@@ -32,8 +32,8 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
-double qFunctionCpp_t(arma::vec beta, arma::mat sigma, arma::vec sigmaType, arma::mat u, 
-arma::vec df, arma::vec kKi, arma::vec kLh, arma::vec kY, arma::mat kX, arma::mat kZ) {
+double qFunctionCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   int kM = u.n_rows;
   double value = 0;
   for (int i = 0; i < kM; i++) {
