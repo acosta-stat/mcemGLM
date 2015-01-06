@@ -102,24 +102,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // uSamplerCpp
-arma::mat uSamplerCpp(arma::vec beta, arma::mat sigma, arma::vec sigmaType, const arma::vec& u, arma::vec df, arma::vec kKi, arma::vec kLh, arma::vec kY, const arma::mat& kX, const arma::mat& kZ, int B);
-RcppExport SEXP mcemGLM_uSamplerCpp(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP) {
+arma::mat uSamplerCpp(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_uSamplerCpp(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP );
-        Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type sigmaType(sigmaTypeSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP );
         Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type df(dfSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type kKi(kKiSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type kLh(kLhSEXP );
-        Rcpp::traits::input_parameter< arma::vec >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
         Rcpp::traits::input_parameter< int >::type B(BSEXP );
-        arma::mat __result = uSamplerCpp(beta, sigma, sigmaType, u, df, kKi, kLh, kY, kX, kZ, B);
+        Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP );
+        arma::mat __result = uSamplerCpp(beta, sigma, sigmaType, u, df, kKi, kLh, kY, kX, kZ, B, sd0);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

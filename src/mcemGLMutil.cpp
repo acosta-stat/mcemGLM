@@ -60,4 +60,3 @@ arma::mat getSigma(arma::vec x) {
   }
   return sigma;
 }
-

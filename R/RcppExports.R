@@ -21,7 +21,7 @@ rcpp_hello_world <- function() {
     .Call('mcemGLM_rcpp_hello_world', PACKAGE = 'mcemGLM')
 }
 
-uSamplerCpp <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kY, kX, kZ, B) {
-    .Call('mcemGLM_uSamplerCpp', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kY, kX, kZ, B)
+uSamplerCpp <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_uSamplerCpp', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kY, kX, kZ, B, sd0)
 }
 
