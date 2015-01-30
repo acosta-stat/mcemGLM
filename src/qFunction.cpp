@@ -19,6 +19,7 @@
  *            of variance components. Its sum is equal to the length of 'u'.
  * kLh:       Number of sub-variance components in each variance component. These have a common 
  *            covariance matrix but different degrees of freedom.
+ * kLhi:      Number of random effects in each subvariance componenet.
  * kY:        Observations, 0 for failure and 1 for success.
  * kX:        Design matrix for fixed effects.
  * kZ:        Design matrix for random effects.
@@ -33,11 +34,11 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 double qFunctionCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   int kM = u.n_rows;
   double value = 0;
   for (int i = 0; i < kM; i++) {
-    value += loglikehoodLogitCpp_t(beta, sigma, sigmaType, u.row(i).t(), df, kKi, kLh, kY, kX, kZ) / kM;
+    value += loglikehoodLogitCpp_t(beta, sigma, sigmaType, u.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ) / kM;
   }
   return value;
 }

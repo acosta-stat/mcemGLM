@@ -1,0 +1,3 @@
+useDynLib(mcemGLM)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)

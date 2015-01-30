@@ -9,8 +9,9 @@
 # kLh: Number of subvariance components within each variance components. The
 #      subvariance components share a covariance matrix but have different
 #      degrees of freedom.
+# KLhi: Number of random effects in each subvariance component
 # kY, kX, kZ: Data and design matrices
-toMax_t <- function(pars, u, sigmaType, kKi, kLh, kY, kX, kZ) {
+toMax_t <- function(pars, u, sigmaType, kKi, kLh, KLhi, kY, kX, kZ) {
   kP <- dim(kX)[2]  # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kL <- sum(kLh)    # Number of subvariance components
