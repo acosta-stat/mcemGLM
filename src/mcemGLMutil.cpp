@@ -15,6 +15,17 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 /** Evaluate the log density of a multivariate t distribution with mean vector 0*/
 double ldmt(arma::vec x, double df, arma::mat sigma, int sigmaType) {
+  if (df <= 0) {
+    return -INFINITY;
+  }
+  int n = sigma.n_cols;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (sigma(i, j) < 0) {
+        return -INFINITY;
+      }
+    }
+  }
   double value = 0; /** Density value */
   int k = x.size();
   //arma::mat sigma0 = as<arma::mat>(sigma);

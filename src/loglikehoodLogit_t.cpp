@@ -44,6 +44,8 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
   int kR = kKi.n_elem; /** Number of variance components */
   int kL = sum(kLh);   /** Number of subvariance components */
   
+  
+  
   /** sum of yij * (wij - log(1 + ...))
    *  This corresponds to the 
   */
@@ -66,10 +68,10 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
     for (int j = 0; j < kLh(i); j++) {
       // std::cout<<i<<"\n";
       to += kLhi(counter);
-      std::cout<<"from:"<<from<<'\n';
-      std::cout<<"to:"<<to<<'\n';
-      std::cout<<sigmaType(i)<<"\n";
-      std::cout<<kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t()))<<"\n";
+      // std::cout<<"from:"<<from<<'\n';
+      // std::cout<<"to:"<<to<<'\n';
+      // std::cout<<sigmaType(i)<<"\n";
+      // std::cout<<kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t()))<<"\n";
       value += ldmt(u.subvec(from, to), df(counter), kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t())), sigmaType(i));
       from = to + 1;
       counter += 1;
