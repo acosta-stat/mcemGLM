@@ -1,6 +1,6 @@
-# This function is used in optim to maximize the Q function.
+# This function is used with optim to maximize the Q function.
 # The paraters in 'pars' are: beta, df, and sigma.
-# u:         Vector composed of kR variance components.
+# u:          Matrix of MCMC ouput for the random effects.
 # sigmaType:  Type of each covariance matrix:
 #             0 - Diagonal
 #             1 - Exchangeable
@@ -24,11 +24,13 @@ toMax_t <- function(pars, u, sigmaType, sigmaDim, kKi, kLh, kLhi, kY, kX, kZ) {
   for (i in 1:kR) {
     sigma[i, 1] <- sigmaDim[i]
     if (sigmaType[i] == 0) {
+      # Diagonal matrix. One parameter
       tmp_mat <- pars[counter] * diag(sigmaDim[i])
       sigma[i, 2:(sigmaDim[i]^2 + 1)] <- as.vector(tmp_mat)
       counter <- counter + 1
     }
     if (sigmaType[i] == 1) {
+      # Exchangeable matrix. Two parameters, diagonal and off-diagonal.
       tmp_mat <- pars[counter] * diag(sigmaDim[i])
       counter <- counter + 1
       tmp_mat[lower.tri(tmp_mat)] <- pars[counter]
@@ -37,6 +39,7 @@ toMax_t <- function(pars, u, sigmaType, sigmaDim, kKi, kLh, kLhi, kY, kX, kZ) {
       sigma[i, 2:(sigmaDim[i]^2 + 1)] <- as.vector(tmp_mat)
     }
     if (sigmaType[i] == 2) {
+      # AR(1) matrix. Two parameters, sigma^2 and pho.
       sigma2 <- pars[counter]
       counter <- counter + 1
       pho <- pars[counter]

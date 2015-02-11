@@ -34,8 +34,7 @@ using namespace Rcpp;
 
 
 // [[Rcpp::export]]
-double loglikehoodLogitCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
+double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   double value = 0; /** The value to be returned */
   
   int nObs = kY.n_elem;
@@ -61,23 +60,7 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
     value += kY(i) * wij - log(1 + exp(wij));
   }
   
-  int from = 0;
-  int to = - 1;
-  int counter = 0;
-  for (int i = 0; i < kR; i++) {
-    for (int j = 0; j < kLh(i); j++) {
-      // std::cout<<i<<"\n";
-      to += kLhi(counter);
-      // std::cout<<"from:"<<from<<'\n';
-      // std::cout<<"to:"<<to<<'\n';
-      // std::cout<<sigmaType(i)<<"\n";
-      // std::cout<<kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t()))<<"\n";
-      value += ldmt(u.subvec(from, to), df(counter), kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t())), sigmaType(i));
-      from = to + 1;
-      counter += 1;
-    }
-  }
-  
+  value += ldmn(u, sigma);
   
   return value;
 }

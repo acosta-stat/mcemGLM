@@ -11,7 +11,39 @@
 using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
-// #include <Rcpp.h>
+// [[Rcpp::export]]
+/** Evaluate the log density of a multivariate normal distribution with mean vector 0 */
+double ldmn(const arma::vec& x, const arma::mat& sigma) {
+  int kDIM = sigma.n_cols;
+  for (int i = 0; i < kDIM; i++) {
+    for (int j = 0; j < kDIM; j++) {
+      if(sigma(i, j) < 0) {
+        return -INFINITY;
+      }
+    }
+  }
+  
+  double VALUE = -0.5 * kDIM * log(2 * M_PI) - 0.5 * log(arma::det(sigma));
+  
+  arma::mat sigmainv;
+  sigmainv = inv_sympd(sigma);
+  //std::cout<<sigmainv(1,1);
+  
+  double tmp0 = 0;
+  NumericVector tmpVector(kDIM); /** stores the product of x^t and sigma^-1 */
+  for (int i = 0; i < kDIM; i++) {
+    for (int j = 0; j < kDIM; j++) {
+      tmpVector(i) += x(j) * sigmainv(j, i);
+    }
+  }
+  for (int i = 0; i < kDIM; i++) {
+    tmp0 += tmpVector(i) * x(i);
+  }
+  VALUE += - 0.5 * tmp0;
+  return VALUE;
+  
+}
+
 // [[Rcpp::export]]
 /** Evaluate the log density of a multivariate t distribution with mean vector 0*/
 double ldmt(arma::vec x, double df, arma::mat sigma, int sigmaType) {

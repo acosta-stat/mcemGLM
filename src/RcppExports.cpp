@@ -31,6 +31,45 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// loglikelihoodLogitCpp_n
+double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP uSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        double __result = loglikelihoodLogitCpp_n(beta, sigma, u, kKi, kLh, kLhi, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// ldmn
+/** Evaluate the log density of a multivariate normal distribution with mean vector 0 */ double ldmn(const arma::vec& x, const arma::mat& sigma);
+RcppExport SEXP mcemGLM_ldmn(SEXP xSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        /** Evaluate the log density of a multivariate normal distribution with mean vector 0 */ double __result = ldmn(x, sigma);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // ldmt
 /** Evaluate the log density of a multivariate t distribution with mean vector 0*/ double ldmt(arma::vec x, double df, arma::mat sigma, int sigmaType);
 RcppExport SEXP mcemGLM_ldmt(SEXP xSEXP, SEXP dfSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP) {

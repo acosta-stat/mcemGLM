@@ -21,16 +21,16 @@ double min0(double a, double b) {
 }
 
 double logAccept(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& ucurrent, 
-const arma::vec& uproposed, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
-const arma::mat& kX, const arma::mat& kZ) {
+const arma::vec& uproposed, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, 
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   return min0(0.0, loglikehoodLogitCpp_t(beta, sigma, sigmaType, uproposed, df, kKi, kLh, kLhi, kY, kX, kZ)
   - loglikehoodLogitCpp_t(beta, sigma, sigmaType, ucurrent, df, kKi, kLh, kLhi, kY, kX, kZ));
 }
 
 // [[Rcpp::export]]
 arma::mat uSamplerCpp(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
-int B, double sd0) {
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ, int B, double sd0) {
   RNGScope scope;
   int kK = u.n_rows;
   

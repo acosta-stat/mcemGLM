@@ -4,6 +4,8 @@ using namespace Rcpp;
 
 double ldmt(arma::vec x, double df, arma::mat sigma, int sigmaType);
 
+double ldmn(const arma::vec& x, const arma::mat& sigma);
+
 arma::mat getSigma(arma::vec x);
 
 double loglikehoodLogitCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 

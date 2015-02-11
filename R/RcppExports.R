@@ -5,6 +5,14 @@ loglikehoodLogitCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi,
     .Call('mcemGLM_loglikehoodLogitCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
 }
 
+loglikelihoodLogitCpp_n <- function(beta, sigma, u, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodLogitCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
+ldmn <- function(x, sigma) {
+    .Call('mcemGLM_ldmn', PACKAGE = 'mcemGLM', x, sigma)
+}
+
 ldmt <- function(x, df, sigma, sigmaType) {
     .Call('mcemGLM_ldmt', PACKAGE = 'mcemGLM', x, df, sigma, sigmaType)
 }
