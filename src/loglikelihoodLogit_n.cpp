@@ -61,6 +61,5 @@ double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, co
   }
   
   value += ldmn(u, sigma);
-  
   return value;
 }
