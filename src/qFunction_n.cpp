@@ -1,5 +1,5 @@
 /**
- * \file qFunction.cpp
+ * \file qFunction_n.cpp
  * \author Felipe Acosta
  * \date 2014-12-30
  * \brief This function evaluates the Q function of the algorithm. It performs a loop on the loglikelihood function 
@@ -33,12 +33,12 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
-double qFunctionCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
+double qFunctionCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   int kM = u.n_rows;
   double value = 0;
   for (int i = 0; i < kM; i++) {
-    value += loglikelihoodLogitCpp_t(beta, sigma, sigmaType, u.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ) / kM;
+    value += loglikelihoodLogitCpp_n(beta, sigma, u.row(i).t(), kY, kX, kZ) / kM;
   }
   return value;
 }

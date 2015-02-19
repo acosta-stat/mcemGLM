@@ -34,7 +34,7 @@ using namespace Rcpp;
 
 
 // [[Rcpp::export]]
-double loglikehoodLogitCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
+double loglikelihoodLogitCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
 const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   double value = 0; /** The value to be returned */
   
@@ -42,7 +42,7 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
   int kP = kX.n_cols;  /** Dimension of Beta */
   int kK = kZ.n_cols;  /** Dimension of U */
   int kR = kKi.n_elem; /** Number of variance components */
-  int kL = sum(kLh);   /** Number of subvariance components */
+  // int kL = sum(kLh);   /** Number of subvariance components */
   
   
   

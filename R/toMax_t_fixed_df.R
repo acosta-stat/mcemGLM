@@ -13,7 +13,7 @@
 #             degrees of freedom.
 # KLhi:       Number of random effects in each subvariance component.
 # kY, kX, kZ: Data and design matrices.
-toMax_t <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, kY, kX, kZ) {
+toMax_t_fixed_df <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, kY, kX, kZ) {
   kP <- dim(kX)[2]  # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kL <- sum(kLh)    # Number of subvariance components

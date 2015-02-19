@@ -9,7 +9,7 @@
 # MCit:       Number of intial MCMC iterations
 # MCf:        Factor to increase the number of MCMC iterations.
 
-mcemMLE_t <- function (sigmaType, sigmaDim, df, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf) {
+mcemMLE_t_fixed_df <- function (sigmaType, sigmaDim, df, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf) {
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
   beta <- rep(0, kP)
@@ -81,9 +81,9 @@ mcemMLE_t <- function (sigmaType, sigmaDim, df, kKi, kLh, kLhi, kY, kX, kZ, EMit
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
-    df <- outMLE[j, (kP + 1):(kP + kL)]
-    sigma <- outMLE[j, -c(1:(kP + kL))]
-    theta <- c(beta, df, sigma)
+    # df <- outMLE[j, (kP + 1):(kP + kL)]
+    sigma <- outMLE[j, -c(1:kP)]
+    theta <- c(beta, sigma)
     
     # The starting value for the next MCMC run is the mean of the previous iteration.
     u <- apply(uSample, 2, mean)
@@ -91,5 +91,8 @@ mcemMLE_t <- function (sigmaType, sigmaDim, df, kKi, kLh, kLhi, kY, kX, kZ, EMit
     # We modify the number of MCMC iterations
     MCit <- MCit * MCf
   }
+  # Get a final sample from U using the last MLE estimates
+  uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = MCit, sd0 = 1)
+  
   return(list(mcemEST=outMLE, randeff = uSample))
 }
