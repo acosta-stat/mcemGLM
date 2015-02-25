@@ -72,7 +72,7 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
       // std::cout<<"to:"<<to<<'\n';
       // std::cout<<sigmaType(i)<<"\n";
       // std::cout<<kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t()))<<"\n";
-      value += ldmt(u.subvec(from, to), df(counter), kron(arma::mat(kLhi(counter), kLhi(counter), arma::fill::eye), getSigma(sigma.row(i).t())), sigmaType(i));
+      value += ldmt(u.subvec(from, to), df(counter), sigma.submat(from, from, to, to), sigmaType(i));
       from = to + 1;
       counter += 1;
     }

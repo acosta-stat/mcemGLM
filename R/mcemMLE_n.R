@@ -8,7 +8,7 @@
 # MCit:       Number of intial MCMC iterations
 # MCf:        Factor to increase the number of MCMC iterations.
 
-mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf) {
+mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf, verb = FALSE) {
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
   beta <- rep(0, kP)
@@ -45,6 +45,9 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf) {
       print(outOptim)
     }
     outMLE[j, ] <- outOptim$par
+    if (verb == TRUE) {
+      print(outOptim$par)
+    }
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]

@@ -89,17 +89,3 @@ double ldmt(arma::vec x, double df, arma::mat sigma, int sigmaType) {
   return value;
 }
 
-// [[Rcpp::export]]
-/** Reconstruct a nxn covariance matrix from a vector */
-arma::mat getSigma(arma::vec x) {
-  int n = x(0);
-  arma::mat sigma(n,n);
-  int ctr = 1;
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      sigma(i, j) = x(ctr);
-      ctr += 1;
-    }
-  }
-  return sigma;
-}

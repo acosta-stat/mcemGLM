@@ -17,10 +17,6 @@ ldmt <- function(x, df, sigma, sigmaType) {
     .Call('mcemGLM_ldmt', PACKAGE = 'mcemGLM', x, df, sigma, sigmaType)
 }
 
-getSigma <- function(x) {
-    .Call('mcemGLM_getSigma', PACKAGE = 'mcemGLM', x)
-}
-
 qFunctionCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
     .Call('mcemGLM_qFunctionCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
 }

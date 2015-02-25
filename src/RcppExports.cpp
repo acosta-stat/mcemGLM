@@ -85,21 +85,6 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// getSigma
-/** Reconstruct a nxn covariance matrix from a vector */ arma::mat getSigma(arma::vec x);
-RcppExport SEXP mcemGLM_getSigma(SEXP xSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP );
-        /** Reconstruct a nxn covariance matrix from a vector */ arma::mat __result = getSigma(x);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
 // qFunctionCpp_t
 double qFunctionCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 RcppExport SEXP mcemGLM_qFunctionCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
