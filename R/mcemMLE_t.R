@@ -7,34 +7,46 @@
 # EMit:       Number of EM iterations.
 # MCit:       Number of intial MCMC iterations
 # MCf:        Factor to increase the number of MCMC iterations.
+# MCsd:       Standard deviation for the proposal step.
 
-mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf, verb = FALSE) {
+mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {
+  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2)
+  ctrlN <- names(ctrl)
+  ctrl[(controlN <- names(controlEM))] <- controlEM
+  if(length(unkwn <- controlN[!controlN %in% ctrlN])){
+    warning("Unknown names in control: ", paste(unkwn, collapse = ", "))
+  }
+  
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
-  beta <- rep(0, kP)
-  
   kK <- ncol(kZ)
   kR <- length(kKi)
   u <- rep(0, kK)
   kL <- sum(kLh)
-  df <- rep(100, kL)
   
   # Parameters needed in sigma, one for diagonal, two for exchangeable and AR(1).
-  sigma <- NULL
-  for (i in sigmaType) {
-    if (i == 0) {
-      sigma <- c(sigma, 1)
-    } else {
-      sigma <- c(sigma, 1, 1)
+  if (!is.null(initial)) {
+    beta <- initial[1:kP]
+    sigma <- initial[-(1:kP)]
+  } else {
+    beta <- rep(0, kP)
+    df <- rep(20, kL)
+    sigma <- NULL
+    for (i in sigmaType) {
+      if (i == 0) {
+        sigma <- c(sigma, 1)
+      } else {
+        sigma <- c(sigma, 1, 1)
+      }
     }
   }
   
   theta <- c(beta, df, sigma)
-  outMLE <- matrix(0, EMit, length(theta))
+  outMLE <- matrix(0, ctrl$EMit, length(theta))
   outMLE[1, ] <- theta
   
   # (pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ)
-  for (j in 2:EMit) {
+  for (j in 2:ctrl$EMit) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
     
     sigmaMat <- constructSigma_t(sigma, sigmaType, kK, kR, kLh, kLhi)
@@ -42,10 +54,10 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf, v
     # The matrix input is:
     # print("Matrix:")
     # print(sigmaMat)
-    uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = MCit, sd0 = 1)
+    uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
     
     # Now we optimize.
-    outOptim <- optim(par = theta, fn = toMax_t, control = list(fnscale = -1, maxit = 10000), u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    outOptim <- optim(par = theta, fn = toMax_t, control = controlOptim, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     if(outOptim$convergence != 0) {
       print("Convergence issues")
       print(outOptim)
@@ -53,6 +65,7 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf, v
     outMLE[j, ] <- outOptim$par
     if (verb == TRUE) {
       print(outOptim$par)
+      print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
     # The current estimates are updated now
@@ -65,7 +78,10 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, EMit, MCit, MCf, v
     u <- apply(uSample, 2, mean)
     
     # We modify the number of MCMC iterations
-    MCit <- MCit * MCf
+    ctrl$MCit <- ctrl$MCit * ctrl$MCf
   }
+  
+  # Get a final sample for u and return
+  uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
   return(list(mcemEST=outMLE, randeff = uSample))
 }

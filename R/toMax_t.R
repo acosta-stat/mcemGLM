@@ -21,6 +21,6 @@ toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   df <- pars[(kP + 1):(kP + kL)]
   
   sigma <- constructSigma_t(pars[-(1:(kP + kL))], sigmaType, kK, kR, kLh, kLhi)
-  return(qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
+  return(-qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
   # return(list(beta=beta, df=df, sigma=sigma))
 }

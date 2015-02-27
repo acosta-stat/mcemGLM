@@ -22,6 +22,6 @@ toMax_t_fixed_df <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, k
 
   sigma <- constructSigma_t(pars[-(1:kP)], sigmaType, kK, kR, kLh, kLhi)
   
-  return(qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
+  return(-qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
   # return(list(beta=beta, df=df, sigma=sigma))
 }
