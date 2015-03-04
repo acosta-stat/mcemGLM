@@ -9,6 +9,18 @@ loglikelihoodLogitCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLh
     .Call('mcemGLM_loglikelihoodLogitCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
 }
 
+loglikelihoodLogitGradientBetaCpp_n <- function(beta, u, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodLogitGradientBetaCpp_n', PACKAGE = 'mcemGLM', beta, u, kY, kX, kZ)
+}
+
+loglikelihoodLogitHessianBetaCpp_n <- function(beta, u, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodLogitHessianBetaCpp_n', PACKAGE = 'mcemGLM', beta, u, kY, kX, kZ)
+}
+
+logMarginalCpp_t <- function(sigma, sigmaType, u, df, kKi, kLh, kLhi) {
+    .Call('mcemGLM_logMarginalCpp_t', PACKAGE = 'mcemGLM', sigma, sigmaType, u, df, kKi, kLh, kLhi)
+}
+
 ldmn <- function(x, sigma) {
     .Call('mcemGLM_ldmn', PACKAGE = 'mcemGLM', x, sigma)
 }

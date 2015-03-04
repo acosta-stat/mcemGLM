@@ -7,8 +7,9 @@
 # EMit:       Number of EM iterations.
 # MCit:       Number of intial MCMC iterations
 # MCf:        Factor to increase the number of MCMC iterations.
+# MCsd:       Standard deviation for the proposal step.
 
-mcemMLE_t_fixed_df <- function (sigmaType,  df, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {  
+mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {  
   ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCEMsd = 0.2)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM

@@ -28,3 +28,13 @@ const arma::mat& kX, const arma::mat& kZ);
 arma::mat uSamplerCpp(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
 const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
 const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+
+arma::vec loglikelihoodLogitGradientBetaCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u,
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat loglikelihoodLogitHessianBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+double logMarginalCpp_t(const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);

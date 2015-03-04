@@ -7,5 +7,6 @@ Author: Your Name
 Maintainer: Your Name <your@email.com>
 Description: More about what it does (maybe more than one line)
 License: GPL (>= 2)
+Depends: mvtnorm, numDeriv
 Imports: Rcpp (>= 0.11.3), RcppArmadillo (>= 0.4.200.0)
 LinkingTo: Rcpp, RcppArmadillo

@@ -51,6 +51,65 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// loglikelihoodLogitGradientBetaCpp_n
+arma::vec loglikelihoodLogitGradientBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitGradientBetaCpp_n(SEXP betaSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::vec __result = loglikelihoodLogitGradientBetaCpp_n(beta, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// loglikelihoodLogitHessianBetaCpp_n
+arma::mat loglikelihoodLogitHessianBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitHessianBetaCpp_n(SEXP betaSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::mat __result = loglikelihoodLogitHessianBetaCpp_n(beta, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// logMarginalCpp_t
+double logMarginalCpp_t(const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi);
+RcppExport SEXP mcemGLM_logMarginalCpp_t(SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP );
+        double __result = logMarginalCpp_t(sigma, sigmaType, u, df, kKi, kLh, kLhi);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // ldmn
 /** Evaluate the log density of a multivariate normal distribution with mean vector 0 */ double ldmn(const arma::vec& x, const arma::mat& sigma);
 RcppExport SEXP mcemGLM_ldmn(SEXP xSEXP, SEXP sigmaSEXP) {
