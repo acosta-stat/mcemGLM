@@ -73,8 +73,14 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf
   }
-  # Get a final sample from U using the last MLE estimates
+  # Get a final sample from U using the last MLE estimates to estimate the information matrix.
   uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
+  iMatrix <- matrix(0, length(theta), length(theta))
+  for (i in 1:ctrl$MCit) {
+    h0 <- hessianLogit_n(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    g0 <- gradientLogit_n(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
+  }
   
-  return(list(mcemEST=outMLE, randeff = uSample))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample))
 }

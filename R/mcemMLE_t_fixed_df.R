@@ -10,7 +10,7 @@
 # MCsd:       Standard deviation for the proposal step.
 
 mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {  
-  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCEMsd = 0.2)
+  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -61,8 +61,9 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
       print(outOptim)
     }
     outMLE[j, ] <- outOptim$par
-    if (verb == TRUE) {
+    if (ctrl$verb == TRUE) {
       print(outOptim$par)
+      print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
     # The current estimates are updated now
@@ -76,8 +77,14 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf
   }
-  # Get a final sample from U using the last MLE estimates
+  # Get a final sample from U using the last MLE estimates to estimate the information matrix.
   uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
+  iMatrix <- matrix(0, length(theta), length(theta))
+  for (i in 1:ctrl$MCit) {
+    h0 <- hessianLogit_t_fixed_df(pars = theta,df = df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    g0 <- gradientLogit_t_fixed_df(pars = theta, df= df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
+  }
   
-  return(list(mcemEST=outMLE, randeff = uSample))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample))
 }

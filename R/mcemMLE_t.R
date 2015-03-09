@@ -63,7 +63,7 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
       print(outOptim)
     }
     outMLE[j, ] <- outOptim$par
-    if (verb == TRUE) {
+    if (ctrl$verb == TRUE) {
       print(outOptim$par)
       print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
@@ -81,7 +81,14 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     ctrl$MCit <- ctrl$MCit * ctrl$MCf
   }
   
-  # Get a final sample for u and return
+  # Get a final sample from U using the last MLE estimates to estimate the information matrix.
   uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
-  return(list(mcemEST=outMLE, randeff = uSample))
+  iMatrix <- matrix(0, length(theta), length(theta))
+  for (i in 1:ctrl$MCit) {
+    h0 <- hessianLogit_t(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    g0 <- gradientLogit_t(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
+  }
+  
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample))
 }
