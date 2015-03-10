@@ -35,7 +35,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
       if (i == 0) {
         sigma <- c(sigma, 1)
       } else {
-        sigma <- c(sigma, 1, 1)
+        sigma <- c(sigma, 1, 0.1)
       }
     }
   }
@@ -51,7 +51,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
     
     # Now we optimize.
-    outOptim <- optim(par = theta, fn = toMax_n, method = methodOptim, control = controlOptim, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    outOptim <- optim(par = theta, fn = toMax_n, method = methodOptim, control = controlOptim, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)    
     if(outOptim$convergence != 0) {
       print("Convergence issues")
       print(outOptim)
@@ -68,7 +68,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     }
     
     # The starting value for the next MCMC run is the mean of the previous iteration.
-    u <- apply(uSample, 2, mean)
+    u <- colMeans(uSample)
     
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf

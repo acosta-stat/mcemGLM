@@ -23,6 +23,10 @@ toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   # We call ovSigma the overall covariance matrix.
   ovSigma <- constructSigma_n(pars = pars[-(1:kP)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
+  if (min(eigen(ovSigma)$values) <= 0) {
+    return(Inf)
+  }
+    
   return(-qFunctionCpp_n(beta, ovSigma, sigmaType, u, kY, kX, kZ))
   # return(list(beta=beta, df=df, sigma=sigma))
 }

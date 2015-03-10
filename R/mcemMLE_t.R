@@ -75,7 +75,7 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     theta <- c(beta, df, sigma)
     
     # The starting value for the next MCMC run is the mean of the previous iteration.
-    u <- apply(uSample, 2, mean)
+    u <- colMeans(uSample)
     
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf

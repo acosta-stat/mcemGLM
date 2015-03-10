@@ -26,7 +26,7 @@ double ldmn(const arma::vec& x, const arma::mat& sigma) {
   double VALUE = -0.5 * kDIM * log(2 * M_PI) - 0.5 * log(arma::det(sigma));
   
   arma::mat sigmainv;
-  sigmainv = inv_sympd(sigma);
+  sigmainv = inv(sigma);
   //std::cout<<sigmainv(1,1);
   
   double tmp0 = 0;
