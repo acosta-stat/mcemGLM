@@ -190,6 +190,25 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// qFunctionGradientBetaCpp_n
+arma::vec qFunctionGradientBetaCpp_n(const arma::vec& beta, const arma::mat& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_qFunctionGradientBetaCpp_n(SEXP betaSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::vec __result = qFunctionGradientBetaCpp_n(beta, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP mcemGLM_rcpp_hello_world() {

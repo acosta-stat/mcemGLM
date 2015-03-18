@@ -75,36 +75,4 @@ constructSigma_t <- function(pars, sigmaType, kK, kR, kLh, kLhi) {
     }
   }
   return(ovSigma)
-  
-#   sigma <- matrix(-1, length(kLhi), 1 + (max(kLhi))^2)
-#   counter <- 1
-#   for (i in 1:length(kLhi)) {
-#     sigma[i, 1] <- kLhi[i]
-#     if (sigmaType[i] == 0) {
-#       # Diagonal matrix. One parameter
-#       tmp_mat <- pars[counter] * diag(kLhi[i])
-#       sigma[i, 2:(kLhi[i]^2 + 1)] <- as.vector(tmp_mat)
-#       counter <- counter + 1
-#     }
-#     if (sigmaType[i] == 1) {
-#       # Exchangeable matrix. Two parameters, diagonal and off-diagonal.
-#       tmp_mat <- pars[counter] * diag(kLhi[i])
-#       counter <- counter + 1
-#       tmp_mat[lower.tri(tmp_mat)] <- pars[counter]
-#       tmp_mat[upper.tri(tmp_mat)] <- pars[counter]
-#       counter <- counter + 1
-#       sigma[i, 2:(kLhi[i]^2 + 1)] <- as.vector(tmp_mat)
-#     }
-#     if (sigmaType[i] == 2) {
-#       # AR(1) matrix. Two parameters, sigma^2 and pho.
-#       sigma2 <- pars[counter]
-#       counter <- counter + 1
-#       pho <- pars[counter]
-#       counter <- counter + 1
-#       d0 <- abs(outer(1:kLhi[i], 1:kLhi[i], "-"))
-#       tmp_mat <- sigma2 * pho^d0
-#       sigma[i, 2:(kLhi[i]^2 + 1)] <- as.vector(tmp_mat)
-#     }
-#   }
-#   return(sigma)
 }

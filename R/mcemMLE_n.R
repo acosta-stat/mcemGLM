@@ -10,7 +10,7 @@
 # MCsd:       Standard deviation for the proposal step.
 
 mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {
-  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2)
+  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2, utrust = TRUE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -48,15 +48,24 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
   for (j in 2:ctrl$EMit) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
     ovSigma <- constructSigma_n(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    if (j == 2){
+      u <- rmvnorm(1, u, ovSigma)
+    }
     uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
     
     # Now we optimize.
-    outOptim <- optim(par = theta, fn = toMax_n, method = methodOptim, control = controlOptim, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)    
-    if(outOptim$convergence != 0) {
-      print("Convergence issues")
-      print(outOptim)
+    if (ctrl$utrust == FALSE) {
+      outOptim <- optim(par = theta, fn = toMax_n, method = methodOptim, control = controlOptim, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, utrust = FALSE)    
+      if(outOptim$convergence != 0) {
+        print("Convergence issues")
+        print(outOptim)
+      }
+      outMLE[j, ] <- outOptim$par
+    } else {
+      outTrust <- trust(toMax_n, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      print(outTrust)
+      outMLE[j, ] <- outTrust$argument
     }
-    outMLE[j, ] <- outOptim$par
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]

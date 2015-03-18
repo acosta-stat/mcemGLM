@@ -10,7 +10,7 @@
 # MCsd:       Standard deviation for the proposal step.
 
 mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {  
-  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2)
+  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2, utrust = TRUE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -55,21 +55,28 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
     
     # Now we optimize.
-    outOptim <- optim(par = theta, fn = toMax_t_fixed_df, method = methodOptim, control = controlOptim, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    if(outOptim$convergence != 0) {
-      print("Convergence issues")
-      print(outOptim)
+    if (ctrl$utrust == FALSE) {
+      outOptim <- optim(par = theta, fn = toMax_t_fixed_df, method = methodOptim, control = controlOptim, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      if(outOptim$convergence != 0) {
+        print("Convergence issues")
+        print(outOptim)
+      }
+      outMLE[j, ] <- outOptim$par
+    } else {
+      outTrust <- trust(toMax_t_fixed_df, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      print(outTrust)
+      outMLE[j, ] <- outTrust$argument
     }
-    outMLE[j, ] <- outOptim$par
-    if (ctrl$verb == TRUE) {
-      print(outOptim$par)
-      print(ts.plot(uSample[, sample(1:kK, 1)]))
-    }
+    
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
     sigma <- outMLE[j, -c(1:kP)]
     theta <- c(beta, sigma)
+    if (ctrl$verb == TRUE) {
+      print(theta)
+      print(ts.plot(uSample[, sample(1:kK, 1)]))
+    }
     
     # The starting value for the next MCMC run is the mean of the previous iteration.
     u <- colMeans(uSample)

@@ -37,6 +37,10 @@ qFunctionCpp_n <- function(beta, sigma, sigmaType, u, kY, kX, kZ) {
     .Call('mcemGLM_qFunctionCpp_n', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, kY, kX, kZ)
 }
 
+qFunctionGradientBetaCpp_n <- function(beta, u, kY, kX, kZ) {
+    .Call('mcemGLM_qFunctionGradientBetaCpp_n', PACKAGE = 'mcemGLM', beta, u, kY, kX, kZ)
+}
+
 rcpp_hello_world <- function() {
     .Call('mcemGLM_rcpp_hello_world', PACKAGE = 'mcemGLM')
 }

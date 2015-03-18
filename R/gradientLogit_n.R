@@ -10,8 +10,8 @@ gradientLogit_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   kL <- sum(kLh)    # Number of subvariance components
   
   beta <- pars[1:kP]
-  sigma <- pars
   # The gradient can be separated into Beta and Sigma. The gradient of Beta can be computed analytically.
+  
   gradientBeta <- loglikelihoodLogitGradientBetaCpp_n(beta = beta, u = u, kY = kY, kX = kX, kZ = kZ)
   
   # The gradient of sigma will be approximated by Richardson's extrapolation using the numDeriv package.

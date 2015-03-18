@@ -11,7 +11,9 @@
 #             degrees of freedom.
 # KLhi:       Number of random effects in each subvariance component
 # kY, kX, kZ: Data and design matrices
-toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
+toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
+  require(numDeriv)
+  
   kP <- dim(kX)[2]  # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects in the model
@@ -19,8 +21,37 @@ toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   
   beta <- pars[1:kP]
   df <- pars[(kP + 1):(kP + kL)]
+  s0 <- length(pars[-(1:(kP + kL))]) # Number of variance parameters
+  ovSigma <- constructSigma_t(pars[-(1:(kP + kL))], sigmaType, kK, kR, kLh, kLhi)
   
-  sigma <- constructSigma_t(pars[-(1:(kP + kL))], sigmaType, kK, kR, kLh, kLhi)
-  return(-qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
-  # return(list(beta=beta, df=df, sigma=sigma))
+  if (utrust == FALSE) {
+    return(-qFunctionCpp_t(beta, ovSigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
+  }
+  
+  value <- qFunctionCpp_t(beta, ovSigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+  
+  
+  loglikelihoodSigma <- function(pars, u) {
+    ovSigma <- constructSigma_n(pars = pars[-(1:kL)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    return(logMarginalCpp_t(sigma = ovSigma, df = pars[1:kL], sigmaType = sigmaType, u = u, kKi = kKi, kLh = kLh, kLhi = kLhi))
+  }
+  # The gradient can be separated into Beta and Sigma. The gradient of Beta can be computed analytically.
+  # The marginal using normal and t distribution are the same so we can use the 'n' function.
+  # The functions for "Sigma" actually contains the df
+  gradientBeta <- rep(0, kP)
+  gradientSigma <- rep(0, kL + s0)
+  hessianBeta <- matrix(0, kP, kP)
+  hessianSigma <- matrix(0, kL + s0, kL + s0)
+  for (i in 1:nrow(u)) {
+    gradientBeta <- gradientBeta + loglikelihoodLogitGradientBetaCpp_n(beta = beta, u = u[i, ], kY = kY, kX = kX, kZ = kZ)
+    gradientSigma <- gradientSigma + grad(func = loglikelihoodSigma, x = pars[-(1:kP)], u = u[i, ])
+    hessianBeta <- hessianBeta + loglikelihoodLogitHessianBetaCpp_n(beta = beta, u = u[i, ], kY = kY, kX = kX, kZ = kZ)
+    hessianSigma <- hessianSigma + hessian(func = loglikelihoodSigma, x = pars[-(1:kP)], u = u[i, ])
+  }
+  hessian0 <- matrix(0, length(pars), length(pars))
+  gradient0 <- c(gradientBeta, gradientSigma) / nrow(u)
+  hessian0[1:kP, 1:kP] <- hessianBeta / nrow(u)
+  hessian0[(kP + 1):(kP + kL + s0), (kP + 1):(kP + kL + s0)] <- hessianSigma / nrow(u)
+  
+  return(list(value = value, gradient = gradient0, hessian = hessian0))  
 }
