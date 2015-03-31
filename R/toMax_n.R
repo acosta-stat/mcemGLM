@@ -26,7 +26,7 @@ toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   ovSigma <- constructSigma_n(pars = pars[-(1:kP)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
   if (min(eigen(ovSigma)$values) <= 0) {
-    return(Inf)
+    return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
   }
   if (utrust == FALSE) {
     return(-qFunctionCpp_n(beta, ovSigma, sigmaType, u, kY, kX, kZ))

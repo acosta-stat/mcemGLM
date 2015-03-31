@@ -22,7 +22,7 @@ toMax_t_fixed_df <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, k
   s0 <- length(pars[-(1:kP)]) # Number of variance parameters
   ovSigma <- constructSigma_t(pars[-(1:kP)], sigmaType, kK, kR, kLh, kLhi)
   if (min(eigen(ovSigma)$values) <= 0) {
-    return(-Inf)
+    return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
   }
   
   if (utrust == FALSE) {

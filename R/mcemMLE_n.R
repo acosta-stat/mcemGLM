@@ -9,8 +9,8 @@
 # MCf:        Factor to increase the number of MCMC iterations.
 # MCsd:       Standard deviation for the proposal step.
 
-mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {
-  ctrl <- list(EMit = 10, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2, utrust = TRUE)
+mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), controlTrust = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {
+  ctrl <- list(EMit = 3, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = NULL, utrust = TRUE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -44,6 +44,25 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
   outMLE <- matrix(0, ctrl$EMit, length(theta))
   outMLE[1, ] <- theta
   
+  if (is.null(ctrl$MCsd)) {
+    if (ctrl$verb == TRUE)
+      print("Tuning acceptance rate.")
+    ar <- 1
+    sdtune <- 1
+    ovSigma <- constructSigma_n(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    u <- rmvnorm(1, u, ovSigma)
+    while (ar > 0.4 | ar < 0.1) {
+      uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
+      ar <- length(unique(uSample[, 1])) / 1000
+      if (ar < 0.1)
+        sdtune <- 0.8 * sdtune
+      if (ar > 0.4)
+        sdtune <- 1.2 * sdtune
+    }
+    if (ctrl$verb == TRUE)
+      print(ar)
+    ctrl$MCsd <- sdtune
+  }
 
   for (j in 2:ctrl$EMit) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
@@ -63,7 +82,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
       outMLE[j, ] <- outOptim$par
     } else {
       outTrust <- trust(toMax_n, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-      print(outTrust)
+      if (ctrl$verb == TRUE)
+        print(outTrust)
       outMLE[j, ] <- outTrust$argument
     }
     
@@ -90,6 +110,6 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     g0 <- gradientLogit_n(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
   }
-  
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample))
+  colnames(uSample) <- colnames(kZ)
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ))
 }
