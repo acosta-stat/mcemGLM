@@ -9,7 +9,7 @@
 # kLh:       Number of subvariance components in each variance component. Each subvariance component has a covariance matrix.
 # kLhi:      Number of random effects in each subvariance component. This are the dimensions of the subvariance component matrices.
 
-constructSigma_n <- function(pars, sigmaType, kK, kR, kLh, kLhi) {
+constructSigma <- function(pars, sigmaType, kK, kR, kLh, kLhi) {
   # We call ovSigma the overall covariance matrix
   # Dimension of overall sigma.
   ovSigma <- matrix(0, kK, kK)

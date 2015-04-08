@@ -14,10 +14,10 @@
 #   MCf:      Factor to increase the number of MCMC iterations.
 #   MCsd:     Standard deviation for the proposal step.
 
-mcemGLMM <- function(fixed, random, data, family, vcDist = c("t", "normal"), df, corType = NULL, controlEM = list(), controlTrust = list(), controlOptim = list(), methodOptim = "Nelder-Mead", initial = NULL) {
+mcemGLMM <- function(fixed, random, data, family, vcDist = c("t", "normal"), df, corType, controlEM = list(), controlTrust = list(), controlOptim = list(), methodOptim = "Nelder-Mead", initial = NULL) {
   kY <- data[, all.vars(fixed)[1]]
   kX <- model.matrix(fixed, data = data)
-  if (is.null(corType)) {
+  if (missing(corType)) {
     if (!is.list(random)) {
       # Case 1: One random effect with a diagonal matrix.
       kZ <- model.matrix(random, data = data)
@@ -25,7 +25,7 @@ mcemGLMM <- function(fixed, random, data, family, vcDist = c("t", "normal"), df,
       kKi <- ncol(kZ)
       kLh <- 1
       kLhi <- kKi
-      # return(list(kX = kX, kZ = kZ, kKi, kLh, kLhi))
+      
       if (vcDist == "normal") {
         fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust, methodOptim, controlOptim)
       } else {

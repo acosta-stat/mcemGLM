@@ -6,6 +6,56 @@
 
 using namespace Rcpp;
 
+// iMatrixDiagCpp_n
+arma::mat iMatrixDiagCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iMatrixDiagCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP uSEXP, SEXP kKiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        Rcpp::traits::input_parameter< int >::type B(BSEXP );
+        Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP );
+        arma::mat __result = iMatrixDiagCpp_n(beta, sigma, u, kKi, kY, kX, kZ, B, sd0);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// iMatrixDiagCpp_t
+arma::mat iMatrixDiagCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iMatrixDiagCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        Rcpp::traits::input_parameter< int >::type B(BSEXP );
+        Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP );
+        arma::mat __result = iMatrixDiagCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // loglikelihoodLogitGradientBetaCpp_n
 arma::vec loglikelihoodLogitGradientBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 RcppExport SEXP mcemGLM_loglikelihoodLogitGradientBetaCpp_n(SEXP betaSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
@@ -25,6 +75,51 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// loglikelihoodLogitGradientCpp_n
+arma::vec loglikelihoodLogitGradientCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& kKi, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitGradientCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP kKiSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::vec __result = loglikelihoodLogitGradientCpp_n(beta, sigma, kKi, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// loglikelihoodLogitGradientCpp_t
+arma::vec loglikelihoodLogitGradientCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitGradientCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::vec __result = loglikelihoodLogitGradientCpp_t(beta, sigma, u, df, kKi, kLh, kLhi, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // loglikelihoodLogitHessianBetaCpp_n
 arma::mat loglikelihoodLogitHessianBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 RcppExport SEXP mcemGLM_loglikelihoodLogitHessianBetaCpp_n(SEXP betaSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
@@ -38,6 +133,51 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
         arma::mat __result = loglikelihoodLogitHessianBetaCpp_n(beta, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// loglikelihoodLogitHessianCpp_n
+arma::mat loglikelihoodLogitHessianCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& kKi, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitHessianCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP kKiSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::mat __result = loglikelihoodLogitHessianCpp_n(beta, sigma, kKi, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// loglikelihoodLogitHessianCpp_t
+arma::mat loglikelihoodLogitHessianCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_loglikelihoodLogitHessianCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        arma::mat __result = loglikelihoodLogitHessianCpp_t(beta, sigma, u, df, kKi, kLh, kLhi, kY, kX, kZ);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -163,6 +303,52 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
         double __result = qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// qFunctionDiagCpp_n
+List qFunctionDiagCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& kKi, const arma::mat& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_qFunctionDiagCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP kKiSEXP, SEXP uSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        List __result = qFunctionDiagCpp_n(beta, sigma, kKi, u, kY, kX, kZ);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// qFunctionDiagCpp_t
+List qFunctionDiagCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+RcppExport SEXP mcemGLM_qFunctionDiagCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type u(uSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP );
+        Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP );
+        List __result = qFunctionDiagCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

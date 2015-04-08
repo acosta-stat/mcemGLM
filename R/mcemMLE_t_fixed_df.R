@@ -49,7 +49,7 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
       print("Tuning acceptance rate.")
     ar <- 1
     sdtune <- 1
-    ovSigma <- constructSigma_n(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     u <- rmvnorm(1, u, ovSigma)
     while (ar > 0.4 | ar < 0.1) {
       uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
@@ -66,12 +66,9 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
 
   for (j in 2:ctrl$EMit) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
-    sigmaMat <- constructSigma_t(sigma, sigmaType, kK, kR, kLh, kLhi)
+    ovSigma <- constructSigma(sigma, sigmaType, kK, kR, kLh, kLhi)
     
-    # The matrix input is:
-    # print("Matrix:")
-    # return(sigmaMat)
-    uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
+    uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
     
     # Now we optimize.
     if (ctrl$utrust == FALSE) {
@@ -82,7 +79,11 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
       }
       outMLE[j, ] <- outOptim$par
     } else {
-      outTrust <- trust(toMax_t_fixed_df, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      if(sum(sigmaType) == 0) {
+        outTrust <- trust(toMaxDiag_t, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      } else {
+        outTrust <- trust(toMax_t_fixed_df, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      }
       if (ctrl$verb == TRUE)
         print(outTrust)
       outMLE[j, ] <- outTrust$argument
@@ -98,20 +99,48 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
       print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
+    # Retuning the accepatance rate.
+    ar <- length(unique(uSample[, 1]))/ctrl$MCit
+    if (ar < 0.1 | ar > 0.4) {
+      if (ctrl$verb == TRUE)
+        print("Tuning acceptance rate.")
+      ar <- 1
+      sdtune <- ctrl$MCsd
+      ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+      u <- rmvnorm(1, u, ovSigma)
+      while (ar > 0.4 | ar < 0.1) {
+        uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
+        ar <- length(unique(uSample[, 1])) / 1000
+        if (ar < 0.1)
+          sdtune <- 0.8 * sdtune
+        if (ar > 0.4)
+          sdtune <- 1.2 * sdtune
+      }
+      if (ctrl$verb == TRUE)
+        print(ar)
+      ctrl$MCsd <- sdtune
+    }
+    
     # The starting value for the next MCMC run is the mean of the previous iteration.
     u <- colMeans(uSample)
     
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf
   }
-  # Get a final sample from U using the last MLE estimates to estimate the information matrix.
-  uSample <- uSamplerCpp(beta = beta, sigma = sigmaMat, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
-  iMatrix <- matrix(0, length(theta), length(theta))
-  for (i in 1:ctrl$MCit) {
-    h0 <- hessianLogit_t_fixed_df(pars = theta,df = df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    g0 <- gradientLogit_t_fixed_df(pars = theta, df= df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
+  # Estimation of the information matrix.
+  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  if (sum(sigmaType) == 0) {
+    iMatrix <- iMatrixDiagCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
+  } else {
+    uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
+    iMatrix <- matrix(0, length(theta), length(theta))
+    for (i in 1:ctrl$MCit) {
+      h0 <- hessianLogit_t_fixed_df(pars = theta,df = df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      g0 <- gradientLogit_t_fixed_df(pars = theta, df= df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
+    }
   }
+  
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ))
 }
