@@ -10,7 +10,7 @@
 # MCsd:       Standard deviation for the proposal step.
 
 mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(), controlTrust = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {
-  ctrl <- list(EMit = 3, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = NULL, utrust = TRUE)
+  ctrl <- list(EMit = 50, MCit = 2000, MCf = 1.04, verb = TRUE, MCsd = NULL, EMdelta = 0.01, EMepsilon = 0.001, utrust = TRUE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -44,6 +44,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
   outMLE <- matrix(0, ctrl$EMit, length(theta))
   outMLE[1, ] <- theta
   
+  # MCMC step size tuning
   if (is.null(ctrl$MCsd)) {
     if (ctrl$verb == TRUE)
       print("Tuning acceptance rate.")
@@ -63,19 +64,17 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
       print(ar)
     ctrl$MCsd <- sdtune
   }
-
-  for (j in 2:ctrl$EMit) {
+  
+  # EM iterations
+  j <- 2
+  errorCounter <- 0
+  while (j <= ctrl$EMit & sum(tail(errorCounter, 3)) < 3) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
     ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     if (j == 2){
       u <- rmvnorm(1, u, ovSigma)
     }
     uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = ctrl$MCit, sd0 = ctrl$MCsd)
-    
-    
-    
-    
-    
     
     # Now we optimize.
     if (ctrl$utrust == FALSE) {
@@ -105,7 +104,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
       print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
-    # Retuning the accepatance rate.
+    # Retuning the MCMC step size.
     ar <- length(unique(uSample[, 1]))/ctrl$MCit
     if (ar < 0.1 | ar > 0.4) {
       if (ctrl$verb == TRUE)
@@ -123,7 +122,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
           sdtune <- 1.1 * sdtune
       }
       if (ctrl$verb == TRUE)
-        print(ar)
+        print(
+          ar)
       ctrl$MCsd <- sdtune
     }
     
@@ -131,7 +131,17 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     u <- colMeans(uSample)
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf
+    
+    # Error checking
+    error <- max(abs(outMLE[j, ] - outMLE[j - 1, ]) / (abs(outMLE[j, ]) + ctrl$EMdelta))
+    if (error < ctrl$EMepsilon) {
+      errorCounter <- c(errorCounter, 1)
+    } else {
+      errorCounter <- c(errorCounter, 0)
+    }
+    j <- j + 1
   }
+  
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   if (sum(sigmaType) == 0) {
@@ -146,5 +156,5 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     }
   }
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }

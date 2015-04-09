@@ -10,7 +10,7 @@
 # MCsd:       Standard deviation for the proposal step.
 
 mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, controlEM = list(),  controlTrust = list(), methodOptim = "Nelder-Mead", controlOptim = list()) {  
-  ctrl <- list(EMit = 5, MCit = 1000, MCf = 1.04, verb = TRUE, MCsd = 0.2, utrust = TRUE)
+  ctrl <- list(EMit = 50, MCit = 2000, MCf = 1.04, verb = TRUE, MCsd = NULL, EMdelta = 0.01, EMepsilon = 0.001, utrust = TRUE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -44,6 +44,7 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
   outMLE <- matrix(0, ctrl$EMit, length(theta))
   outMLE[1, ] <- theta
   
+  # MCMC step size tuning
   if (is.null(ctrl$MCsd)) {
     if (ctrl$verb == TRUE)
       print("Tuning acceptance rate.")
@@ -64,7 +65,10 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     ctrl$MCsd <- sdtune
   }
 
-  for (j in 2:ctrl$EMit) {
+  # EM iterations
+  j <- 2
+  errorCounter <- 0
+  while (j <= ctrl$EMit & sum(tail(errorCounter, 3)) < 3) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
     ovSigma <- constructSigma(sigma, sigmaType, kK, kR, kLh, kLhi)
     
@@ -126,6 +130,15 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     
     # We modify the number of MCMC iterations
     ctrl$MCit <- ctrl$MCit * ctrl$MCf
+    
+    # Error checking
+    error <- max(abs(outMLE[j, ] - outMLE[j - 1, ])/(abs(outMLE[j, ]) + ctrl$EMdelta))
+    if (error < ctrl$EMepsilon) {
+      errorCounter <- c(errorCounter, 1)
+    } else {
+      errorCounter <- c(errorCounter, 0)
+    }
+    j <- j + 1
   }
   # Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
