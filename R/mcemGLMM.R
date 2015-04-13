@@ -14,32 +14,72 @@
 #   MCf:      Factor to increase the number of MCMC iterations.
 #   MCsd:     Standard deviation for the proposal step.
 
-mcemGLMM <- function(fixed, random, data, family, vcDist = c("t", "normal"), df, corType, controlEM = list(), controlTrust = list(), controlOptim = list(), methodOptim = "Nelder-Mead", initial = NULL) {
-  kY <- data[, all.vars(fixed)[1]]
-  kX <- model.matrix(fixed, data = data)
+mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vcDist = c("t", "normal"), df, corType, controlEM = list(), controlTrust = list(), initial) {
+  # Reading Y and X.
+  if (missing(data)) {
+    kY <- get_all_vars(fixed)[, 1]
+    kX <- model.matrix(fixed)
+  } else {
+    kY <- data[, all.vars(fixed)[1]]
+    kX <- model.matrix(fixed, data = data)
+  }
+  
+  ctrl <- list(EMit = 50, MCit = 5000, MCf = 1.03, verb = TRUE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01, utrust = TRUE)
+  ctrlN <- names(ctrl)
+  ctrl[(controlN <- names(controlEM))] <- controlEM
+  if(length(unkwn <- controlN[!controlN %in% ctrlN])){
+    warning("Unknown names in control: ", paste(unkwn, collapse = ", "))
+  }
+  
+  # Options for trust
+  cTrust <- list(rinit = 20, rmax = 200, iterlim = 100)
+  cTrustNames <- names(cTrust)
+  cTrust[(controlN <- names(controlTrust))] <- controlTrust
+  if(length(unkwn <- controlN[!controlN %in% cTrustNames])){
+    warning("Unknown names in control: ", paste(unkwn, collapse = ", "))
+  }
+  
+  # Missing corType corresponds to the diagonal covariance matrix cases.
   if (missing(corType)) {
     if (!is.list(random)) {
       # Case 1: One random effect with a diagonal matrix.
-      kZ <- model.matrix(random, data = data)
+      if (missing(data)) {
+        kZ <- model.matrix(random)
+      } else {
+        kZ <- model.matrix(random, data = data)
+      }
       sigmaType <- 0
       kKi <- ncol(kZ)
       kLh <- 1
       kLhi <- kKi
       
       if (vcDist == "normal") {
-        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust, methodOptim, controlOptim)
+        if (family == "bernoulli") {
+          fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        } else {
+          fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        }
       } else {
-        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust, methodOptim, controlOptim)
+        if (family == "bernoulli") {
+          fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        } else {
+          fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        }
+        
       }
       return(fit0)
     } else {
-      # Case 2: Multiple random effects with diagonal matrices.
+      # Case 2: Possible multiple random effects with diagonal matrices.
       sigmaType <- rep(0, length(random))
       kZ <- NULL
       kKi <- NULL
       kLh <- NULL
       for (i in 1:length(random)) {
-        tmpZ <- model.matrix(random[[i]], data = data)
+        if (missing(data)) {
+          tmpZ <- model.matrix(random[[i]])
+        } else {
+          tmpZ <- model.matrix(random[[i]], data = data)
+        }
         tmpZ <- tmpZ[, colSums(tmpZ^2) !=0] # Check for columns with only zeros. This might happen with nested random effects.
         kZ <- cbind(kZ, tmpZ)
         kKi <- c(kKi, ncol(tmpZ))
@@ -48,9 +88,18 @@ mcemGLMM <- function(fixed, random, data, family, vcDist = c("t", "normal"), df,
       kLhi <- kKi
       # return(list(sigmaType, kY, kX, kZ, kKi, kLh, kLhi))
       if (vcDist == "normal") {
-        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust, methodOptim, controlOptim)
+        if (family == "bernoulli") {
+          fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        } else {
+          fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        }
       } else {
-        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust, methodOptim, controlOptim)
+        if (family == "bernoulli") {
+          fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        } else {
+          fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        }
+        
       }
       return(fit0)
     }

@@ -12,8 +12,7 @@
 #             subvariance components share a covariance matrix. Length equal to kR.
 # KLhi:       Number of random effects in each subvariance component.
 # kY, kX, kZ: Data and design matrices.
-toMaxDiag_t <- function(pars, df, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
-  require(numDeriv)
+toMaxDiagPoisson_t <- function(pars, df, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
   kP <- ncol(kX)    # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects
@@ -28,9 +27,6 @@ toMaxDiag_t <- function(pars, df, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utru
   if (min(eigen(ovSigma)$values) <= 0) {
     return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
   }
-  if (utrust == FALSE) {
-    return(-qFunctionCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY, kX, kZ))
-  }
-  
-  return(qFunctionDiagCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY, kX, kZ))
+
+  return(qFunctionDiagPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY, kX, kZ))
 }

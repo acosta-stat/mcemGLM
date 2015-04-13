@@ -1,7 +1,7 @@
 /**
- * \file iMatrixDiag_t.cpp
+ * \file iMatrixDiagPoisson_t.cpp
  * \author Felipe Acosta
- * \date 2015-04-07
+ * \date 2015-04-13
  * \brief This function evaluates the LogLikelihood gradient function for the logistic regression case with normal 
  * random effects for the diagonal case.
  * Arguments:
@@ -26,14 +26,14 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
-arma::mat iMatrixDiagCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
+arma::mat iMatrixDiagPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
 const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
 const arma::mat& kX, const arma::mat& kZ, int B, double sd0) {
   int kP = kX.n_cols;  /** Dimension of Beta */
   int kR = kKi.n_elem; /** Number of random effects */
   
   arma::mat uSample(B, kR); /** MCMC sample from U */
-  uSample = uSamplerCpp(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0);
+  uSample = uSamplerPoissonCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0);
   
   arma::vec g0(kP + kR); /** Gradient vector */
   g0.fill(0);
@@ -43,8 +43,8 @@ const arma::mat& kX, const arma::mat& kZ, int B, double sd0) {
   iMatrix.fill(0);
   
   for (int i = 0; i < B; i++) {
-    g0 = loglikelihoodLogitGradientCpp_t(beta, sigma, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
-    h0 = loglikelihoodLogitHessianCpp_t(beta, sigma, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
+    g0 = loglikelihoodPoissonGradientCpp_t(beta, sigma, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
+    h0 = loglikelihoodPoissonHessianCpp_t(beta, sigma, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
     iMatrix += (h0 - g0 * g0.t()) / (double) B;
   }
   

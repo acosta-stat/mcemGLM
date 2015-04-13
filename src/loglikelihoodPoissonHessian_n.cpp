@@ -1,9 +1,9 @@
 /**
- * \file loglikelihoodLogit_n.cpp
+ * \file loglikelihoodPoissonHessian_n.cpp
  * \author Felipe Acosta
- * \date 2014-12-02
- * \brief This function evaluates the LogLikelihood function for the logistic regression case with normal 
- * random effects.
+ * \date 2015-04-13
+ * \brief This function evaluates the LogLikelihood gradient function for the logistic regression case with normal 
+ * random effects for the diagonal case.
  * Arguments:
  * beta:      The fixed effects coefficients.
  * sigma:     Matrix with r rows. The covariance matrices for the random effects. There are 'r' 
@@ -26,18 +26,17 @@
 using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
-
 // [[Rcpp::export]]
-double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
-  double value = 0; /** The value to be returned */
-  
+arma::mat loglikelihoodPoissonHessianCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& kKi, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   int nObs = kY.n_elem;
   int kP = kX.n_cols;  /** Dimension of Beta */
   int kK = kZ.n_cols;  /** Dimension of U */
+  int kR = kKi.n_elem; /** Number of random effects */
   
-  /** sum of yij * (wij - log(1 + ...))
-   *  This corresponds to the 
-  */
+  arma::mat hessian(kP + kR, kP + kR); /** The value to be returned */
+  hessian.fill(0);
+  
   for (int i = 0; i < nObs; i++) {
     double wij = 0;
     for (int j = 0; j < kP; j++) {
@@ -47,9 +46,26 @@ double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, co
     for (int j = 0; j < kK; j++) {
       wij += kZ(i, j) * u(j);
     }
-    value += kY(i) * wij - log(1 + exp(wij));
+    for (int j = 0; j < kP; j++) {
+      for (int k = 0; k <= j; k++) {
+        hessian(j, k) += -kX(i, j) * kX(i, k) * exp(wij);
+        if (k < j) {
+          hessian(k, j) = hessian(j, k);
+        }
+      }
+    }
   }
   
-  value += ldmn(u, sigma);
-  return value;
+  int counter = 0;
+  for (int i = 0; i < kR; i++) {
+    double sumU = 0;
+    double lambda_i = sigma(counter, counter);
+    for (int j = 0; j < kKi(i); j++) {
+      sumU += u(counter) * u(counter);
+      counter += 1;
+    }
+    hessian(kP + i, kP + i) = 0.5 * kKi(i) / (lambda_i * lambda_i) - sumU / (lambda_i * lambda_i * lambda_i);
+  }
+  
+  return hessian;
 }

@@ -1,9 +1,9 @@
 /**
- * \file loglikelihoodLogit_n.cpp
+ * \file loglikelihoodPoisson_n.cpp
  * \author Felipe Acosta
- * \date 2014-12-02
+ * \date 2015-04-13
  * \brief This function evaluates the LogLikelihood function for the logistic regression case with normal 
- * random effects.
+ * random effects up to a constant (the factorial term is ommited.)
  * Arguments:
  * beta:      The fixed effects coefficients.
  * sigma:     Matrix with r rows. The covariance matrices for the random effects. There are 'r' 
@@ -28,7 +28,7 @@ using namespace Rcpp;
 
 
 // [[Rcpp::export]]
-double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
+double loglikelihoodPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ) {
   double value = 0; /** The value to be returned */
   
   int nObs = kY.n_elem;
@@ -47,7 +47,8 @@ double loglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, co
     for (int j = 0; j < kK; j++) {
       wij += kZ(i, j) * u(j);
     }
-    value += kY(i) * wij - log(1 + exp(wij));
+    
+    value += -exp(wij) + kY(i) * wij;
   }
   
   value += ldmn(u, sigma);

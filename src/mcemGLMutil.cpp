@@ -12,6 +12,13 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
+double min0(double a, double b) {
+  if (a < b)
+    return a;
+  return b;
+}
+
+// [[Rcpp::export]]
 /** Evaluate the log density of a multivariate normal distribution with mean vector 0 */
 double ldmn(const arma::vec& x, const arma::mat& sigma) {
   int kDIM = sigma.n_cols;
