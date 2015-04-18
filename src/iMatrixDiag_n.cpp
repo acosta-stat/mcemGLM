@@ -2,7 +2,7 @@
  * \file iMatrixDiag_n.cpp
  * \author Felipe Acosta
  * \date 2015-04-07
- * \brief This function evaluates the LogLikelihood gradient function for the logistic regression case with normal 
+ * \brief This function calculates the information matrix for the logistic regression case with normal 
  * random effects for the diagonal case.
  * Arguments:
  * beta:      The fixed effects coefficients.
@@ -43,8 +43,8 @@ int B, double sd0) {
   iMatrix.fill(0);
   
   for (int i = 0; i < B; i++) {
-    g0 = loglikelihoodLogitGradientCpp_n(beta, sigma, kKi, u, kY, kX, kZ);
-    h0 = loglikelihoodLogitHessianCpp_n(beta, sigma, kKi, u, kY, kX, kZ);
+    g0 = loglikelihoodLogitGradientCpp_n(beta, sigma, kKi, uSample.row(i).t(), kY, kX, kZ);
+    h0 = loglikelihoodLogitHessianCpp_n(beta, sigma, kKi, uSample.row(i).t(), kY, kX, kZ);
     iMatrix += (h0 - g0 * g0.t()) / (double) B;
   }
   

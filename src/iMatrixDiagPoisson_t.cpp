@@ -2,7 +2,7 @@
  * \file iMatrixDiagPoisson_t.cpp
  * \author Felipe Acosta
  * \date 2015-04-13
- * \brief This function evaluates the LogLikelihood gradient function for the logistic regression case with normal 
+ * \brief This function calculates the information matrix for the Poisson regression case with t 
  * random effects for the diagonal case.
  * Arguments:
  * beta:      The fixed effects coefficients.

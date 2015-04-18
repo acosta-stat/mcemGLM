@@ -2,7 +2,7 @@
  * \file iMatrixDiag_t.cpp
  * \author Felipe Acosta
  * \date 2015-04-07
- * \brief This function evaluates the LogLikelihood gradient function for the logistic regression case with normal 
+ * \brief This function calculated the information matrix for the logistic regression case with t 
  * random effects for the diagonal case.
  * Arguments:
  * beta:      The fixed effects coefficients.
