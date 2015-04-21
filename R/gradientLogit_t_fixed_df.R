@@ -16,7 +16,7 @@ gradientLogit_t_fixed_df <- function(pars, df, u, sigmaType, kKi, kLh, kLhi, kY,
   
   # The gradient of sigma will be approximated by Richardson's extrapolation using the numDeriv package.
   loglikelihoodSigma <- function(pars, df, u) {
-    ovSigma <- constructSigma_n(pars = pars, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = pars, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     return(logMarginalCpp_t(sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi))
   }
   gradientSigma <- grad(func = loglikelihoodSigma, x = pars[-(1:kP)],df = df, u = u)

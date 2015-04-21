@@ -20,7 +20,7 @@ toMax_t_fixed_df <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, k
   
   beta <- pars[1:kP]
   s0 <- length(pars[-(1:kP)]) # Number of variance parameters
-  ovSigma <- constructSigma_t(pars[-(1:kP)], sigmaType, kK, kR, kLh, kLhi)
+  ovSigma <- constructSigma(pars[-(1:kP)], sigmaType, kK, kR, kLh, kLhi)
   if (min(eigen(ovSigma)$values) <= 0) {
     return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
   }
@@ -33,7 +33,7 @@ toMax_t_fixed_df <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, k
   
   
   loglikelihoodSigma <- function(pars, df, u) {
-    ovSigma <- constructSigma_n(pars = pars, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = pars, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     return(logMarginalCpp_t(sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi))
   }
   

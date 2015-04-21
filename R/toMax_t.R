@@ -22,7 +22,7 @@ toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   beta <- pars[1:kP]
   df <- pars[(kP + 1):(kP + kL)]
   s0 <- length(pars[-(1:(kP + kL))]) # Number of variance parameters
-  ovSigma <- constructSigma_t(pars[-(1:(kP + kL))], sigmaType, kK, kR, kLh, kLhi)
+  ovSigma <- constructSigma(pars[-(1:(kP + kL))], sigmaType, kK, kR, kLh, kLhi)
   
   if (utrust == FALSE) {
     return(-qFunctionCpp_t(beta, ovSigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
@@ -32,7 +32,7 @@ toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   
   
   loglikelihoodSigma <- function(pars, u) {
-    ovSigma <- constructSigma_n(pars = pars[-(1:kL)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = pars[-(1:kL)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     return(logMarginalCpp_t(sigma = ovSigma, df = pars[1:kL], sigmaType = sigmaType, u = u, kKi = kKi, kLh = kLh, kLhi = kLhi))
   }
   # The gradient can be separated into Beta and Sigma. The gradient of Beta can be computed analytically.

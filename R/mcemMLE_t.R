@@ -49,7 +49,7 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
   for (j in 2:ctrl$EMit) {
     # Obtain MCMC sample for u with the current parameter estimates. We need to give it the sigma matrix in the 'compact form'.
     
-    sigmaMat <- constructSigma_t(sigma, sigmaType, kK, kR, kLh, kLhi)
+    sigmaMat <- constructSigma(sigma, sigmaType, kK, kR, kLh, kLhi)
     
     # The matrix input is:
     # print("Matrix:")

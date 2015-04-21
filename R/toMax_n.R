@@ -23,7 +23,7 @@ toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   s0 <- length(pars[-(1:kP)]) # Number of variance parameters
   
   # We call ovSigma the overall covariance matrix.
-  ovSigma <- constructSigma_n(pars = pars[-(1:kP)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  ovSigma <- constructSigma(pars = pars[-(1:kP)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
   if (min(eigen(ovSigma)$values) <= 0) {
     return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
@@ -37,7 +37,7 @@ toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   
   
   loglikelihoodSigma <- function(pars, u) {
-    ovSigma <- constructSigma_t(pars = pars, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = pars, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     return(ldmn(x = u, sigma = ovSigma))
   }
 

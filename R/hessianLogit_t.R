@@ -16,7 +16,7 @@ hessianLogit_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   
   # The gradient of sigma will be approximated by Richardson's extrapolation using the numDeriv package.
   loglikelihoodSigma <- function(pars, u) {
-    ovSigma <- constructSigma_n(pars = pars[-(1:kL)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = pars[-(1:kL)], sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     return(logMarginalCpp_t(sigma = ovSigma, df = pars[1:kL], sigmaType = sigmaType, u = u, kKi = kKi, kLh = kLh, kLhi = kLhi))
   }
   hessianSigma <- hessian(func = loglikelihoodSigma, x = pars[-(1:kP)], u = u)
