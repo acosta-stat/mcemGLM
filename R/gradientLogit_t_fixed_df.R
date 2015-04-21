@@ -3,7 +3,6 @@
 
 
 gradientLogit_t_fixed_df <- function(pars, df, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
-  require(numDeriv)
   kP <- ncol(kX)    # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects

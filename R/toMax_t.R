@@ -12,8 +12,6 @@
 # KLhi:       Number of random effects in each subvariance component
 # kY, kX, kZ: Data and design matrices
 toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
-  require(numDeriv)
-  
   kP <- dim(kX)[2]  # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects in the model
