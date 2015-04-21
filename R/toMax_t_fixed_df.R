@@ -25,9 +25,9 @@ toMax_t_fixed_df <- function(pars, df, u, sigmaType, sigmaDim, kKi, kLh, kLhi, k
     return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
   }
   
-  if (utrust == FALSE) {
-    return(-qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
-  }
+  # if (utrust == FALSE) {
+  #   return(-qFunctionCpp_t(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
+  # }
   
   value <- qFunctionCpp_t(beta, ovSigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
   
