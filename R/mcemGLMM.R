@@ -56,13 +56,15 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
       if (vcDist == "normal") {
         if (family == "bernoulli") {
           fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } else {
+        }
+        if (family == "poisson") {
           fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
       } else {
         if (family == "bernoulli") {
           fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } else {
+        } 
+        if (family == "poisson") {
           fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
         
@@ -90,13 +92,15 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
       if (vcDist == "normal") {
         if (family == "bernoulli") {
           fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } else {
+        } 
+        if (family == "poisson") {
           fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
       } else {
         if (family == "bernoulli") {
           fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } else {
+        } 
+        if (family == "poisson") {
           fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
         

@@ -5,6 +5,14 @@ iMatrixDiagCpp_n <- function(beta, sigma, u, kKi, kY, kX, kZ, B, sd0) {
     .Call('mcemGLM_iMatrixDiagCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kKi, kY, kX, kZ, B, sd0)
 }
 
+iMatrixDiagNegBinomCpp_n <- function(beta, sigma, alpha, u, kKi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iMatrixDiagNegBinomCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, u, kKi, kY, kX, kZ, B, sd0)
+}
+
+iMatrixDiagNegBinomCpp_t <- function(beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iMatrixDiagNegBinomCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0)
+}
+
 iMatrixDiagPoissonCpp_n <- function(beta, sigma, u, kKi, kY, kX, kZ, B, sd0) {
     .Call('mcemGLM_iMatrixDiagPoissonCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kKi, kY, kX, kZ, B, sd0)
 }
@@ -47,6 +55,30 @@ loglikelihoodLogitCpp_n <- function(beta, sigma, u, kY, kX, kZ) {
 
 loglikelihoodLogitCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
     .Call('mcemGLM_loglikelihoodLogitCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
+loglikelihoodNegBinomGradientCpp_n <- function(beta, sigma, alpha, kKi, u, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodNegBinomGradientCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, kKi, u, kY, kX, kZ)
+}
+
+loglikelihoodNegBinomGradientCpp_t <- function(beta, sigma, alpha, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodNegBinomGradientCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
+loglikelihoodNegBinomHessianCpp_n <- function(beta, sigma, alpha, kKi, u, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodNegBinomHessianCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, kKi, u, kY, kX, kZ)
+}
+
+loglikelihoodNegBinomHessianCpp_t <- function(beta, sigma, alpha, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodNegBinomHessianCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
+loglikelihoodNegBinomCpp_n <- function(beta, sigma, alpha, u, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodNegBinomCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, u, kY, kX, kZ)
+}
+
+loglikelihoodNegBinomCpp_t <- function(beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_loglikelihoodNegBinomCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
 }
 
 loglikelihoodPoissonGradientCpp_n <- function(beta, sigma, kKi, u, kY, kX, kZ) {
@@ -97,6 +129,14 @@ qFunctionDiagCpp_n <- function(beta, sigma, kKi, u, kY, kX, kZ) {
     .Call('mcemGLM_qFunctionDiagCpp_n', PACKAGE = 'mcemGLM', beta, sigma, kKi, u, kY, kX, kZ)
 }
 
+qFunctionDiagNegBinomCpp_n <- function(beta, sigma, alpha, kKi, u, kY, kX, kZ) {
+    .Call('mcemGLM_qFunctionDiagNegBinomCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, kKi, u, kY, kX, kZ)
+}
+
+qFunctionDiagNegBinomCpp_t <- function(beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_qFunctionDiagNegBinomCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
 qFunctionDiagPoissonCpp_n <- function(beta, sigma, kKi, u, kY, kX, kZ) {
     .Call('mcemGLM_qFunctionDiagPoissonCpp_n', PACKAGE = 'mcemGLM', beta, sigma, kKi, u, kY, kX, kZ)
 }
@@ -123,6 +163,14 @@ uSamplerCpp <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, k
 
 uSamplerCpp_n <- function(beta, sigma, u, kY, kX, kZ, B, sd0) {
     .Call('mcemGLM_uSamplerCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kY, kX, kZ, B, sd0)
+}
+
+uSamplerNegBinomCpp_n <- function(beta, sigma, alpha, u, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_uSamplerNegBinomCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, u, kY, kX, kZ, B, sd0)
+}
+
+uSamplerNegBinomCpp_t <- function(beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_uSamplerNegBinomCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0)
 }
 
 uSamplerPoissonCpp_n <- function(beta, sigma, u, kY, kX, kZ, B, sd0) {

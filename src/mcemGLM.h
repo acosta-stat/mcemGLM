@@ -107,3 +107,45 @@ const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
 arma::mat iMatrixDiagPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& u, 
 const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
 int B, double sd0);
+
+double loglikelihoodNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+double loglikelihoodNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec loglikelihoodNegBinomGradientCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec loglikelihoodNegBinomGradientCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat loglikelihoodNegBinomHessianCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat loglikelihoodNegBinomHessianCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+List qFunctionDiagNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, const arma::mat& u, 
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+List qFunctionDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat uSamplerNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+
+arma::mat uSamplerNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+
+arma::mat iMatrixDiagNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
+int B, double sd0);
+
+arma::mat iMatrixDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ, int B, double sd0);

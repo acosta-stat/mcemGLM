@@ -1,0 +1,5 @@
+useDynLib(mcemGLM)
+import(RcppArmadillo)
+importFrom(Rcpp, evalCpp)
+depends(mvtnorm, numDeriv, trust)
+exportPattern("^[[:alpha:]]+")
