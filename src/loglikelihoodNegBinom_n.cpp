@@ -48,7 +48,6 @@ const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& k
     for (int j = 0; j < kK; j++) {
       wij += kZ(i, j) * u(j);
     }
-    
     value += lgamma(kY(i) + alpha) - lgamma(alpha) + alpha * log(alpha) + kY(i) * wij - (kY(i) + alpha) * log(alpha + exp(wij));
   }
   

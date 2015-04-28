@@ -9,7 +9,7 @@
 # MCf:        Factor to increase the number of MCMC iterations.
 # MCsd:       Standard deviation for the proposal step.
 
-mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust) {
+mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust) {
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
   kK <- ncol(kZ)
@@ -20,9 +20,11 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   # Parameters needed in sigma, one for diagonal, two for exchangeable and AR(1).
   if (!missing(initial)) {
     beta <- initial[1:kP]
-    sigma <- initial[-(1:kP)]
+    alpha <- initial[kP + 1]
+    sigma <- initial[-(1:(kP + 1))]
   } else {
     beta <- rep(0, kP)
+    alpha <- 1
     sigma <- NULL
     for (i in sigmaType) {
       if (i == 0) {
@@ -32,7 +34,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
       }
     }
   }
-  theta <- c(beta, sigma)
+  theta <- c(beta, alpha, sigma)
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
   outMLE <- matrix(0, controlEM$EMit, length(theta))
@@ -46,7 +48,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     sdtune <- 1
     u <- rmvnorm(1, rep(0, kK), ovSigma)
     while (ar > 0.4 | ar < 0.1) {
-      uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
+      uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 1000
       if (ar < 0.1)
         sdtune <- 0.8 * sdtune
@@ -64,11 +66,11 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   while (j <= controlEM$EMit & sum(tail(errorCounter, 3)) < 3) {
     # Obtain MCMC sample for u with the current parameter estimates.
     u <- rmvnorm(1, rep(0, kK), ovSigma) # Initial value for u
-    uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+    uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
     
     # Now we optimize.
     if (sum(sigmaType == 0)) {
-      outTrust <- trust(toMaxDiagPoisson_n, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      outTrust <- trust(toMaxDiagNegBinom_n, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     } else {
       stop("Not implemented yet.")
       # outTrust <- trust(toMax_n, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
@@ -79,8 +81,9 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
-    sigma <- outMLE[j, -c(1:kP)]
-    theta <- c(beta, sigma)
+    alpha <- outMLE[j, kP + 1]
+    sigma <- outMLE[j, -c(1:(kP + 1))]
+    theta <- c(beta, alpha, sigma)
     ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     if (controlEM$verb == TRUE) {
       print(theta)
@@ -96,7 +99,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
       sdtune <- controlEM$MCsd
       u <- rmvnorm(1, rep(0, kK), ovSigma)
       while (ar > 0.4 | ar < 0.1) {
-        uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
+        uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
         ar <- length(unique(uSample[, 1])) / 1000
         if (ar < 0.1)
           sdtune <- 0.9 * sdtune
@@ -126,7 +129,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   if (sum(sigmaType) == 0) {
-    iMatrix <- iMatrixDiagPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+    iMatrix <- iMatrixDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   } else {
     stop("Not implemented yet.")
     # uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)

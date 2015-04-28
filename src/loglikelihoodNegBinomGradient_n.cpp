@@ -43,7 +43,7 @@ const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& k
     for (int j = 0; j < kP; j++) {
       gradient(j) += kY(i) * kX(i, j) - (alpha + kY(i)) * kX(i, j) * exp(wij) / (alpha + exp(wij));
     }
-    gradient(kP) += R::digamma(kY(i) + alpha) - R::digamma(alpha) + log(alpha) + 1 - log(alpha + exp(wij)) - (alpha + kY(i))/exp(alpha + exp(wij));
+    gradient(kP) += R::digamma(kY(i) + alpha) - R::digamma(alpha) + log(alpha) + 1.0 - log(alpha + exp(wij)) - (alpha + kY(i))/(alpha + exp(wij));
   }
   
   int counter = 0;
