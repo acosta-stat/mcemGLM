@@ -23,7 +23,14 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
     kY <- data[, all.vars(fixed)[1]]
     kX <- model.matrix(fixed, data = data)
   }
+  if (attr(terms(fixed), "intercept") == 0) {
+    xlabs <- attr(terms(fixed), "term.labels")
+  } else {
+    xlabs <- c("(Intercept)", attr(terms(fixed), "term.labels"))
+  }
   
+  
+  # Options
   ctrl <- list(EMit = 50, MCit = 5000, MCf = 1.03, verb = TRUE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01, utrust = TRUE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
@@ -48,6 +55,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
       } else {
         kZ <- model.matrix(random, data = data)
       }
+      zlabs <- attr(terms(random), "term.labels")
       sigmaType <- 0
       kKi <- ncol(kZ)
       kLh <- 1
@@ -74,7 +82,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
           fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
       }
-      return(fit0)
+      # return(fit0)
     } else {
       # Case 2: Possible multiple random effects with diagonal matrices.
       sigmaType <- rep(0, length(random))
@@ -93,7 +101,8 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
         kLh <- c(kLh, 1)        
       }
       kLhi <- kKi
-      # return(list(sigmaType, kY, kX, kZ, kKi, kLh, kLhi))
+      zlabs <- as.character(lapply(lapply(random, terms), attr, which="term.labels"))
+      # Normal random effects
       if (vcDist == "normal") {
         if (family == "bernoulli") {
           fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
@@ -104,7 +113,9 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
         if (family == "negbinom") {
           fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
-      } else {
+      } 
+      # t random effects
+      if (vcDist == "t") {
         if (family == "bernoulli") {
           fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         } 
@@ -115,8 +126,12 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
           fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
       }
-      return(fit0)
     }
+    class(fit0) <- "mcemGLMM"
+    colnames(fit0$mcemEST) <- c(xlabs, zlabs)
+    fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
+    colnames(fit0$x) <- colnames(kX)
+    return(fit0)
   } else {
     # Different correlation types.
     return("Not yet.")
