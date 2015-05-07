@@ -24,11 +24,11 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
     kX <- model.matrix(fixed, data = data)
   }
   if (attr(terms(fixed), "intercept") == 0) {
-    xlabs <- attr(terms(fixed), "term.labels")
+    tnames <- attr(terms(fixed), "term.labels")
   } else {
-    xlabs <- c("(Intercept)", attr(terms(fixed), "term.labels"))
+    tnames <- c("(Intercept)", attr(terms(fixed), "term.labels"))
   }
-  
+  xlabs <- colnames(kX)
   
   # Options
   ctrl <- list(EMit = 50, MCit = 5000, MCf = 1.03, verb = TRUE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01, utrust = TRUE)
@@ -127,6 +127,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
         }
       }
     }
+    fit0$tnames <- tnames
     class(fit0) <- "mcemGLMM"
     colnames(fit0$mcemEST) <- c(xlabs, zlabs)
     fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
