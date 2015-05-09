@@ -133,5 +133,5 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
   }
   
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }

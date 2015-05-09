@@ -1,4 +1,4 @@
-Anova.mcemGLMM <- function(obj) {
+anova.mcemGLMM <- function(obj) {
   # Fixed effects
   coef0 <- tail(obj$mcemEST, n = 1)[1:ncol(obj$x)]
   names(coef0) <- colnames(obj$mcemEST)[1:ncol(obj$x)]
@@ -33,7 +33,9 @@ Anova.mcemGLMM <- function(obj) {
   
   df0 <- table(pred0)
   pval0 <- pchisq(wald0, df0, lower.tail = FALSE)
-  names(wald0) <- names0
-  tbr <- cbind(wald0, df0, pval0)
+  tbr <- cbind(df0, wald0, pval0)
+  cat("   Wald's Chi-squared Type II Anova table\n\n")
+  colnames(tbr) <- c("Df", "Wald Stat.", "Pr(>W)")
+  rownames(tbr) <- names0
   return(tbr)
 }

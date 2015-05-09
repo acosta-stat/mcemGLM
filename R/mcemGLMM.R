@@ -28,6 +28,11 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
   } else {
     tnames <- c("(Intercept)", attr(terms(fixed), "term.labels"))
   }
+  
+  # Drop columns with only zeros. Keep attributes.
+  kX0 <- kX[, colSums(kX^2) !=0]
+  attr(kX0, "assign") <- attr(kX, "assign")[colSums(kX^2) !=0]
+  kX <- kX0
   xlabs <- colnames(kX)
   
   # Options
@@ -129,9 +134,17 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
     }
     fit0$tnames <- tnames
     class(fit0) <- "mcemGLMM"
-    colnames(fit0$mcemEST) <- c(xlabs, zlabs)
+    if (family != "negbinom") {
+      colnames(fit0$mcemEST) <- c(xlabs, zlabs)
+    } else {
+      colnames(fit0$mcemEST) <- c(xlabs, "alpha", zlabs)
+    }
     fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
+    fit0$family <- family
     colnames(fit0$x) <- colnames(kX)
+    if (det(fit0$iMatrix) < .Machine$double.eps) {
+      warning("Inverse matrix is not invertible.")
+    }
     return(fit0)
   } else {
     # Different correlation types.

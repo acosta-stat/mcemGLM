@@ -42,8 +42,22 @@ summary.mcemGLMM <- function(obj, covm = FALSE) {
   cat("   Two sided Wald tests for fixed effects coefficients:\n\n")
   print(resultsFixed)
   
-  cat("\n\n   One sided Wald tests for variance components:\n\n")
-  print(resultsVar)
+  if (obj$family != "negbinom") {
+    cat("\n\n   One sided Wald tests for variance components:\n\n")
+    print(resultsVar)
+  } else {
+    resultsAlpha <- matrix(resultsVar[1, 1:2], 1, 2)
+    colnames(resultsAlpha) <- c("Estimate", "Std. Error")
+    rownames(resultsAlpha) <- "alpha"
+    cat("\n   Overdispersion paramter alpha:\n\n")
+    print(resultsAlpha)
+    
+    resultsVar <- matrix(resultsVar[-1, ], length(names(var.est0)[-1]), 4)
+    rownames(resultsVar) <- names(var.est0)[-1]
+    colnames(resultsVar)  <- c("Estimate", "Std. Error", "z value", "Pr(>z)")
+    cat("\n\n   One sided Wald tests for variance components:\n\n")
+    print(resultsVar)
+  }
   
   tbr <- list(coefficients = list(fixed = coef0, random = ran.eff0), var.est = var.est0, std.err = c(std.err0, std.err1), z.val = c(zval0, zval1))
   invisible(tbr)
