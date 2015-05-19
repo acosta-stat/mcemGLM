@@ -95,16 +95,15 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
       sdtune <- controlEM$MCsd
       u <- rmvnorm(1, rep(0, kK), ovSigma)
       while (ar > 0.4 | ar < 0.1) {
-        uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
-        ar <- length(unique(uSample[, 1])) / 1000
+        uSample.tmp <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
+        ar <- length(unique(uSample.tmp[, 1])) / 1000
         if (ar < 0.1)
           sdtune <- 0.9 * sdtune
         if (ar > 0.4)
           sdtune <- 1.1 * sdtune
       }
       if (controlEM$verb == TRUE)
-        print(
-          ar)
+        print(ar)
       controlEM$MCsd <- sdtune
     }
     

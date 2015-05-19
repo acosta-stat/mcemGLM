@@ -9,7 +9,7 @@
 # MCf:        Factor to increase the number of MCMC iterations.
 # MCsd:       Standard deviation for the proposal step.
 
-mcemMLENegBinom_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust) {  
+mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust) {  
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
   kK <- ncol(kZ)
@@ -99,8 +99,8 @@ mcemMLENegBinom_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, k
       sdtune <- controlEM$MCsd
       u <- rmvnorm(1, rep(0, kK), ovSigma)
       while (ar > 0.4 | ar < 0.1) {
-        uSample <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
-        ar <- length(unique(uSample[, 1])) / 1000
+        uSample.tmp <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
+        ar <- length(unique(uSample.tmp[, 1])) / 1000
         if (ar < 0.1)
           sdtune <- 0.8 * sdtune
         if (ar > 0.4)

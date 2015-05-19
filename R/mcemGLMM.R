@@ -51,6 +51,37 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
     warning("Unknown names in control: ", paste(unkwn, collapse = ", "))
   }
   
+  if (missing(initial)) {
+    if (family == "bernoulli") {
+      if(!missing(data)) {
+        initial0 <- glm(fixed, family = binomial, data = data)$coefficients
+      } else {
+        initial0 <- glm(fixed, family = binomial)$coefficients
+      }
+    }
+    if (family == "poisson") {
+      if(!missing(data)) {
+        initial0 <- glm(fixed, family = poisson, data = data)$coefficients
+      } else {
+        initial0 <- glm(fixed, family = poisson)$coefficients
+      }
+    }
+    if (family == "negbinom") {
+      if(!missing(data)) {
+        initial0 <- c(glm(fixed, family = poisson, data = data)$coefficients, 100)
+      } else {
+        initial0 <-c(glm(fixed, family = poisson)$coefficients, 100)
+      }
+    }
+    
+    
+    if(!is.list(random)) {
+      initial <- c(initial0, 5)
+    } else {
+      initial <- c(initial0, rep(5, length(random)))
+    }
+  }
+  
   # Missing corType corresponds to the diagonal covariance matrix cases.
   if (missing(corType)) {
     if (!is.list(random)) {
@@ -77,6 +108,9 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
           fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         }
       } else {
+        if (length(df) > 1) {
+          stop("The number of variance components and the length of df must me equal.")
+        }
         if (family == "bernoulli") {
           fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         } 
@@ -121,6 +155,9 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
       } 
       # t random effects
       if (vcDist == "t") {
+        if (length(df) != length(random)) {
+          stop("The number of variance components and the length of df must me equal.")
+        }
         if (family == "bernoulli") {
           fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
         } 
@@ -143,7 +180,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vc
     fit0$family <- family
     colnames(fit0$x) <- colnames(kX)
     if (det(fit0$iMatrix) < .Machine$double.eps) {
-      warning("Inverse matrix is not invertible.")
+      warning("Information matrix is not invertible.")
     }
     return(fit0)
   } else {
