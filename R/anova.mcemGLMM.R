@@ -1,20 +1,20 @@
-anova.mcemGLMM <- function(obj) {
+anova.mcemGLMM <- function(object, ...) {
   # Fixed effects
-  coef0 <- tail(obj$mcemEST, n = 1)[1:ncol(obj$x)]
-  names(coef0) <- colnames(obj$mcemEST)[1:ncol(obj$x)]
+  coef0 <- tail(object$mcemEST, n = 1)[1:ncol(object$x)]
+  names(coef0) <- colnames(object$mcemEST)[1:ncol(object$x)]
     
   # Covariance matrix and standard errors
-  cmat0 <- solve(obj$iMatrix)
+  cmat0 <- solve(object$iMatrix)
   # std.err0 <- sqrt(diag(cmat0))
   
   # z2 values
   
   # Coefficients positions
-  pred0 <- attr(obj$x, "assign")
+  pred0 <- attr(object$x, "assign")
   
-  imat0 <- solve(obj$iMatrix)
+  imat0 <- solve(object$iMatrix)
   
-  names0 <- obj$tnames
+  names0 <- object$tnames
   # Drop intercept
   if(pred0[1] == 0) {
     coef0 <- coef0[-1]
@@ -34,7 +34,7 @@ anova.mcemGLMM <- function(obj) {
   df0 <- table(pred0)
   pval0 <- pchisq(wald0, df0, lower.tail = FALSE)
   tbr <- cbind(df0, wald0, pval0)
-  cat("   Wald's Chi-squared Type II Anova table\n\n")
+  cat("   Wald's Chi-squared ANOVA table\n\n")
   colnames(tbr) <- c("Df", "Wald Stat.", "Pr(>W)")
   rownames(tbr) <- names0
   return(tbr)

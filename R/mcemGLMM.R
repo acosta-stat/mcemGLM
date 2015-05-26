@@ -14,7 +14,7 @@
 #   MCf:      Factor to increase the number of MCMC iterations.
 #   MCsd:     Standard deviation for the proposal step.
 
-mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson"), vcDist = c("t", "normal"), df, corType, controlEM = list(), controlTrust = list(), initial) {
+mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "negbinom"), vcDist = c("normal", "t"), df, corType, controlEM = list(), controlTrust = list(), initial) {
   # Reading Y and X.
   if (missing(data)) {
     kY <- get_all_vars(fixed)[, 1]

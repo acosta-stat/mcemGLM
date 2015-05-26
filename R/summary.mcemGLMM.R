@@ -1,22 +1,22 @@
-summary.mcemGLMM <- function(obj, covm = FALSE) {
+summary.mcemGLMM <- function(object, ...) {
   # Fixed effects
-  coef0 <- tail(obj$mcemEST, n = 1)[1:ncol(obj$x)]
-  names(coef0) <- colnames(obj$mcemEST)[1:ncol(obj$x)]
+  coef0 <- tail(object$mcemEST, n = 1)[1:ncol(object$x)]
+  names(coef0) <- colnames(object$mcemEST)[1:ncol(object$x)]
   
-  ran.eff0 <- colMeans(obj$randeff)
+  ran.eff0 <- colMeans(object$randeff)
   
   # Variance estimates
-  var.est0 <-tail(obj$mcemEST, n = 1)[-(1:ncol(obj$x))]
-  names(var.est0) <- colnames(obj$mcemEST)[-(1:ncol(obj$x))]
+  var.est0 <-tail(object$mcemEST, n = 1)[-(1:ncol(object$x))]
+  names(var.est0) <- colnames(object$mcemEST)[-(1:ncol(object$x))]
   
   # Covariance matrix and standard errors
-  cmat0 <- solve(obj$iMatrix)
+  cmat0 <- solve(object$iMatrix)
   std.err0 <- sqrt(diag(cmat0))
-  std.err1 <- std.err0[-(1:ncol(obj$x))]
-  std.err0 <- std.err0[1:ncol(obj$x)]
+  std.err1 <- std.err0[-(1:ncol(object$x))]
+  std.err0 <- std.err0[1:ncol(object$x)]
   
   # z values
-  zval0 <- coef0/std.err0[1:ncol(obj$x)]
+  zval0 <- coef0/std.err0[1:ncol(object$x)]
   zval1 <- var.est0/std.err1
   
   # p values
@@ -25,7 +25,7 @@ summary.mcemGLMM <- function(obj, covm = FALSE) {
   
   resultsFixed <- matrix(0, length(coef0), 4)
   resultsFixed[, 1] <- coef0
-  resultsFixed[, 2] <- std.err0[1:ncol(obj$x)]
+  resultsFixed[, 2] <- std.err0[1:ncol(object$x)]
   resultsFixed[, 3] <- zval0
   resultsFixed[, 4] <- pval0
   rownames(resultsFixed) <- names(coef0)
@@ -42,7 +42,7 @@ summary.mcemGLMM <- function(obj, covm = FALSE) {
   cat("   Two sided Wald tests for fixed effects coefficients:\n\n")
   print(resultsFixed)
   
-  if (obj$family != "negbinom") {
+  if (object$family != "negbinom") {
     cat("\n\n   One sided Wald tests for variance components:\n\n")
     print(resultsVar)
   } else {

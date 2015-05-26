@@ -3,36 +3,39 @@
 \alias{mcemGLM}
 \docType{package}
 \title{
-What the package does (short line)
+Generalized Linear Mixed Model Estimation via Monte Carlo EM  
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+\code{mcemGLM} performs maximum likelihood estimation for logistic, Poisson, and negative binomial regression when random effects are present. The package uses an MCEM algorithm to estimate the model's fixed paramters and variance components with their respective standard errors.  
+
+A Wald test based \code{anova} is available to test significance of multileveled variables. In addition the function \code{contrasts.mcemGLMM} can be used for multiple contrast testing.  
 }
 \details{
 \tabular{ll}{
 Package: \tab mcemGLM\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2014-11-30\cr
+Date: \tab 2015-05-22\cr
 License: \tab GPL (>= 2)\cr
 }
-~~ An overview of how to use the package, including the most important functions ~~
 }
 \author{
-Your Name
+Felipe Acosta Archila
 
-Maintainer: Your Name <your@email.com>
+Maintainer: Felipe Acosta Archila <acosta@umn.edu>
 }
 \references{
-~~ Literature or other references for background information ~~
+Literature or other references for background information  
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
-\keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
+\keyword{ glmm }
 \examples{
-%% ~~ simple examples of the most important functions ~~
+set.seed(123)
+x <- rnorm(30, 10, 1)
+z <- factor(rep(1:6, each = 5))
+obs <- sample(0:1, 30, TRUE)
+fit <- mcemGLMM(obs ~ x, random = ~ 0 + z, family = "bernoulli",
+vcDist = "normal", controlEM = list(verb = FALSE, MCit = 10000), 
+initial = c(3.30, -0.35, 0.005))
+summary(fit)
+anova(fit)
 }

@@ -1,11 +1,11 @@
 Package: mcemGLM
 Type: Package
-Title: What the package does (short line)
+Title: Maximum likelihood estimation for GLMM
 Version: 1.0
 Date: 2014-11-30
 Author: Your Name
 Maintainer: Your Name <your@email.com>
-Description: More about what it does (maybe more than one line)
+Description: Maximum likelihood estimation for generalized linear mixed models via Monte Carlo EM.
 License: GPL (>= 2)
 Depends: mvtnorm, numDeriv, trust
 Imports: Rcpp (>= 0.11.3), RcppArmadillo (>= 0.4.200.0)
