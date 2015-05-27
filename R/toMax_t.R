@@ -11,7 +11,7 @@
 #             degrees of freedom.
 # KLhi:       Number of random effects in each subvariance component
 # kY, kX, kZ: Data and design matrices
-toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
+toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   kP <- dim(kX)[2]  # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects in the model
@@ -21,11 +21,7 @@ toMax_t <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   df <- pars[(kP + 1):(kP + kL)]
   s0 <- length(pars[-(1:(kP + kL))]) # Number of variance parameters
   ovSigma <- constructSigma(pars[-(1:(kP + kL))], sigmaType, kK, kR, kLh, kLhi)
-  
-  if (utrust == FALSE) {
-    return(-qFunctionCpp_t(beta, ovSigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ))
-  }
-  
+    
   value <- qFunctionCpp_t(beta, ovSigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
   
   

@@ -12,7 +12,7 @@
 #             subvariance components share a covariance matrix. Length equal to kR.
 # KLhi:       Number of random effects in each subvariance component.
 # kY, kX, kZ: Data and design matrices.
-toMaxDiagPoisson_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
+toMaxDiagPoisson_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   kP <- ncol(kX)    # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects

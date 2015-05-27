@@ -16,6 +16,7 @@
 
 mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "negbinom"), vcDist = c("normal", "t"), df, corType, controlEM = list(), controlTrust = list(), initial) {
   # Reading Y and X.
+  call0 <- match.call()
   if (missing(data)) {
     kY <- get_all_vars(fixed)[, 1]
     kX <- model.matrix(fixed)
@@ -23,11 +24,11 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
     kY <- data[, all.vars(fixed)[1]]
     kX <- model.matrix(fixed, data = data)
   }
-  if (attr(terms(fixed), "intercept") == 0) {
-    tnames <- attr(terms(fixed), "term.labels")
-  } else {
-    tnames <- c("(Intercept)", attr(terms(fixed), "term.labels"))
-  }
+#  if (attr(terms(fixed), "intercept") == 0) {
+#    tnames <- attr(terms(fixed), "term.labels")
+#  } else {
+#    tnames <- c("(Intercept)", attr(terms(fixed), "term.labels"))
+#  }
   
   # Drop columns with only zeros. Keep attributes.
   kX0 <- kX[, colSums(kX^2) !=0]
@@ -36,7 +37,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 50, MCit = 5000, MCf = 1.03, verb = TRUE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01, utrust = TRUE)
+  ctrl <- list(EMit = 50, MCit = 5000, MCf = 1.03, verb = TRUE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -169,7 +170,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
         }
       }
     }
-    fit0$tnames <- tnames
+    # fit0$tnames <- tnames
     class(fit0) <- "mcemGLMM"
     if (family != "negbinom") {
       colnames(fit0$mcemEST) <- c(xlabs, zlabs)
@@ -177,7 +178,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
       colnames(fit0$mcemEST) <- c(xlabs, "alpha", zlabs)
     }
     fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
-    fit0$family <- family
+    fit0$call <- call0
     colnames(fit0$x) <- colnames(kX)
     if (det(fit0$iMatrix) < .Machine$double.eps) {
       warning("Information matrix is not invertible.")

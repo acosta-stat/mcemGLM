@@ -12,7 +12,7 @@
 #             subvariance components share a covariance matrix. Length equal to kR.
 # KLhi:       Number of random effects in each subvariance component.
 # kY, kX, kZ: Data and design matrices.
-toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRUE) {
+toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ) {
   kP <- ncol(kX)    # Number of fixed coefficients
   kR <- length(kKi) # Number of variance components, this is the number of sigma matrices
   kK <- ncol(kZ)    # Number of random effects
@@ -26,9 +26,6 @@ toMax_n <- function(pars, u, sigmaType, kKi, kLh, kLhi, kY, kX, kZ, utrust = TRU
   
   if (min(eigen(ovSigma)$values) <= 0) {
     return(list(value = -Inf, gradient = rep(0, length(pars)), hessian = matrix(0, length(pars), length(pars))))
-  }
-  if (utrust == FALSE) {
-    return(-qFunctionCpp_n(beta, ovSigma, sigmaType, u, kY, kX, kZ))
   }
   
   # Value of the function

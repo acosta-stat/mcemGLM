@@ -10,3 +10,4 @@ License: GPL (>= 2)
 Depends: mvtnorm, numDeriv, trust
 Imports: Rcpp (>= 0.11.3), RcppArmadillo (>= 0.4.200.0)
 LinkingTo: Rcpp, RcppArmadillo
+LazyData: true

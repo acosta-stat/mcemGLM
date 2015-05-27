@@ -6,3 +6,4 @@ src/*.so
 src/*.dll
 insects.Rdata
 NAMESPACE~
+DESCRIPTION~

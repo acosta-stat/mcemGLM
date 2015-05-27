@@ -13,8 +13,12 @@ anova.mcemGLMM <- function(object, ...) {
   pred0 <- attr(object$x, "assign")
   
   imat0 <- solve(object$iMatrix)
+  if (attr(terms(as.formula(object$call$fixed)), "intercept") == 0) {
+    names0 <- attr(terms(as.formula(object$call$fixed)), "term.labels")
+  } else {
+    names0 <- c("(Intercept)", attr(terms(as.formula(object$call$fixed)), "term.labels"))
+  }
   
-  names0 <- object$tnames
   # Drop intercept
   if(pred0[1] == 0) {
     coef0 <- coef0[-1]

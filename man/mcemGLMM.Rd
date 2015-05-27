@@ -33,25 +33,72 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     optimizer. See details below.}
   \item{initial}{optional initial values for the parameters. If missing 
     the initial values for the fixed effects are taken from a generalized 
-    linear model fitted without ranom effects and the initial values for 
+    linear model fitted without random effects and the initial values for 
     the variance components are set to 5.}
 }
 \value{
-  A list of class "mcemGLMM".
+  A list of class "mcemGLMM" with the following items:
+  \describe{
+    \item{mcemEST}{a matrix with the value of the estimators at the end 
+      of each EM step.}
+    \item{iMatrix}{Fisher's information matrix.}
+    \item{randeff}{a sample from the conditional distribution of the 
+      random effects given the data and the maximum likelihood estimators.}
+    \item{y}{vector of observations.}
+    \item{x}{design matrix for the fixed effects.}
+    \item{z}{design matrix for the random effects.}
+    \item{EMerror}{relative error at the last iteration. See details.}
+    \item{call}{original call.}
+  }
 }
 \details{
-This will talk about the random effects options, the em options list, and the trust list.
+  The function \code{mcemGLMM} allows the fitting of generalized linear 
+  mixed models when the random effects are normal or a t distributed. 
+  The degrees of freedom for the t case must be supplied by the user 
+  with a vector in the \code{df} argument. The length of the vector 
+  must be equal to the number of variance components. For normal random 
+  effects the argument \code{df} does not need to be included.
+  
+  To fit a model with one random effect a formula must be supplied in 
+  the \code{random} argument. Note that it is necessary that the 
+  variable is a factor and to specify that there is no intercept for 
+  the random part of the model. To use more than one random effects a 
+  list of formulas must be supplied. Each member must be formula with 
+  in which the variables involved must be factors and it also it is 
+  necessary to specify that there is no intercept. To fit crossed 
+  random effects each variable must no appear in its own formula. To 
+  fit nested random effects a formula with the highest level variable 
+  must be specified and each subsequent variable must be specified with 
+  an interaction of the variables above it. See examples below.
 }
 \examples{
-# Same as before.
-set.seed(123)
-x <- rnorm(30, 10, 1)
-z <- factor(rep(1:6, each = 5))
-obs <- sample(0:1, 30, TRUE)
-fit <- mcemGLMM(obs ~ x, random = ~ 0 + z, family = "bernoulli",
-vcDist = "normal", controlEM = list(verb = FALSE, MCit = 10000), 
-initial = c(3.30, -0.35, 0.005))
-summary(fit)
-anova(fit)
+# Data set for a logistic model with one binary fixed effects and two 
+# possible random effects.
+data(exdata)
+
+# To fit a model with one random effect
+fit.1 <- mcemGLMM(obs ~ x, random = ~ 0 + z1, data = exdata, 
+                family = "bernoulli", vcDist = "normal", 
+                controlEM = list(verb = FALSE, MCit = 10000), 
+                initial = c(0.27, -0.13, 0.003))
+summary(fit.1)
+
+# To fit a model with crossed random effects
+fit.crossed <- mcemGLMM(obs ~ x, random = list(~ 0 + z1, ~ 0 + z2), 
+                data = exdata, 
+                family = "bernoulli", vcDist = "normal", 
+                controlEM = list(verb = FALSE, MCit = 10000), 
+                initial = c(0.28, -0.15, 0.001, 0.4))
+summary(fit.crossed)
+
+
+# To fit a model with crossed random effects
+fit.nested <- mcemGLMM(obs ~ x, random = list(~ 0 + z2, ~ 0 + z2:z1), 
+                data = exdata, 
+                family = "bernoulli", vcDist = "normal", 
+                controlEM = list(verb = FALSE, MCit = 10000), 
+                initial = c(0.31, -0.15, 0.29, 0.27))
+summary(fit.nested)
+
 }
 \keyword{glmm}
