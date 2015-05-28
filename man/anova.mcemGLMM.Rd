@@ -3,30 +3,25 @@
 \alias{anova.mcemGLMM}
 \title{Anova method for mcemGLMM objects}
 \description{
-  Maximum likelihood estimation for logistic, Poisson, and negative binomial models with random effects using a Monte Carlo EM algorithm.
+  ANOVA table based on Wald tests for a model fitted with \code{mcemGLMM}.
 }
 \usage{
 \method{anova}{mcemGLMM}(object, ...)
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}
-  \item{...}{aditional arguments.}
+  \item{...}{additional arguments.}
 }
 \value{
-  A list of class "mcemGLMM".
+  A matrix with the rows corresponding to a test for the different 
+  terms of the model and the following columns:
+  \describe{
+    \item{Df}{degrees of freedom for the term.}
+    \item{Wald}{Wald's chi squared statistic.}
+    \item{Pr}{p value for the test statistic.}
+  }
 }
 \details{
 This will talk about the random effects options, the em options list, and the trust list.
-}
-\examples{
-# Same as before.
-set.seed(123)
-x <- rnorm(30, 10, 1)
-z <- factor(rep(1:6, each = 5))
-obs <- sample(0:1, 30, TRUE)
-fit <- mcemGLMM(obs ~ x, random = ~ 0 + z, family = "bernoulli",
-vcDist = "normal", controlEM = list(verb = FALSE, MCit = 10000), 
-initial = c(3.30, -0.35, 0.005))
-anova(fit)
 }
 \keyword{glmm}

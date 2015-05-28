@@ -3,30 +3,31 @@
 \alias{summary.mcemGLMM}
 \title{Summary method for mcemGLMM objects}
 \description{
-  Maximum likelihood estimation for logistic, Poisson, and negative binomial models with random effects using a Monte Carlo EM algorithm.
+  Summary for an object obtained from \code{mcemGLMM}.  
 }
 \usage{
 \method{summary}{mcemGLMM}(object, ...)
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}
-  \item{...}{aditional arguments.}
+  \item{...}{additional arguments.}
 }
 \value{
-  A list of class "mcemGLMM".
+  A list with the following items:
+  \describe{
+    \item{coefficients}{a list with the fixed effects coefficients 
+      and the predicted random effects.}
+    \item{var.est}{the estimated variances for each variance component.}
+    \item{std.err}{the standard errors for the fixed effects 
+      coeffcients and the variance estimates.}
+    \item{z.val}{z test values for the fixed effects coefficients and 
+      the variance estimators.}
+  }
 }
 \details{
-This will talk about the random effects options, the em options list, and the trust list.
-}
-\examples{
-# Same as before.
-set.seed(123)
-x <- rnorm(30, 10, 1)
-z <- factor(rep(1:6, each = 5))
-obs <- sample(0:1, 30, TRUE)
-fit <- mcemGLMM(obs ~ x, random = ~ 0 + z, family = "bernoulli",
-vcDist = "normal", controlEM = list(verb = FALSE, MCit = 10000), 
-initial = c(3.30, -0.35, 0.005))
-summary(fit)
+The function prints a table for Wald tests for the fixed effect 
+coefficients and the variance estimators. In the case of the negative 
+binomial the estimate of the overdispersion value is reported with its
+respective standard deviation.
 }
 \keyword{glmm}

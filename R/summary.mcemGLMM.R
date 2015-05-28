@@ -39,7 +39,10 @@ summary.mcemGLMM <- function(object, ...) {
   rownames(resultsVar) <- names(var.est0)
   colnames(resultsVar)  <- c("Estimate", "Std. Error", "z value", "Pr(>z)")
   
-  cat("   Two sided Wald tests for fixed effects coefficients:\n\n")
+  cat("Call:\n  ")
+  print(object$call)
+  
+  cat("\n   Two sided Wald tests for fixed effects coefficients:\n\n")
   print(resultsFixed)
   
   if (object$call$family != "negbinom") {

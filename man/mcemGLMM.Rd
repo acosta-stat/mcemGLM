@@ -39,8 +39,8 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
 \value{
   A list of class "mcemGLMM" with the following items:
   \describe{
-    \item{mcemEST}{a matrix with the value of the estimators at the end 
-      of each EM step.}
+    \item{mcemEST}{a matrix with the value of the maximum likelihood 
+    estimators at the end of each EM step.}
     \item{iMatrix}{Fisher's information matrix.}
     \item{randeff}{a sample from the conditional distribution of the 
       random effects given the data and the maximum likelihood estimators.}

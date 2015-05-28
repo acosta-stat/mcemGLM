@@ -2,31 +2,37 @@
 \alias{contrasts.mcemGLMM}
 \title{Contrast estimation for mcemGLMM objects}
 \description{
-  Maximum likelihood estimation for logistic, Poisson, and negative binomial models with random effects using a Monte Carlo EM algorithm.
+  Contrast testing for a model fitted with \code{mcemGLMM}.
 }
 \usage{
 contrasts.mcemGLMM(object, ctr.mat)
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}
-  \item{ctr.mat}{contrast matrix.}
-  \item{...}{aditional arguments.}
+  \item{ctr.mat}{contrast matrix. Each row corresponds to a 
+    linear combination of the fixed effect coefficients.}
+  \item{...}{additional arguments.}
 }
 \value{
-  A list of class "mcemGLMM".
+  A matrix with each row corresponding to a contrast and with the following columns:
+  \describe{
+    \item{Estimate}{contrasts's point estimator.}
+    \item{Std. Err.}{standard error for each fitted contrast.}
+    \item{Wald}{Wald statistic for each fitted contrast.}
+    \item{Adj. p-value}{p-value adjusted for multiple comparison (Bonferroni.)}
+  }
 }
 \details{
 This will talk about the random effects options, the em options list, and the trust list.
 }
 \examples{
-# Same as before.
-set.seed(123)
-x <- rnorm(30, 10, 1)
-z <- factor(rep(1:6, each = 5))
-obs <- sample(0:1, 30, TRUE)
-fit <- mcemGLMM(obs ~ x, random = ~ 0 + z, family = "bernoulli",
-vcDist = "normal", controlEM = list(verb = FALSE, MCit = 10000), 
-initial = c(3.30, -0.35, 0.005))
-summary(fit)
+data(exdata)
+fit <- mcemGLMM(obs ~ z2 + x, random = ~ 0 + z1, 
+                data = exdata, 
+                family = "bernoulli", vcDist = "normal", 
+                controlEM = list(verb = FALSE, MCit = 10000), 
+                initial = c(-0.13, -0.15, -0.21, 1.59, 0.002))
+mat <- rbind("1 - 2" = c(0, -1, 0, 0), "1 - 3" = c(0, 0, -1, 0), "2 - 3" = c(0, 1, -1, 0))
+contrasts.mcemGLMM(fit, mat)
 }
 \keyword{glmm}

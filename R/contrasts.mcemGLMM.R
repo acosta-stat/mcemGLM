@@ -15,7 +15,11 @@ contrasts.mcemGLMM <- function(object, ctr.mat) {
     ctr.err0[i] <- solve(cm %*% solve(object$iMatrix) %*% t(cm))
     wald0[i] <- ctr.est0[i]^2 * ctr.err0[i]
   }
+  std.err <- 1/sqrt(ctr.err0)
   pval0 <- pchisq(wald0, 1, lower.tail = FALSE) * nrow(ctr.mat)
   pval0 <- ifelse(pval0 < 1, pval0, 1)
-  return(list(estimates = ctr.est0, std.err = 1/sqrt(ctr.err0), wald = wald0, adj.p.val = pval0))
+  tbr <- cbind(ctr.est0, std.err, wald0, pval0)
+  colnames(tbr) <- c("Estimate", "Std. Err.", "Wald", "Adj. p-value")
+  rownames(tbr) <- rownames(ctr.mat)
+  return(tbr)
 }
