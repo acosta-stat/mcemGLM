@@ -41,6 +41,7 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     }
   }
   
+  loglikeVal <- NULL
   theta <- c(beta, df, sigma)
   outMLE <- matrix(0, ctrl$EMit, length(theta))
   outMLE[1, ] <- theta
@@ -60,6 +61,7 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     outTrust <- trust(toMax_t, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     print(outTrust)
     outMLE[j, ] <- outTrust$argument
+    loglikeVal <- c(loglikeVal, outTrust$value)
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
@@ -87,5 +89,5 @@ mcemMLE_t <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial = NULL, co
     iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
   }
   
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, loglikeVal = loglikeVal))
 }

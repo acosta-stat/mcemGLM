@@ -32,6 +32,8 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
       }
     }
   }
+  
+  loglikeVal <- NULL
   theta <- c(beta, sigma)
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   outMLE <- matrix(0, controlEM$EMit, length(theta))
@@ -74,7 +76,7 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     if (controlEM$verb == TRUE)
       print(outTrust)
     outMLE[j, ] <- outTrust$argument
-    
+    loglikeVal <- c(loglikeVal, outTrust$value)
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
     sigma <- outMLE[j, -c(1:kP)]
@@ -133,5 +135,5 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
   }
   
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }

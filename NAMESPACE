@@ -2,5 +2,5 @@ useDynLib(mcemGLM)
 import(RcppArmadillo)
 importFrom(Rcpp, evalCpp)
 import(mvtnorm, numDeriv, trust)
-export(mcemGLMM, summary.mcemGLMM, anova.mcemGLMM, contrasts.mcemGLMM)
+export(mcemGLMM, summary.mcemGLMM, anova.mcemGLMM, contrasts.mcemGLMM, residuals.mcemGLMM, predict.mcemGLMM)
 

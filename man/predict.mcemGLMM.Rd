@@ -1,0 +1,23 @@
+\name{predict.mcemGLMM}
+\alias{predict}
+\alias{predict.mcemGLMM}
+\title{Predict method for mcemGLMM objects}
+\description{
+  This functions returns predicted link function of observations for a model fitted with \code{mcemGLMM}.
+}
+\usage{
+  \method{residuals}{mcemGLMM}(object, newdata, type, ...)
+}
+\arguments{
+  \item{object}{a model fitted with the mcemGLMM function.}
+  \item{newdata}{optional data frame with new data. The varaible names must match the original variables. If missing, the function will return predicted values at each observation.}
+  \item{type}{character string. The type of predictions to be returned. Either "link" or "response" predictions are available.}
+  \item{...}{additional arguments.}
+}
+\value{
+  A vector with the predictions from the observed data or by using the supplied new data.
+}
+\details{
+  This section will state how is this obtained.
+}
+\keyword{glmm, prediction}

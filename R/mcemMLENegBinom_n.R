@@ -34,6 +34,8 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
       }
     }
   }
+  
+  loglikeVal <- NULL
   theta <- c(beta, alpha, sigma)
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
@@ -78,6 +80,7 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     if (controlEM$verb == TRUE)
       print(outTrust)
     outMLE[j, ] <- outTrust$argument
+    loglikeVal <- c(loglikeVal, outTrust$value)
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
@@ -141,5 +144,5 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     # }
   }
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
+  return(list(mcemEST = outMLE, iMatrix = -iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }
