@@ -6,7 +6,7 @@
   This functions returns predicted link function of observations for a model fitted with \code{mcemGLMM}.
 }
 \usage{
-  \method{residuals}{mcemGLMM}(object, newdata, type, ...)
+  \method{predict}{mcemGLMM}(object, newdata, type = c("link", "response"), ...)
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}

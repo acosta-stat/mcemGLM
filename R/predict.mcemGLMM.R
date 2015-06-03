@@ -1,4 +1,4 @@
-predict.mcemGLMM <- function(object, newdata, type = c("link", "response")) {
+predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), ...) {
   kP <- ncol(object$x)
   coef0 <- tail(object$mcemEST, 1)[1:kP]
   if (missing(newdata)) {
