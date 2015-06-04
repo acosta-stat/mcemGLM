@@ -3,8 +3,8 @@ Type: Package
 Title: Maximum likelihood estimation for GLMM
 Version: 1.0
 Date: 2014-11-30
-Author: Your Name
-Maintainer: Your Name <your@email.com>
+Author: Felipe Acosta Archila
+Maintainer: Felipe Acosta Archila <acosta@umn.edu>
 Description: Maximum likelihood estimation for generalized linear mixed models via Monte Carlo EM.
 License: GPL (>= 2)
 Depends: mvtnorm, numDeriv, trust
