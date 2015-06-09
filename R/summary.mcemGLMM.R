@@ -27,7 +27,7 @@ summary.mcemGLMM <- function(object, ...) {
   resultsFixed[, 1] <- coef0
   resultsFixed[, 2] <- std.err0[1:ncol(object$x)]
   resultsFixed[, 3] <- zval0
-  resultsFixed[, 4] <- pval0
+  resultsFixed[, 4] <- round(pval0, 8)
   rownames(resultsFixed) <- names(coef0)
   colnames(resultsFixed) <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
   

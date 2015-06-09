@@ -55,7 +55,7 @@ anova.mcemGLMM <- function(object, opt, ...) {
   }
   
   df0 <- table(pred0)
-  pval0 <- pchisq(wald0, df0, lower.tail = FALSE)
+  pval0 <- round(pchisq(wald0, df0, lower.tail = FALSE), 8)
   tbr <- cbind(df0, wald0, pval0)
   cat("   Wald's Chi-squared ANOVA table\n\n")
   colnames(tbr) <- c("Df", "Wald Stat.", "Pr(>W)")
