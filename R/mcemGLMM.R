@@ -170,7 +170,6 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
         }
       }
     }
-    # fit0$tnames <- tnames
     class(fit0) <- "mcemGLMM"
     if (family != "negbinom") {
       colnames(fit0$mcemEST) <- c(xlabs, zlabs)

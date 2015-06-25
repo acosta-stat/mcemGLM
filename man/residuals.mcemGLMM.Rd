@@ -6,10 +6,11 @@
   This functions returns the residuals of a model fitted with \code{mcemGLMM}.
 }
 \usage{
-\method{residuals}{mcemGLMM}(object, ...)
+\method{residuals}{mcemGLMM}(object, type = c("deviance", "pearson"), ...)
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}
+  \item{type}{character string. The type of residuals to be returned.}
   \item{...}{additional arguments.}
 }
 \value{

@@ -42,6 +42,7 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     \item{mcemEST}{a matrix with the value of the maximum likelihood 
     estimators at the end of each EM step.}
     \item{iMatrix}{Fisher's information matrix.}
+    \item{loglikeVal}{loglikelihood value (up to a constant) for the model. Used to perform likelihood ratio tests.}
     \item{randeff}{a sample from the conditional distribution of the 
       random effects given the data and the maximum likelihood estimators.}
     \item{y}{vector of observations.}

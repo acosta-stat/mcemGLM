@@ -10,7 +10,7 @@
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}
-  \item{newdata}{optional data frame with new data. The varaible names must match the original variables. If missing, the function will return predicted values at each observation.}
+  \item{newdata}{optional data frame with new data. The variable names must match the original variables. If missing, the function will return predicted values at each observation.}
   \item{type}{character string. The type of predictions to be returned. Either "link" or "response" predictions are available.}
   \item{...}{additional arguments.}
 }

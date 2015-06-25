@@ -19,11 +19,20 @@ residuals.mcemGLMM <- function(object, type = c("deviance", "pearson"), ...) {
       res0 <- (object$y - mu0) / sqrt(mu0)
     }
     if (type == "deviance") {
-      print(mu0)
+      # print(mu0)
       res0 <- sign(object$y - mu0) * sqrt(2 * object$y * log(object$y / mu0) - 2 * (object$y - mu0))
     }
-    
   }
   
-  return(res0)
+  if (object$call$family == "negbinom") {
+    mu0 <- exp(lin0)
+    a0 <- tail(object$mcemEST, 1)[kP + 1]
+    if (type == "pearson") {
+      res0 <- (object$y - mu0) / sqrt(mu0 * (1 + 1/a0))
+    }
+    if (type == "deviance") {
+      res0 <- sign(object$y - mu0) * sqrt(2 * (object$y * log(object$y / mu0)) - (object$y + a0) * log((object$y + alpha)/(mu0 + alpha)))
+    }
+  }
+  return(as.vector(res0))
 }
