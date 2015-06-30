@@ -24,11 +24,6 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
     kY <- data[, all.vars(fixed)[1]]
     kX <- model.matrix(fixed, data = data)
   }
-#  if (attr(terms(fixed), "intercept") == 0) {
-#    tnames <- attr(terms(fixed), "term.labels")
-#  } else {
-#    tnames <- c("(Intercept)", attr(terms(fixed), "term.labels"))
-#  }
   
   # Drop columns with only zeros. Keep attributes.
   kX0 <- kX[, colSums(kX^2) !=0]
@@ -37,7 +32,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.03, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01)
+  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.03, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01, speedup = FALSE)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -74,8 +69,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
         initial0 <-c(glm(fixed, family = poisson)$coefficients, 100)
       }
     }
-    
-    
+
     if(!is.list(random)) {
       initial <- c(initial0, 5)
     } else {

@@ -46,7 +46,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
       print("Tuning acceptance rate.")
     ar <- 1
     sdtune <- 1
-    u <- rmvnorm(1, rep(0, kK), ovSigma)
+    u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
     while (ar > 0.4 | ar < 0.1) {
       uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 1000
@@ -65,19 +65,46 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   errorCounter <- 0
   while (j <= controlEM$EMit & sum(tail(errorCounter, 3)) < 3) {
     # Obtain MCMC sample for u with the current parameter estimates.
-    u <- rmvnorm(1, rep(0, kK), ovSigma) # Initial value for u
-    uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+    u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
+    uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY,
+                             kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
     
     # Now we optimize.
     if (sum(sigmaType == 0)) {
-      outTrust <- trust(toMaxDiag_n, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      outTrust <- trust(toMaxDiag_n, parinit = theta, rinit = controlTrust$rinit, 
+                        rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, 
+                        minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, 
+                        kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     } else {
-      outTrust <- trust(toMax_n, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+      outTrust <- trust(toMax_n, parinit = theta, rinit = 10, rmax = 20, 
+                        minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, 
+                        kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     }
+    
     if (controlEM$verb == TRUE)
       print(outTrust)
+    
     outMLE[j, ] <- outTrust$argument
     loglikeVal <- c(loglikeVal, outTrust$value)
+    
+    # Use the Jacobian to speed up the convergence
+    if (j > 10 & controlEM$speedup == TRUE) {
+      #print(outMLE[j, ])
+      beta <- outMLE[j, 1:kP]
+      sigma <- outMLE[j, -c(1:kP)]
+      theta <- c(beta, sigma)
+      ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
+                                kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+      iJ <- iJacob <- iJacobDiagCpp_n(beta = beta, sigma = ovSigma, 
+                                      uSample = uSample, kKi = kKi, kY = kY, 
+                                      kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+      #print(outMLE[j - 1, ])
+      #print(outMLE[j, ])
+      #print(iJ)
+      outMLE[j, ] <- outMLE[j - 1, ] + iJ %*% (outMLE[j, ] - outMLE[j - 1, ])
+      #print(outMLE[j, ])
+    }
+    
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
     sigma <- outMLE[j, -c(1:kP)]
@@ -95,7 +122,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
-      u <- rmvnorm(1, rep(0, kK), ovSigma)
+      u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
       while (ar > 0.4 | ar < 0.1) {
         uSample.tmp <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 1000
@@ -124,8 +151,9 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   if (sum(sigmaType) == 0) {
-    iMatrix <- iMatrixDiagCpp_n(beta = beta, sigma = ovSigma, u = u, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+    iMatrix <- iMatrixDiagCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   } else {
     uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
     iMatrix <- matrix(0, length(theta), length(theta))
@@ -136,5 +164,5 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
     }
   }
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = -iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
+  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }

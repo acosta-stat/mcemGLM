@@ -26,14 +26,14 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
-arma::mat iMatrixDiagNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+arma::mat iMatrixDiagNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::mat& uSample, 
 const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
 int B, double sd0) {
   int kP = kX.n_cols;  /** Dimension of Beta */
   int kR = kKi.n_elem; /** Number of random effects */
   
-  arma::mat uSample(B, kR); /** MCMC sample from U */
-  uSample = uSamplerNegBinomCpp_n(beta, sigma, alpha, u, kY, kX, kZ, B, sd0);
+  //arma::mat uSample(B, kR); /** MCMC sample from U */
+  //uSample = uSamplerNegBinomCpp_n(beta, sigma, alpha, u, kY, kX, kZ, B, sd0);
   
   arma::vec g0(kP + 1 + kR); /** Gradient vector */
   g0.fill(0);
@@ -45,7 +45,7 @@ int B, double sd0) {
   for (int i = 0; i < B; i++) {
     g0 = loglikelihoodNegBinomGradientCpp_n(beta, sigma, alpha, kKi, uSample.row(i).t(), kY, kX, kZ);
     h0 = loglikelihoodNegBinomHessianCpp_n(beta, sigma, alpha, kKi, uSample.row(i).t(), kY, kX, kZ);
-    iMatrix += (h0 - g0 * g0.t()) / (double) B;
+    iMatrix += (-h0 - g0 * g0.t()) / (double) B;
   }
   
   //iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / ctrl$MCit
