@@ -25,6 +25,115 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// iJacobDiagNegBinomCpp_n
+arma::mat iJacobDiagNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::mat& uSample, const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iJacobDiagNegBinomCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP alphaSEXP, SEXP uSampleSEXP, SEXP kKiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type uSample(uSampleSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP);
+    __result = Rcpp::wrap(iJacobDiagNegBinomCpp_n(beta, sigma, alpha, uSample, kKi, kY, kX, kZ, B, sd0));
+    return __result;
+END_RCPP
+}
+// iJacobDiagNegBinomCpp_t
+arma::mat iJacobDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iJacobDiagNegBinomCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP alphaSEXP, SEXP sigmaTypeSEXP, SEXP uSampleSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type uSample(uSampleSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP);
+    __result = Rcpp::wrap(iJacobDiagNegBinomCpp_t(beta, sigma, alpha, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0));
+    return __result;
+END_RCPP
+}
+// iJacobDiagPoissonCpp_n
+arma::mat iJacobDiagPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& uSample, const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iJacobDiagPoissonCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP uSampleSEXP, SEXP kKiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type uSample(uSampleSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP);
+    __result = Rcpp::wrap(iJacobDiagPoissonCpp_n(beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0));
+    return __result;
+END_RCPP
+}
+// iJacobDiagPoissonCpp_t
+arma::mat iJacobDiagPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iJacobDiagPoissonCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSampleSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type uSample(uSampleSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP);
+    __result = Rcpp::wrap(iJacobDiagPoissonCpp_t(beta, sigma, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0));
+    return __result;
+END_RCPP
+}
+// iJacobDiagCpp_t
+arma::mat iJacobDiagCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+RcppExport SEXP mcemGLM_iJacobDiagCpp_t(SEXP betaSEXP, SEXP sigmaSEXP, SEXP sigmaTypeSEXP, SEXP uSampleSEXP, SEXP dfSEXP, SEXP kKiSEXP, SEXP kLhSEXP, SEXP kLhiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type sigmaType(sigmaTypeSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type uSample(uSampleSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kKi(kKiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kLh(kLhSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kLhi(kLhiSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type kY(kYSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kX(kXSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type kZ(kZSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type sd0(sd0SEXP);
+    __result = Rcpp::wrap(iJacobDiagCpp_t(beta, sigma, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0));
+    return __result;
+END_RCPP
+}
 // iMatrixDiagCpp_n
 arma::mat iMatrixDiagCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& uSample, const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
 RcppExport SEXP mcemGLM_iMatrixDiagCpp_n(SEXP betaSEXP, SEXP sigmaSEXP, SEXP uSampleSEXP, SEXP kKiSEXP, SEXP kYSEXP, SEXP kXSEXP, SEXP kZSEXP, SEXP BSEXP, SEXP sd0SEXP) {

@@ -82,6 +82,19 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     outMLE[j, ] <- outTrust$argument
     loglikeVal <- c(loglikeVal, outTrust$value)
     
+    # Use the Jacobian to speed up the convergence
+    if (j > 30 & controlEM$speedup == TRUE) {
+      #print(outMLE[j, ])
+      beta <- outMLE[j, 1:kP]
+      alpha <- outMLE[j, kP + 1]
+      sigma <- outMLE[j, -c(1:(kP + 1))]
+      theta <- c(beta, alpha, sigma)
+      ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
+                                kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+      iJ <- iJacobDiagNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+      outMLE[j, ] <- outMLE[j - 1, ] + iJ %*% (outMLE[j, ] - outMLE[j - 1, ])
+    }
+    
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
     alpha <- outMLE[j, kP + 1]

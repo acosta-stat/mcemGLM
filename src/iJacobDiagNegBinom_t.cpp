@@ -1,8 +1,8 @@
 /**
- * \file iJacobDiag_n.cpp
+ * \file iJacobDiagNegBinom_t.cpp
  * \author Felipe Acosta
  * \date 2015-04-07
- * \brief This function calculates the inverse of I - Jacobian for the logit with normal random effects.
+ * \brief This function calculates the inverse of I - Jacobian for the negative binomial with t random effects.
  * Arguments:
  * beta:      The fixed effects coefficients.
  * sigma:     Matrix with r rows. The covariance matrices for the random effects. There are 'r' 
@@ -25,36 +25,34 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
-arma::mat iJacobDiagCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& uSample, 
-const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
-int B, double sd0) {
+arma::mat iJacobDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, 
+const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, 
+const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ, int B, double sd0) {
   int kP = kX.n_cols;  /** Dimension of Beta */
   int kR = kKi.n_elem; /** Number of random effects */
   
   //arma::mat uSample(B, kR); /** MCMC sample from U */
   //uSample = uSamplerCpp_n(beta, sigma, u, kY, kX, kZ, B, sd0);
   
-  arma::vec g0(kP + kR); /** Gradient vector */
+  arma::vec g0(kP + 1 + kR); /** Gradient vector */
   g0.fill(0);
   arma::vec g1(kP + kR); /** Gradient vector */
   g1.fill(0);
-  arma::mat h0(kP + kR, kP + kR); /** Hessian Matrix */
+  arma::mat h0(kP + 1 + kR, kP + 1 + kR); /** Hessian Matrix */
   h0.fill(0);
-  arma::mat iMatrix(kP + kR, kP + kR); /** Information Matrix */
+  arma::mat iMatrix(kP + 1 + kR, kP + 1 + kR); /** Information Matrix */
   iMatrix.fill(0);
-  arma::mat Ix(kP + kR, kP + kR);
+  arma::mat Ix(kP + 1 + kR, kP + 1 + kR);
   Ix.fill(0);
   
   for (int i = 0; i < B; i++) {
-    g0 = loglikelihoodLogitGradientCpp_n(beta, sigma, kKi, uSample.row(i).t(), kY, kX, kZ);
-    h0 = loglikelihoodLogitHessianCpp_n(beta, sigma, kKi, uSample.row(i).t(), kY, kX, kZ);
-    iMatrix += (-h0 - g0 * g0.t()) / (double) B;
+    g0 = loglikelihoodNegBinomGradientCpp_t(beta, sigma, alpha, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
+    h0 = loglikelihoodNegBinomHessianCpp_t(beta, sigma, alpha, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
     g1 += g0 / (double) B;
+    iMatrix += (-h0 - g0 * g0.t()) / (double) B;
     Ix += -h0 / (double) B;
   }
-  std::cout<<g1 * g1.t()<<"\n";
-  std::cout<<iMatrix<<"\n";
   iMatrix =+ g1 * g1.t();
-  std::cout<<iMatrix<<"\n";
   return(Ix * inv(iMatrix));
 }

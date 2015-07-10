@@ -82,12 +82,26 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     outMLE[j, ] <- outTrust$argument
     loglikeVal <- c(loglikeVal, outTrust$value)
     
+    # Use the Jacobian to speed up the convergence
+    if (j > 30 & controlEM$speedup == TRUE) {
+      #print(outMLE[j, ])
+      beta <- outMLE[j, 1:kP]
+      alpha <- outMLE[j, kP + 1]
+      sigma <- outMLE[j, -c(1:(kP + 1))]
+      theta <- c(beta, alpha, sigma)
+      ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
+                                kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+      iJ <- iJacobDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+      outMLE[j, ] <- outMLE[j - 1, ] + iJ %*% (outMLE[j, ] - outMLE[j - 1, ])
+    }
+    
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
     alpha <- outMLE[j, kP + 1]
     sigma <- outMLE[j, -c(1:(kP + 1))]
     theta <- c(beta, alpha, sigma)
-    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
+                              kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     if (controlEM$verb == TRUE) {
       print(theta)
       print(ts.plot(uSample[, sample(1:kK, 1)]))
@@ -131,8 +145,10 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+  
   if (sum(sigmaType) == 0) {
-    iMatrix <- iMatrixDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+    iMatrix <- iMatrixDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   } else {
     stop("Not implemented yet.")
     # uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)

@@ -1,5 +1,5 @@
 /**
- * \file iJacobDiag_n.cpp
+ * \file iJacobDiagPoisson_t.cpp
  * \author Felipe Acosta
  * \date 2015-04-07
  * \brief This function calculates the inverse of I - Jacobian for the logit with normal random effects.
@@ -25,9 +25,10 @@ using namespace Rcpp;
 // [[Rcpp::depends("RcppArmadillo")]]
 
 // [[Rcpp::export]]
-arma::mat iJacobDiagCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& uSample, 
-const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
-int B, double sd0) {
+arma::mat iJacobDiagPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, 
+const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, 
+const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ, int B, double sd0) {
   int kP = kX.n_cols;  /** Dimension of Beta */
   int kR = kKi.n_elem; /** Number of random effects */
   
@@ -46,15 +47,12 @@ int B, double sd0) {
   Ix.fill(0);
   
   for (int i = 0; i < B; i++) {
-    g0 = loglikelihoodLogitGradientCpp_n(beta, sigma, kKi, uSample.row(i).t(), kY, kX, kZ);
-    h0 = loglikelihoodLogitHessianCpp_n(beta, sigma, kKi, uSample.row(i).t(), kY, kX, kZ);
+    g0 = loglikelihoodPoissonGradientCpp_t(beta, sigma, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
+    h0 = loglikelihoodPoissonHessianCpp_t(beta, sigma, uSample.row(i).t(), df, kKi, kLh, kLhi, kY, kX, kZ);
     iMatrix += (-h0 - g0 * g0.t()) / (double) B;
     g1 += g0 / (double) B;
     Ix += -h0 / (double) B;
   }
-  std::cout<<g1 * g1.t()<<"\n";
-  std::cout<<iMatrix<<"\n";
   iMatrix =+ g1 * g1.t();
-  std::cout<<iMatrix<<"\n";
   return(Ix * inv(iMatrix));
 }

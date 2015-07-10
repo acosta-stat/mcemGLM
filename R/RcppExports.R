@@ -5,6 +5,26 @@ iJacobDiagCpp_n <- function(beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0) {
     .Call('mcemGLM_iJacobDiagCpp_n', PACKAGE = 'mcemGLM', beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0)
 }
 
+iJacobDiagNegBinomCpp_n <- function(beta, sigma, alpha, uSample, kKi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iJacobDiagNegBinomCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, uSample, kKi, kY, kX, kZ, B, sd0)
+}
+
+iJacobDiagNegBinomCpp_t <- function(beta, sigma, alpha, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iJacobDiagNegBinomCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0)
+}
+
+iJacobDiagPoissonCpp_n <- function(beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iJacobDiagPoissonCpp_n', PACKAGE = 'mcemGLM', beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0)
+}
+
+iJacobDiagPoissonCpp_t <- function(beta, sigma, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iJacobDiagPoissonCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0)
+}
+
+iJacobDiagCpp_t <- function(beta, sigma, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0) {
+    .Call('mcemGLM_iJacobDiagCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, uSample, df, kKi, kLh, kLhi, kY, kX, kZ, B, sd0)
+}
+
 iMatrixDiagCpp_n <- function(beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0) {
     .Call('mcemGLM_iMatrixDiagCpp_n', PACKAGE = 'mcemGLM', beta, sigma, uSample, kKi, kY, kX, kZ, B, sd0)
 }

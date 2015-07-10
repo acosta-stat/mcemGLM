@@ -88,21 +88,17 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
     loglikeVal <- c(loglikeVal, outTrust$value)
     
     # Use the Jacobian to speed up the convergence
-    if (j > 10 & controlEM$speedup == TRUE) {
+    if (j > 30 & controlEM$speedup == TRUE) {
       #print(outMLE[j, ])
       beta <- outMLE[j, 1:kP]
       sigma <- outMLE[j, -c(1:kP)]
       theta <- c(beta, sigma)
       ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
                                 kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-      iJ <- iJacob <- iJacobDiagCpp_n(beta = beta, sigma = ovSigma, 
-                                      uSample = uSample, kKi = kKi, kY = kY, 
-                                      kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-      #print(outMLE[j - 1, ])
-      #print(outMLE[j, ])
-      #print(iJ)
+      iJ <- iJacobDiagCpp_n(beta = beta, sigma = ovSigma, 
+                            uSample = uSample, kKi = kKi, kY = kY, 
+                            kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
       outMLE[j, ] <- outMLE[j - 1, ] + iJ %*% (outMLE[j, ] - outMLE[j - 1, ])
-      #print(outMLE[j, ])
     }
     
     # The current estimates are updated now
