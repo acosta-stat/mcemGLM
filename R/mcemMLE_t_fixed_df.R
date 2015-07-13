@@ -79,7 +79,7 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     loglikeVal <- c(loglikeVal, outTrust$value)
     
     # Use the Jacobian to speed up the convergence
-    if (j > 30 & controlEM$speedup == TRUE) {
+    if (j > 30 & FALSE) {
       #print(outMLE[j, ])
       beta <- outMLE[j, 1:kP]
       sigma <- outMLE[j, -c(1:kP)]

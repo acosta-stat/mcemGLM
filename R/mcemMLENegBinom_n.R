@@ -83,7 +83,7 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     loglikeVal <- c(loglikeVal, outTrust$value)
     
     # Use the Jacobian to speed up the convergence
-    if (j > 30 & controlEM$speedup == TRUE) {
+    if (j > 30 & FALSE) {
       #print(outMLE[j, ])
       beta <- outMLE[j, 1:kP]
       alpha <- outMLE[j, kP + 1]

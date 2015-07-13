@@ -80,7 +80,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     outMLE[j, ] <- outTrust$argument
     loglikeVal <- c(loglikeVal, outTrust$value)
     
-    if (j > 30 & controlEM$speedup == TRUE) {
+    if (j > 30 & FALSE) {
       #print(outMLE[j, ])
       beta <- outMLE[j, 1:kP]
       sigma <- outMLE[j, -c(1:kP)]

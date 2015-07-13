@@ -14,7 +14,7 @@
 #   MCf:      Factor to increase the number of MCMC iterations.
 #   MCsd:     Standard deviation for the proposal step.
 
-mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "negbinom"), vcDist = c("normal", "t"), df, corType, controlEM = list(), controlTrust = list(), initial) {
+mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "negbinom"), vcDist = c("normal", "t"), df, controlEM = list(), controlTrust = list(), initial) {
   # Reading Y and X.
   call0 <- match.call()
   if (missing(data)) {
@@ -32,7 +32,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.03, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01, speedup = FALSE)
+  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.03, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -77,109 +77,110 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
     }
   }
   
-  # Missing corType corresponds to the diagonal covariance matrix cases.
-  if (missing(corType)) {
-    if (!is.list(random)) {
-      # Case 1: One random effect with a diagonal matrix.
-      if (missing(data)) {
-        kZ <- model.matrix(random)
-      } else {
-        kZ <- model.matrix(random, data = data)
-      }
-      zlabs <- attr(terms(random), "term.labels")
-      sigmaType <- 0
-      kKi <- ncol(kZ)
-      kLh <- 1
-      kLhi <- kKi
-      
-      if (vcDist == "normal") {
-        if (family == "bernoulli") {
-          fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-        if (family == "poisson") {
-          fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-        if (family == "negbinom") {
-          fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-      } else {
-        if (length(df) > 1) {
-          stop("The number of variance components and the length of df must me equal.")
-        }
-        if (family == "bernoulli") {
-          fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } 
-        if (family == "poisson") {
-          fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-        if (family == "negbinom") {
-          fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-      }
-      # return(fit0)
+  if (!is.list(random)) {
+    
+    # Case 1: One random effect with a diagonal matrix.
+    if (missing(data)) {
+      kZ <- model.matrix(random)
     } else {
-      # Case 2: Possible multiple random effects with diagonal matrices.
-      sigmaType <- rep(0, length(random))
-      kZ <- NULL
-      kKi <- NULL
-      kLh <- NULL
-      for (i in 1:length(random)) {
-        if (missing(data)) {
-          tmpZ <- model.matrix(random[[i]])
-        } else {
-          tmpZ <- model.matrix(random[[i]], data = data)
-        }
-        tmpZ <- tmpZ[, colSums(tmpZ^2) !=0] # Check for columns with only zeros. This might happen with nested random effects.
-        kZ <- cbind(kZ, tmpZ)
-        kKi <- c(kKi, ncol(tmpZ))
-        kLh <- c(kLh, 1)        
+      kZ <- model.matrix(random, data = data)
+    }
+    zlabs <- attr(terms(random), "term.labels")
+    sigmaType <- 0
+    kKi <- ncol(kZ)
+    kLh <- 1
+    kLhi <- kKi
+    
+    if (vcDist == "normal") {
+      if (family == "bernoulli") {
+        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
       }
-      kLhi <- kKi
-      zlabs <- as.character(lapply(lapply(random, terms), attr, which="term.labels"))
-      # Normal random effects
-      if (vcDist == "normal") {
-        if (family == "bernoulli") {
-          fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } 
-        if (family == "poisson") {
-          fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-        if (family == "negbinom") {
-          fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
+      if (family == "poisson") {
+        fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+      if (family == "negbinom") {
+        fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+    } else {
+      if (length(df) > 1) {
+        stop("The number of variance components and the length of df must me equal.")
+      }
+      if (family == "bernoulli") {
+        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
       } 
-      # t random effects
-      if (vcDist == "t") {
-        if (length(df) != length(random)) {
-          stop("The number of variance components and the length of df must me equal.")
-        }
-        if (family == "bernoulli") {
-          fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        } 
-        if (family == "poisson") {
-          fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
-        if (family == "negbinom") {
-          fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
-        }
+      if (family == "poisson") {
+        fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+      if (family == "negbinom") {
+        fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
       }
     }
-    class(fit0) <- "mcemGLMM"
-    if (family != "negbinom") {
-      colnames(fit0$mcemEST) <- c(xlabs, zlabs)
-    } else {
-      colnames(fit0$mcemEST) <- c(xlabs, "alpha", zlabs)
-    }
-    fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
-    fit0$call <- call0
-    colnames(fit0$x) <- colnames(kX)
-    if (det(fit0$iMatrix) < .Machine$double.eps) {
-      warning("Information matrix is not invertible.")
-    }
-    return(fit0)
   } else {
-    # Different correlation types.
-    return("Not yet.")
+    # Case 2: Possible multiple random effects with diagonal matrices.
+    sigmaType <- rep(0, length(random))
+    kZ <- NULL
+    kKi <- NULL
+    kLh <- NULL
+    for (i in 1:length(random)) {
+      if (missing(data)) {
+        tmpZ <- model.matrix(random[[i]])
+      } else {
+        tmpZ <- model.matrix(random[[i]], data = data)
+      }
+      tmpZ <- tmpZ[, colSums(tmpZ^2) !=0] # Check for columns with only zeros. This might happen with nested random effects.
+      kZ <- cbind(kZ, tmpZ)
+      kKi <- c(kKi, ncol(tmpZ))
+      kLh <- c(kLh, 1)        
+    }
+    kLhi <- kKi
+    zlabs <- as.character(lapply(lapply(random, terms), attr, which="term.labels"))
+    
+    # Normal random effects
+    if (vcDist == "normal") {
+      if (family == "bernoulli") {
+        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      } 
+      if (family == "poisson") {
+        fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+      if (family == "negbinom") {
+        fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+    }
+    
+    # t random effects
+    if (vcDist == "t") {
+      if (length(df) != length(random)) {
+        stop("The number of variance components and the length of df must me equal.")
+      }
+      if (family == "bernoulli") {
+        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      } 
+      if (family == "poisson") {
+        fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+      if (family == "negbinom") {
+        fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+      }
+    }
+  }
+  class(fit0) <- "mcemGLMM"
+  if (family != "negbinom") {
+    colnames(fit0$mcemEST) <- c(xlabs, zlabs)
+  } else {
+    colnames(fit0$mcemEST) <- c(xlabs, "alpha", zlabs)
   }
   
+  # Remove rows of zeros (stopping before max iterations)
+  fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
+  
+  # Save call
+  fit0$call <- call0
+  
+  # Names for fixed effect's design matrix
+  colnames(fit0$x) <- colnames(kX)
+  if (det(fit0$iMatrix) < .Machine$double.eps) {
+    warning("Information matrix is not invertible.")
+  }
+  return(fit0)
 }
