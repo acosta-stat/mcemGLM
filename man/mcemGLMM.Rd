@@ -6,7 +6,7 @@
 }
 \usage{
 mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson", 
-    "negbinom"), vcDist = c("normal", "t"), df, corType, 
+    "negbinom"), vcDist = c("normal", "t"), df, 
     controlEM = list(), controlTrust = list(), initial)
 }
 \arguments{
@@ -20,14 +20,14 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     environment.}
   \item{family}{a string indicating the type of model to be fitted. 
     The options are "bernoulli" for logistic regression, "Poisson"
-    for Poisson count regression, and "negbinomial" for negative 
+    for Poisson count regression, and "negbinom" for negative 
     binomial count regression.}
   \item{vcDist}{a string indicating the distribution of the marginal 
-    variance components.}
+    variance components. The options are "normal" and "t" for normal 
+    and t distributed random effects respectively.}
   \item{df}{a vector of degrees of freedom of the random effects 
     when these are t distributed. The length of the vector must be
     equal to the number of variance components in the model.}
-  \item{corType}{correlation type. This does nothing at the moment.}
   \item{controlEM}{a list of options for the algorithm. See Details below.}
   \item{controlTrust}{a list of options to be passed to the \code{trust}
     optimizer. See details below.}
@@ -54,7 +54,8 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
 }
 \details{
   The function \code{mcemGLMM} allows the fitting of generalized linear 
-  mixed models when the random effects are normal or a t distributed. 
+  mixed models when the random effects are normal or a t distributed.
+  The supported models are the logistic, Poisson and negative binomial. 
   The degrees of freedom for the t case must be supplied by the user 
   with a vector in the \code{df} argument. The length of the vector 
   must be equal to the number of variance components. For normal random 
@@ -71,24 +72,72 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
   fit nested random effects a formula with the highest level variable 
   must be specified and each subsequent variable must be specified with 
   an interaction of the variables above it. See examples below.
+  
+  
+  A note on the negative binomial overdispersion:
+  
+  The variance for the negative binomial model is set equal to
+  \eqn{\mu(1 + 1/\alpha)} so we have that there is no overdispersion
+  as \eqn{\alpha} goes to infinity. However in the summary of a negative 
+  binomial model the parameter \eqn{\phi = 1 + 1/\alpha} estimation is
+  reported instead of \eqn{\alpha}. This leads to the convention that 
+  there is no over dispersion when \eqn{\phi = 1}.
+  
+  Stopping rules and convergence criteria:
+  
+  The algorithm runs for a maximum of \code{EMit} iterations or until
+  the criteria 
+  \deqn{\max_i \left\{ \frac{ |\theta_i^{(t)} - \theta_i^{(t-1)}|}{|\theta_i^{(t)}| + \delta}\right\} < \epsilon}{\max_i|\theta_i^(t)-\theta_i^(t-1)|/(|\theta_i^(t)| + \delta) < \epsilon}
+  is satisfied three times in a row for pre-defined values of 
+  \eqn{\epsilon} and \eqn{\delta}. For a detailed discussion on 
+  convergence diagnostics see Neath R.C. (2012). After fitting a model 
+  it is recommended to plot the EM estimates at each step to assess 
+  convergence.
+ 
+  Control options for EM:
+  \describe{
+    \item{EMit}{maximum number of EM iterations.}
+    \item{MCit}{initial number of Monte Carlo iterations for the MCMC 
+    step.}
+    \item{MCf}{factor in which the MC iterations increase in each EM 
+    iteration.}
+    \item{verb}{logical. If TRUE at each EM iteration the function will 
+    print convergence information and a trace plot for on of the random 
+    effects. This is useful to assess the performance of the algorithm 
+    but it can impact the actual running time.}
+    \item{MCsd}{initial standard deviation for the proposal density of 
+    the MCMC step. If null (default) an auto-tuning step will be 
+    performed.}
+    \item{EMdelta}{constant for the EM error assessment.}
+    \item{EMepsilon}{constant for the EM error assessment.}
+  }
+  
 }
 \examples{
 # Data set for a logistic model with one binary fixed effects and two 
 # possible random effects.
+# Initial values and MC iterations are given to speed up the examples 
+# but these are not necessary in general.
+
 data(exdata)
 
 # To fit a model with one random effect
 fit.1 <- mcemGLMM(obs ~ x, random = ~ 0 + z1, data = exdata, 
                 family = "bernoulli", vcDist = "normal", 
-                controlEM = list(verb = FALSE, MCit = 10000), 
+                controlEM = list(MCit = 10000), 
                 initial = c(0.27, -0.13, 0.003))
 summary(fit.1)
+
+# We can assess convergence by looking at a trace plot of the EM estimates
+# an the loglikelihood values
+ts.plot(fit.1$mcemEST)
+ts.plot(fit.1$loglikeVal)
 
 # To fit a model with crossed random effects
 fit.crossed <- mcemGLMM(obs ~ x, random = list(~ 0 + z1, ~ 0 + z2), 
                 data = exdata, 
                 family = "bernoulli", vcDist = "normal", 
-                controlEM = list(verb = FALSE, MCit = 10000), 
+                controlEM = list(MCit = 10000), 
                 initial = c(0.28, -0.15, 0.001, 0.4))
 summary(fit.crossed)
 
@@ -97,9 +146,21 @@ summary(fit.crossed)
 fit.nested <- mcemGLMM(obs ~ x, random = list(~ 0 + z2, ~ 0 + z2:z1), 
                 data = exdata, 
                 family = "bernoulli", vcDist = "normal", 
-                controlEM = list(verb = FALSE, MCit = 10000), 
+                controlEM = list(MCit = 10000), 
                 initial = c(0.31, -0.15, 0.29, 0.27))
 summary(fit.nested)
 
+# Fit a Poisson model
+fit.pois <- mcemGLMM(obs2 ~ x, random = ~ 0 + z1, data = exdata, 
+                family = "poisson", vcDist = "normal", 
+                controlEM = list(verb = FALSE, MCit = 10000), 
+                initial = c(1.95, 0.03, 0.003))
+summary(fit.pois)
+
 }
+\references{
+Neath, R. C. (2012) On Convergence Properties of the 
+Monte Carlo EM Algorithm \emph{AMS Collections}
+}
+
 \keyword{glmm}

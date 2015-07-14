@@ -32,7 +32,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.03, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01)
+  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.04, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){

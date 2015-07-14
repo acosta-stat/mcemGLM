@@ -52,9 +52,6 @@ int B, double sd0) {
     g1 += g0 / (double) B;
     Ix += -h0 / (double) B;
   }
-  std::cout<<g1 * g1.t()<<"\n";
-  std::cout<<iMatrix<<"\n";
   iMatrix =+ g1 * g1.t();
-  std::cout<<iMatrix<<"\n";
   return(Ix * inv(iMatrix));
 }

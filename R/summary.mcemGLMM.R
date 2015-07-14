@@ -50,10 +50,13 @@ summary.mcemGLMM <- function(object, ...) {
     print(resultsVar)
   } else {
     resultsAlpha <- matrix(resultsVar[1, 1:2], 1, 2)
-    colnames(resultsAlpha) <- c("Estimate", "Std. Error")
-    rownames(resultsAlpha) <- "alpha"
-    cat("\n   Overdispersion paramter alpha:\n\n")
-    print(resultsAlpha)
+    resultsTheta <- matrix(0, 1, 2)
+    resultsTheta[1, 1] <- 1 + 1/resultsAlpha[1, 1]
+    resultsTheta[1, 2] <- 1/resultsAlpha[1, 1] * resultsAlpha[1, 2]
+    colnames(resultsTheta) <- c("Estimate", "Std. Error")
+    rownames(resultsTheta) <- "theta"
+    cat("\n   Overdispersion parameter beta:\n\n")
+    print(resultsTheta)
     
     resultsVar <- matrix(resultsVar[-1, ], length(names(var.est0)[-1]), 4)
     rownames(resultsVar) <- names(var.est0)[-1]

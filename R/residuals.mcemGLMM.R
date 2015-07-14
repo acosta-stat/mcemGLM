@@ -31,7 +31,7 @@ residuals.mcemGLMM <- function(object, type = c("deviance", "pearson"), ...) {
       res0 <- (object$y - mu0) / sqrt(mu0 * (1 + 1/a0))
     }
     if (type[1] == "deviance") {
-      res0 <- sign(object$y - mu0) * sqrt(2 * (object$y * log(object$y / mu0)) - (object$y + a0) * log((object$y + alpha)/(mu0 + alpha)))
+      res0 <- sign(object$y - mu0) * sqrt(2 * (object$y * log(object$y / mu0)) - (object$y + a0) * log((object$y + a0)/(mu0 + a0)))
     }
   }
   return(as.vector(res0))
