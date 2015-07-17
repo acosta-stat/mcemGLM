@@ -32,7 +32,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.04, verb = FALSE, MCsd = NULL, EMdelta = 0.02, EMepsilon = 0.01)
+  ctrl <- list(EMit = 150, MCit = 7000, MCf = 1.04, verb = FALSE, MCsd = NULL, EMdelta = 0.05, EMepsilon = 0.01)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -172,14 +172,14 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   }
   
   # Remove rows of zeros (stopping before max iterations)
-  fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) !=0, ]
+  fit0$mcemEST <- fit0$mcemEST[rowSums(fit0$mcemEST^2) != 0, ]
   
   # Save call
   fit0$call <- call0
   
   # Names for fixed effect's design matrix
   colnames(fit0$x) <- colnames(kX)
-  if (det(fit0$iMatrix) < .Machine$double.eps) {
+  if (abs(det(fit0$iMatrix)) < .Machine$double.eps) {
     warning("Information matrix is not invertible.")
   }
   return(fit0)

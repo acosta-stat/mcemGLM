@@ -3,12 +3,17 @@
 \alias{mcemGLM}
 \docType{package}
 \title{
-Generalized Linear Mixed Model Estimation via Monte Carlo EM  
+Generalized Linear Mixed Model Estimation via Monte Carlo EM
 }
 \description{
-\code{mcemGLM} performs maximum likelihood estimation for logistic, Poisson, and negative binomial regression when random effects are present. The package uses an MCEM algorithm to estimate the model's fixed paramters and variance components with their respective standard errors.  
+\code{mcemGLM} performs maximum likelihood estimation for logistic, 
+Poisson, and negative binomial regression when random effects are 
+present. The package uses an MCEM algorithm to estimate the model's 
+fixed paramters and variance components with their respective 
+standard errors.
 
-A Wald test based \code{anova} is available to test significance of multileveled variables. In addition the function \code{contrasts.mcemGLMM} can be used for multiple contrast testing.  
+A Wald test based \code{anova} is available to test significance of 
+multi-leveled variables and for multiple contrast testing.
 }
 \details{
 \tabular{ll}{

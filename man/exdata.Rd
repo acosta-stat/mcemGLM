@@ -14,8 +14,8 @@ Simulated binary response dataset to use in examples.
     \item{\code{obs}}{a numeric binary vector}
     \item{\code{obs2}}{a numeric count vector}
     \item{\code{x}}{a numeric vector}
-    \item{\code{z1}}{a factor with levels \code{1} \code{2}}
-    \item{\code{z2}}{a factor with levels \code{1} \code{2} \code{3}}
+    \item{\code{z1}}{a factor with levels \code{1}, and \code{2}}
+    \item{\code{z2}}{a factor with levels \code{1}, \code{2}, and \code{3}}
   }
   The observations were generated independently with the code shown 
   in the examples section.

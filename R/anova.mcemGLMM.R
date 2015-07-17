@@ -14,7 +14,7 @@ anova.mcemGLMM <- function(object, opt, ...) {
     
     cat(paste("  Test statistic value:", value))
     cat(paste("\n  Degrees of freedom:", df))
-    cat(paste("\n  p value:", pval))
+    cat(paste("\n  p value:", round(pval, 8)))
     
     return(invisible(list(Chi.Sq = value, Df = df, p.value = pval)))
   }

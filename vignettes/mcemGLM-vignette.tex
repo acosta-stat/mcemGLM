@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+\usepackage{Sweave}
+\begin{document}
+\input{mcemGLM-vignette-concordance}
+
+\section{Data}
+\begin{Schunk}
+\begin{Sinput}
+> require(mcemGLM)
+> data("simData.rdata")
+\end{Sinput}
+\end{Schunk}
+head(simData)
+summary(simData)
+
+The data consist of three fixed effects two of which are continuous and one is a factor with three levels. There are three variances components. The component $z2$ is nested within $z1$ and $z3$ is crossed with these.
+
+First we will consider a simple model based on this data using \verb obs  as the binary response.
+
+\section{A simple model}
+We will fit a model with one variance component, $z3$ and we will consider $z1$ as a fixed effect along with $x1$.
+
+The main model arguments for the \verb mcemGLMM  function are \verb fixed  and \verb random.  These specify the fixed and random effects of the model. The response must be included in the \verb fixed  arguemnt. In this first example we are considering $x1$ and $z1$ as fixed and $z3$ as random. We can fit this model with the following command:
+\begin{Schunk}
+\begin{Sinput}
+> fit0 <- mcemGLMM(fixed = obs ~ x1 + z1, 
++                 random = ~0+z2, 
++                   data = simData, 
++                 family = "bernoulli", 
++                 vcDist = "normal",
++                 controlEM = list(EMit = 10))

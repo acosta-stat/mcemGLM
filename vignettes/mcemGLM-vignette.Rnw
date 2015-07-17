@@ -1,0 +1,231 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\section{Data}
+<<echo=TRUE>>=
+require(mcemGLM)
+data("simData.rdata")
+@
+<<echo=FALSE>>=
+set.seed(23786)
+simData$count <- simData$count+rpois(200, 3)
+simData$count2 <- simData$count*(1+rpois(200, 2))
+@
+head(simData)
+summary(simData)
+@
+<<echo=FALSE>>=
+#time0 <- system.time(fit0 <- mcemGLMM(obs ~ x1 + x2 + x3, random = list(~0+z1, ~0+z1:z2, ~0+z3), data = simData, family = "bernoulli", vcDist = "normal", controlEM = list(EMit = 10, EMepsilon = 0.01)))
+@
+
+The data consist of three fixed effects two of which are continuous and one is a factor with three levels. There are three variances components. The component $z2$ is nested within $z1$ and $z3$ is crossed with these.
+
+First we will consider a simple model based on this data using \verb obs  as the binary response.
+
+\section{A simple model}
+We will fit a model with one variance component, $z3$ and we will consider $z1$ as a fixed effect along with $x1$.
+
+The main model arguments for the \verb mcemGLMM  function are \verb fixed  and \verb random.  These specify the fixed and random effects of the model. The response must be included in the \verb fixed  arguemnt. In this first example we are considering $x1$ and $z1$ as fixed and $z3$ as random. We can fit this model with the following command:
+<<echo=TRUE>>=
+fit0 <- mcemGLMM(fixed = obs ~ x1 + z1, 
+                random = ~0+z2, 
+                  data = simData, 
+                family = "bernoulli", 
+                vcDist = "normal",
+                controlEM = list(EMit = 10))
+@
+The rest of the used arguments are:
+\begin{itemize}
+\item \verb data:  argument contains the name of the data frame with the data.
+\item \verb family:  argument specifies the type of model to be fitted. The options are ``bernoulli'' for logistic regression, ``poisson'' for Poisson count regression, and ``negbinom'' for negative binomial count  regression.
+\item \verb vcDist:  argument specifies the distribution of the random effects. The option are ``normal'', and ``t''. In case of $t$ random effects an extra argument with the degrees of freedom must be supplied.
+\end{itemize}
+q
+
+First we can look at the coefficient and variance estimates with the \verb summary  command:
+<<echo=TRUE>>=
+summary(fit0)
+@
+We first get a print of the original call used to fit the model. The summary print out has two tables. The first table shows the estimates, standard errors and $z$ tests for the fixed effect coefficients. While the second table contains the same information but for the variance estimates.
+
+Now we can look at an ANOVA table based on Wald tests.
+<<echo=TRUE>>=
+anova(fit0)
+@
+Each line corresponds to a test on the coefficients that are related to each variable. In the case of a continuous variable or a binary this is equivalent to the $z$ test performed with \verb summary.  When a categorical variable has more than two categories \verb anova  will test run a chi--squared test on all the coefficients that are related to that variable. In this case the chi--squared test for $z1$ tests if the corresponding coefficients for \verb D2 , \verb  D3 , \verb D4 , and \verb D5  are both equal to zero.
+
+We can run multiple comparison tests for the levels of $z1$. First we need to create a contrast matrix with each row representing a contrast that we want to test. In this case
+<<echo=TRUE>>=
+ctr0 <- rbind("D1 - D2" = c(0, 0,-1, 0, 0, 0),
+              "D1 - D3" = c(0, 0, 0,-1, 0, 0),
+              "D1 - D4" = c(0, 0, 0, 0,-1, 0),
+              "D1 - D5" = c(0, 0, 0, 0, 0,-1),
+              "D2 - D3" = c(0, 0, 1,-1, 0, 0),
+              "D2 - D4" = c(0, 0, 1, 0,-1, 0),
+              "D2 - D5" = c(0, 0, 1, 0, 0,-1),
+              "D3 - D4" = c(0, 0, 0, 1,-1, 0),
+              "D3 - D5" = c(0, 0, 0, 1, 0,-1),
+              "D4 - D5" = c(0, 0, 0, 0, 1,-1))
+@
+Notice that the first two rows are the tests that corresponding to compare the baseline, \verb D1 , to the other levels, hence these will have equivalent test statistics as those obtained in \verb summary.  However \verb contrasts.mcemGLMM  accounts for multiple comparisons by adjusting the $p$--values via Bonferroni correction therefore it is possible to obtain significance in \verb summary  and not in \verb contrasts.mcemGLMM  since this $p$--value will likely be larger.
+<<echo=TRUE>>=
+contrasts.mcemGLMM(object = fit0, ctr.mat = ctr0)
+@
+
+For this simple model it is possible to plot the predicted probabilities for each level of \verb z1 . Notice that this corresponds to the population means, i.e., the random effects have been set to zero.
+\begin{figure}[ht]
+\centering
+<<echo=TRUE, fig=TRUE>>=
+plot(simData$x1, predict(fit0, type = "response"), col = simData$z1)
+@
+\end{figure}
+
+We can also plot Pearson and deviance residuals of the model.
+\begin{figure}[ht]
+\centering
+<<echo=TRUE, fig=TRUE>>=
+plot(simData$x1, residuals(fit0, type = "deviance"))
+@
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+<<echo=TRUE, fig=TRUE>>=
+plot(simData$x1, residuals(fit0, type = "pearson"))
+@
+\end{figure}
+
+To assess convergence we can look at trace plots of the MLE estimates and the value of the loglikelihood function across the EM iterations. These are stored in the \verb mcemGLMM  object returned by the function the \verb mcemGLMM  function on the fields \verb mcemEST  and \verb loglikeVal .
+
+\begin{figure}
+\centering
+<<echo=TRUE, fig=TRUE>>=
+par(mfrow = c(1, 2))
+ts.plot(fit0$mcemEST)
+ts.plot(fit0$loglikeVal)
+@
+\end{figure}
+
+It is possible to also take a look at the trace plots of the Markov chain used to estimate the $Q$ function. Since this approximates an integral of dimension equal to the number of random effects it might not be practical to look at all the chains. The last iteration of the MCMC step is saved on the field \verb randeff  as a matrix. Each column of this matrix corresponds to on random effect. We can also use this to get predictions of the observed random effects.
+
+\begin{figure}
+\centering
+<<echo=TRUE, fig=TRUE>>=
+ts.plot(fit0$randeff[, 1])
+@
+\end{figure}
+
+<<echo=TRUE>>=
+colMeans(fit0$randeff)
+@
+
+\clearpage
+\section{Fitting a more complex model}
+To specify more than one random effect we need to put them into a list and state that there is no intercept for that effect. In case of nested random effects if labels are repeated accross it's necessary to fit the lower level by using  the interaction with the upper level.
+
+In this specific example, the labels for $z2$, "1", "2", "3", and "4", are used for each level of $z1$. If the labels of $z2$ are unique within $z1$ it is not necessary to use the interaction term. However it is recommended to use the interaction form for the sake of clarity in the model statement.
+<<echo=TRUE>>=
+fit1 <- mcemGLMM(fixed = obs ~ x1 + x2 + x3, 
+                random = list(~0+z1, ~0+z1:z2), 
+                  data = simData, 
+                family = "bernoulli", 
+                vcDist = "t", 
+                    df = c(5, 5),
+                controlEM = list(EMit = 10))
+@
+The \verb df  argument specifies the degrees of freedom for each variance component in \verb random.  If \verb vcDist  is ``normal'' there is argument is not needed.
+
+We can look at the summary and ANOVA of the model as before
+<<echo=TRUE>>=
+summary(fit1)
+anova(fit1)
+@
+
+We can run multiple comparison tests for the levels of $x3$ as before
+<<echo=TRUE>>=
+ctr1 <- rbind(   "blue - red" = c(0, 0, 0,-1, 0),
+              "blue - yellow" = c(0, 0, 0, 0,-1),
+               "red - yellow" = c(0, 0, 0, 1,-1))
+contrasts.mcemGLMM(object = fit1, ctr.mat = ctr1)
+@
+
+Instead of performing a Wald test to test a fixed effect it is possible to run a likelihood ratio test between two nested models. First we will fit a model without \verb x3 :
+<<echo=TRUE>>=
+fit2 <- mcemGLMM(fixed = obs ~ x1 + x2, 
+                random = list(~0+z1, ~0+z1:z2), 
+                  data = simData, 
+                family = "bernoulli", 
+                vcDist = "t", 
+                    df = c(5, 5),
+                controlEM = list(EMit = 10))
+@
+Now we can use the \verb anova  command to run the likelihood ratio test
+<<echo=TRUE>>=
+anova(fit1, fit2)
+@
+
+\section{A Poisson model}
+To fit a Poisson model we only need to change the \verb family  argument in the \verb mcemGLMM  command. As an example we will use the \verb count  variable in \verb simData .
+<<echo=TRUE>>=
+fit3 <- mcemGLMM(fixed = count ~ x1 + x2 + x3, 
+                random = list(~0+z1, ~0+z1:z2), 
+                  data = simData, 
+                family = "poisson", 
+                vcDist = "normal",
+                controlEM = list(EMit = 10))
+@
+All the previous methods are available for this type of model.
+<<echo=TRUE>>=
+summary(fit3)
+anova(fit3)
+contrasts.mcemGLMM(object = fit3, ctr.mat = ctr1)
+@
+
+\begin{figure}[ht]
+\centering
+<<echo=TRUE, fig=TRUE>>=
+plot(simData$x1, predict(fit3))
+@
+\end{figure}
+
+\section{A negative binomial model}
+To fit a negative binomial model we need to specify the \verb family  argument to \verb "negbinom" . All the previous methods ara available for this model. When we look at the summary of this model we get an estimate of the overdispersion parameter and its standard error.
+<<echo=TRUE>>=
+fit4 <- mcemGLMM(fixed = count2 ~ x1 + x2 + x3, 
+                random = list(~0+z1, ~0+z1:z2), 
+                  data = simData, 
+                family = "negbinom", 
+                vcDist = "normal",
+                controlEM = list(EMit = 10))
+summary(fit4)
+anova(fit4)
+contrasts.mcemGLMM(object = fit4, ctr.mat = ctr1)
+@
+
+\begin{figure}[ht]
+\centering
+<<echo=TRUE, fig=TRUE>>=
+plot(simData$x1, predict(fit4))
+@
+\end{figure}
+
+\begin{figure}
+\centering
+<<echo=TRUE, fig=TRUE>>=
+par(mfrow = c(1, 2))
+ts.plot(fit4$mcemEST)
+ts.plot(fit4$loglikeVal)
+@
+\end{figure}
+
+<<echo=TRUE>>=
+colMeans(fit4$randeff)
+@
+
+\end{document}

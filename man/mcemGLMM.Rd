@@ -112,6 +112,13 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     \item{EMepsilon}{constant for the EM error assessment.}
   }
   
+  Control options for trust, see \code{help(trust)} for more details:
+  \describe{
+    \item{rinit}{starting trust region radius. Default value set to 20.}
+    \item{rmax}{maximum allowed trust region radius. Default value set to 200.}
+    \item{iterlim}{maximum number of iterations. Default value set to 100.}
+  }
+  
 }
 \examples{
 # Data set for a logistic model with one binary fixed effects and two 
