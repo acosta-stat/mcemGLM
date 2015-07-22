@@ -1,6 +1,10 @@
 useDynLib(mcemGLM)
-import(RcppArmadillo)
 importFrom(Rcpp, evalCpp)
+S3method(summary, mcemGLMM)
+S3method(anova, mcemGLMM)
+S3method(predict, mcemGLMM)
+S3method(residuals, mcemGLMM)
+importFrom(stats, rnorm)
 import(mvtnorm, numDeriv, trust)
 export(mcemGLMM, summary.mcemGLMM, anova.mcemGLMM, contrasts.mcemGLMM, residuals.mcemGLMM, predict.mcemGLMM)
 

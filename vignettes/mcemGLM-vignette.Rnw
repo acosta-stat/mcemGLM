@@ -1,3 +1,6 @@
+% \VignetteIndexEntry{An R Package to Fit Generalized Linear Mixed Models}
+% \VignetteDepends{mcemGLM}
+
 \documentclass{article}
 \usepackage{fullpage}
 \usepackage{amsmath}

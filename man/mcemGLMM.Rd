@@ -136,7 +136,7 @@ fit.1 <- mcemGLMM(obs ~ x, random = ~ 0 + z1, data = exdata,
 summary(fit.1)
 
 # We can assess convergence by looking at a trace plot of the EM estimates
-# an the loglikelihood values
+# and the loglikelihood values
 ts.plot(fit.1$mcemEST)
 ts.plot(fit.1$loglikeVal)
 
@@ -144,7 +144,7 @@ ts.plot(fit.1$loglikeVal)
 fit.crossed <- mcemGLMM(obs ~ x, random = list(~ 0 + z1, ~ 0 + z2), 
                 data = exdata, 
                 family = "bernoulli", vcDist = "normal", 
-                controlEM = list(MCit = 10000), 
+                controlEM = list(EMit = 10, MCit = 10000), 
                 initial = c(0.28, -0.15, 0.001, 0.4))
 summary(fit.crossed)
 
