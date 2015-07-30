@@ -44,27 +44,4 @@ const arma::mat& kX, const arma::mat& kZ, int B, double sd0) {
   }
   
   return usample;
-  
-  /*
-  std::cout<<u<<"\n";
-  std::cout<<ucurrent<<"\n";
-  ucurrent(0) = -10;
-  std::cout<<u<<"\n";
-  std::cout<<ucurrent<<"\n";
-  
-  arma::vec xx(5);
-  xx = rnorm(5,0,1);
-  xx(0) = -10;
-  std::cout<<xx.t()<<"\n\n";
-  
-  arma::vec x(7);
-  for (int i = 0; i < 7; i++)
-    x(i) = 1;
-  std::cout<<usample.row(0);
-  usample.row(0) = x.t();
-  std::cout<<usample.row(0);
-  */
-  
-  
-  
 }

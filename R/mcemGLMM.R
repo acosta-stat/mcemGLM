@@ -14,7 +14,10 @@
 #   MCf:      Factor to increase the number of MCMC iterations.
 #   MCsd:     Standard deviation for the proposal step.
 
-mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "negbinom"), vcDist = c("normal", "t"), df, controlEM = list(), controlTrust = list(), initial) {
+mcemGLMM <- function(fixed, random, data, 
+                     family = c("bernoulli", "poisson", "negbinom"), 
+                     vcDist = c("normal", "t"), df, controlEM = list(), 
+                     controlTrust = list(), initial) {
   # Reading Y and X.
   call0 <- match.call()
   if (missing(data)) {
@@ -32,7 +35,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 150, MCit = 7000, MCf = 1.04, verb = FALSE, MCsd = NULL, EMdelta = 0.05, EMepsilon = 0.01)
+  ctrl <- list(EMit = 150, MCit = 7000, MCf = 1.04, verb = FALSE, MCsd = 0, EMdelta = 0.05, EMepsilon = 0.01)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -47,6 +50,7 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
     warning("Unknown names in control: ", paste(unkwn, collapse = ", "))
   }
   
+  # Initial values
   if (missing(initial)) {
     if (family == "bernoulli") {
       if(!missing(data)) {
@@ -69,7 +73,6 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
         initial0 <-c(glm(fixed, family = poisson)$coefficients, 100)
       }
     }
-
     if(!is.list(random)) {
       initial <- c(initial0, 5)
     } else {
@@ -77,8 +80,8 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
     }
   }
   
+  # Fitting starts. Case 1: One random effect not in a list.
   if (!is.list(random)) {
-    
     # Case 1: One random effect with a diagonal matrix.
     if (missing(data)) {
       kZ <- model.matrix(random)
@@ -164,6 +167,8 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
       }
     }
   }
+  
+  # Some cleaning up.
   class(fit0) <- "mcemGLMM"
   if (family != "negbinom") {
     colnames(fit0$mcemEST) <- c(xlabs, zlabs)
@@ -179,8 +184,15 @@ mcemGLMM <- function(fixed, random, data, family = c("bernoulli", "poisson", "ne
   
   # Names for fixed effect's design matrix
   colnames(fit0$x) <- colnames(kX)
+  
+  # Write warnings or other messages
   if (abs(det(fit0$iMatrix)) < .Machine$double.eps) {
     warning("Information matrix is not invertible.")
   }
+  
+  if (sum(diag(fit0$iMatrix) < rep(0, length(diag(fit0$iMatrix))))) {
+    warning("Negative standard error estimate. \n This is possible due to Monte Carlo error. Extending the model with mcemGLMMext is recommended. See help(mcemGLMMext) for details.")
+  }
+  
   return(fit0)
 }

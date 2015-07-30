@@ -18,22 +18,9 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   kL <- sum(kLh)
   
   # Parameters needed in sigma, one for diagonal, two for exchangeable and AR(1).
-  if (!missing(initial)) {
-    beta <- initial[1:kP]
-    alpha <- initial[kP + 1]
-    sigma <- initial[-(1:(kP + 1))]
-  } else {
-    beta <- rep(0, kP)
-    alpha <- 1
-    sigma <- NULL
-    for (i in sigmaType) {
-      if (i == 0) {
-        sigma <- c(sigma, 5)
-      } else {
-        sigma <- c(sigma, 5, 0.1)
-      }
-    }
-  }
+  beta <- initial[1:kP]
+  alpha <- initial[kP + 1]
+  sigma <- initial[-(1:(kP + 1))]
   
   loglikeVal <- NULL
   theta <- c(beta, alpha, sigma)
@@ -43,12 +30,12 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   outMLE[1, ] <- theta
   
   # MCMC step size tuning
-  if (is.null(controlEM$MCsd)) {
+  if (controlEM$MCsd == 0) {
     if (controlEM$verb == TRUE)
       print("Tuning acceptance rate.")
     ar <- 1
     sdtune <- 1
-    u <- rmvnorm(1, rep(0, kK), ovSigma)
+    u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
     while (ar > 0.4 | ar < 0.1) {
       uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 1000
@@ -67,33 +54,17 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   errorCounter <- 0
   while (j <= controlEM$EMit & sum(tail(errorCounter, 3)) < 3) {
     # Obtain MCMC sample for u with the current parameter estimates.
-    u <- rmvnorm(1, rep(0, kK), ovSigma) # Initial value for u
+    u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
     uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
     
     # Now we optimize.
-    if (sum(sigmaType == 0)) {
-      outTrust <- trust(toMaxDiagNegBinom_n, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    } else {
-      stop("Not implemented yet.")
-      # outTrust <- trust(toMax_n, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    }
+    outTrust <- trust(toMaxDiagNegBinom_n, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    
     if (controlEM$verb == TRUE)
       print(outTrust)
+    
     outMLE[j, ] <- outTrust$argument
     loglikeVal <- c(loglikeVal, outTrust$value)
-    
-    # Use the Jacobian to speed up the convergence
-    if (j > 30 & FALSE) {
-      #print(outMLE[j, ])
-      beta <- outMLE[j, 1:kP]
-      alpha <- outMLE[j, kP + 1]
-      sigma <- outMLE[j, -c(1:(kP + 1))]
-      theta <- c(beta, alpha, sigma)
-      ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
-                                kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-      iJ <- iJacobDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-      outMLE[j, ] <- outMLE[j - 1, ] + iJ %*% (outMLE[j, ] - outMLE[j - 1, ])
-    }
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
@@ -114,7 +85,7 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
-      u <- rmvnorm(1, rep(0, kK), ovSigma)
+      u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma)))
       while (ar > 0.4 | ar < 0.1) {
         uSample.tmp <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 1000
@@ -147,18 +118,8 @@ mcemMLENegBinom_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   uSample <- uSamplerNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   
-  if (sum(sigmaType) == 0) {
-    iMatrix <- iMatrixDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-  } else {
-    stop("Not implemented yet.")
-    # uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-    # iMatrix <- matrix(0, length(theta), length(theta))
-    # for (i in 1:controlEM$MCit) {
-    #   h0 <- hessianLogit_n(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    #   g0 <- gradientLogit_n(pars = theta, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    #   iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / controlEM$MCit
-    # }
-  }
+  iMatrix <- iMatrixDiagNegBinomCpp_n(beta = beta, sigma = ovSigma, alpha = alpha, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+  
   colnames(uSample) <- colnames(kZ)
   return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }

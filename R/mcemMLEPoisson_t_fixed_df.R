@@ -18,20 +18,8 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   kL <- sum(kLh)
   
   # Parameters needed in sigma, one for diagonal, two for exchangeable and AR(1).
-  if (!missing(initial)) {
-    beta <- initial[1:kP]
-    sigma <- initial[-(1:kP)]
-  } else {
-    beta <- rep(0, kP)
-    sigma <- NULL
-    for (i in sigmaType) {
-      if (i == 0) {
-        sigma <- c(sigma, 5)
-      } else {
-        sigma <- c(sigma, 5, 0.1)
-      }
-    }
-  }
+  beta <- initial[1:kP]
+  sigma <- initial[-(1:kP)]
   
   loglikeVal <- NULL
   theta <- c(beta, sigma)
@@ -41,7 +29,7 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   outMLE[1, ] <- theta
   
   # MCMC step size tuning
-  if (is.null(controlEM$MCsd)) {
+  if (controlEM$MCsd == 0) {
     if (controlEM$verb == TRUE)
       print("Tuning acceptance rate.")
     ar <- 1
@@ -69,30 +57,12 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
     
     # Now we optimize.
-    if(sum(sigmaType) == 0) {
-      outTrust <- trust(toMaxDiagPoisson_t, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    } else {
-      stop("Not implemented yet.")
-      # outTrust <- trust(toMax_t_fixed_df, parinit = theta, rinit = 10, rmax = 20, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    }
+    outTrust <- trust(toMaxDiagPoisson_t, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    
     if (controlEM$verb == TRUE)
       print(outTrust)
     outMLE[j, ] <- outTrust$argument
     loglikeVal <- c(loglikeVal, outTrust$value)
-    
-    # Use the Jacobian to speed up the convergence
-    if (j > 30 & controlEM$speedup == TRUE) {
-      #print(outMLE[j, ])
-      beta <- outMLE[j, 1:kP]
-      sigma <- outMLE[j, -c(1:kP)]
-      theta <- c(beta, sigma)
-      ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, 
-                                kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-      iJ <- iJacobDiagPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, 
-                                   uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, 
-                                   kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-      outMLE[j, ] <- outMLE[j - 1, ] + iJ %*% (outMLE[j, ] - outMLE[j - 1, ])
-    }
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
@@ -140,18 +110,7 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   # Estimation of the information matrix. Get a sample from U given the estimated MLEs
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-  if (sum(sigmaType) == 0) {
-    iMatrix <- iMatrixDiagPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-  } else {
-    stop("Not implemented yet.")
-    # uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-    # iMatrix <- matrix(0, length(theta), length(theta))
-    # for (i in 1:controlEM$MCit) {
-    #   h0 <- hessianLogit_t_fixed_df(pars = theta,df = df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    #   g0 <- gradientLogit_t_fixed_df(pars = theta, df= df, u = uSample[i, ], sigmaType = sigmaType, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
-    #   iMatrix <-  iMatrix + (h0 - g0 %*% t(g0)) / controlEM$MCit
-    # }
-  }
+  iMatrix <- iMatrixDiagPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   
   colnames(uSample) <- colnames(kZ)
   return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))

@@ -5,6 +5,6 @@ S3method(anova, mcemGLMM)
 S3method(predict, mcemGLMM)
 S3method(residuals, mcemGLMM)
 importFrom(stats, rnorm)
-import(mvtnorm, numDeriv, trust)
-export(mcemGLMM, summary.mcemGLMM, anova.mcemGLMM, contrasts.mcemGLMM, residuals.mcemGLMM, predict.mcemGLMM)
+import(trust)
+export(mcemGLMM, mcemGLMMext, summary.mcemGLMM, anova.mcemGLMM, contrasts.mcemGLMM, residuals.mcemGLMM, predict.mcemGLMM)
 

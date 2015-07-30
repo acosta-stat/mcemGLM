@@ -31,19 +31,6 @@ arma::mat uSamplerCpp(const arma::vec& beta, const arma::mat& sigma, const arma:
 const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
 const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
 
-arma::vec loglikelihoodLogitGradientBetaCpp_n(const arma::vec& beta, const arma::vec& u,
-const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
-
-arma::mat loglikelihoodLogitHessianBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, 
-const arma::mat& kX, const arma::mat& kZ);
-
-double logMarginalCpp_t(const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
-const arma::mat& kX, const arma::mat& kZ);
-
-arma::vec qFunctionGradientBetaCpp_n(const arma::vec& beta, const arma::vec& u, const arma::vec& kY, 
-const arma::mat& kX, const arma::mat& kZ);
-
 arma::vec loglikelihoodLogitGradientCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& kKi, 
 const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 
@@ -149,29 +136,3 @@ int B, double sd0);
 arma::mat iMatrixDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
 const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
 const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
-
-arma::mat iJacobDiagCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& uSample, 
-const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
-int B, double sd0);
-
-arma::mat iJacobDiagCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, 
-const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, 
-const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
-
-arma::mat iJacobDiagPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& uSample, 
-const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, 
-int B, double sd0);
-
-arma::mat iJacobDiagPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, 
-const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, 
-const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
-const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
-
-arma::mat iJacobDiagNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, 
-const arma::mat& uSample, const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, 
-const arma::mat& kZ, int B, double sd0);
-
-arma::mat iJacobDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, 
-const arma::vec& sigmaType, const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, 
-const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
-const arma::mat& kZ, int B, double sd0);
