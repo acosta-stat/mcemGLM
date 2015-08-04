@@ -136,3 +136,22 @@ int B, double sd0);
 arma::mat iMatrixDiagNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
 const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
 const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+
+arma::vec MCMCloglikelihoodPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec MCMCloglikelihoodPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& u, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec MCMCloglikelihoodNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec MCMCloglikelihoodNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, 
+const arma::mat& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec MCMCloglikelihoodLogitCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec MCMCloglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& u, 
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+

@@ -125,7 +125,7 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
 # possible random effects.
 # Initial values and MC iterations are given to speed up the examples 
 # but these are not necessary in general.
-
+set.seed(0123210)
 data(exdata)
 
 # To fit a model with one random effect

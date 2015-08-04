@@ -259,11 +259,11 @@ To specify more than one random effect we need to put them into a list and state
 In this specific example, the labels for $z2$, "1", "2", "3", and "4", are used for each level of $z1$. If the labels of $z2$ are unique within $z1$ it is not necessary to use the interaction term. However it is recommended to use the interaction form for the sake of clarity in the model statement.
 <<echo=TRUE>>=
 fit1 <- mcemGLMM(fixed = obs ~ x1 + x2 + x3, 
-                random = list(~0+z1, ~0+z1:z2, ~0+z3), 
+                random = list(~0+z1, ~0+z1:z2), 
                   data = simData, 
                 family = "bernoulli", 
                 vcDist = "t", 
-                df = c(5, 5, 5))
+                df = c(5, 5))
 @
 The \verb df  argument specifies the degrees of freedom for each variance component in \verb random.  If \verb vcDist  is ``normal'' this argument is not needed.
 
@@ -284,11 +284,11 @@ contrasts.mcemGLMM(object = fit1, ctr.mat = ctr1)
 Instead of performing a Wald test to test a fixed effect it is possible to run a likelihood ratio test between two nested models. First we will fit a model without \verb x3 :
 <<echo=TRUE>>=
 fit2 <- mcemGLMM(fixed = obs ~ x1 + x2, 
-                random = list(~0+z1, ~0+z1:z2, ~0+z3), 
+                random = list(~0+z1, ~0+z1:z2), 
                   data = simData, 
                 family = "bernoulli", 
                 vcDist = "t", 
-                    df = c(5, 5, 5),
+                    df = c(5, 5),
                 controlEM = list(EMit = 3))
 @
 Now we can use the \verb anova  command to run the likelihood ratio test

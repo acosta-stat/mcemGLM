@@ -116,5 +116,9 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   iMatrix <- iMatrixDiagPoissonCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
   
   colnames(uSample) <- colnames(kZ)
-  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
+  
+  # loglikehood MCMC
+  loglikeMCMC <- MCMCloglikelihoodPoissonCpp_n(beta = beta, sigma = ovSigma, u = uSample, kY = kY, kX = kX, kZ = kZ)
+  
+  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, loglikeMCMC = loglikeMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
 }

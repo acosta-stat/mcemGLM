@@ -109,6 +109,30 @@ ldmt <- function(x, df, sigma, sigmaType) {
     .Call('mcemGLM_ldmt', PACKAGE = 'mcemGLM', x, df, sigma, sigmaType)
 }
 
+MCMCloglikelihoodLogitCpp_n <- function(beta, sigma, u, kY, kX, kZ) {
+    .Call('mcemGLM_MCMCloglikelihoodLogitCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kY, kX, kZ)
+}
+
+MCMCloglikelihoodLogitCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_MCMCloglikelihoodLogitCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
+MCMCloglikelihoodNegBinomCpp_n <- function(beta, sigma, alpha, u, kY, kX, kZ) {
+    .Call('mcemGLM_MCMCloglikelihoodNegBinomCpp_n', PACKAGE = 'mcemGLM', beta, sigma, alpha, u, kY, kX, kZ)
+}
+
+MCMCloglikelihoodNegBinomCpp_t <- function(beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_MCMCloglikelihoodNegBinomCpp_t', PACKAGE = 'mcemGLM', beta, sigma, alpha, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
+MCMCloglikelihoodPoissonCpp_n <- function(beta, sigma, u, kY, kX, kZ) {
+    .Call('mcemGLM_MCMCloglikelihoodPoissonCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kY, kX, kZ)
+}
+
+MCMCloglikelihoodPoissonCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_MCMCloglikelihoodPoissonCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
 qFunctionCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
     .Call('mcemGLM_qFunctionCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
 }
