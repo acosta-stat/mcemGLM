@@ -121,7 +121,7 @@ The package runs through the following steps:
   \]
   for specified values of $\delta$ and $\epsilon$ is met three consecutive times or a maximum number of iterations have been performed. 
   
-  The default values in the package are $\delta = 0.05$ and $\epsilon = 0.01$ but these can be easily changed by the user. The default number of iterations is 150 and this value can also be changed by the user.
+  The default values in the package are $\delta = 0.05$ and $\epsilon = 0.01$ but these can be easily changed by the user. The default number of iterations is 80 and this value can also be changed by the user.
 \item After terminating the iterative process another sample from the random effects is obtained to estimate the information matrix of the model.
 \end{enumerate}
 
