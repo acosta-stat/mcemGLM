@@ -36,10 +36,10 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     ar <- 1
     sdtune <- 1
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-    while (ar > 0.4 | ar < 0.1) {
+    while (ar > 0.4 | ar < 0.15) {
       uSample <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 1000
-      if (ar < 0.1)
+      if (ar < 0.15)
         sdtune <- 0.8 * sdtune
       if (ar > 0.4)
         sdtune <- 1.2 * sdtune
@@ -78,16 +78,16 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     
     # Retuning the accepatance rate.
     ar <- length(unique(uSample[, 1]))/controlEM$MCit
-    if (ar < 0.1 | ar > 0.4) {
+    if (ar < 0.15 | ar > 0.4) {
       if (controlEM$verb == TRUE)
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
       u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-      while (ar > 0.4 | ar < 0.1) {
+      while (ar > 0.4 | ar < 0.15) {
         uSample.tmp <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 1000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 1000
-        if (ar < 0.1)
+        if (ar < 0.15)
           sdtune <- 0.8 * sdtune
         if (ar > 0.4)
           sdtune <- 1.2 * sdtune
