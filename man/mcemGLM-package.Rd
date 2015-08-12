@@ -29,9 +29,6 @@ Felipe Acosta Archila
 
 Maintainer: Felipe Acosta Archila <acosta@umn.edu>
 }
-\references{
-Literature or other references for background information  
-}
 \keyword{ glmm }
 \examples{
 set.seed(123)

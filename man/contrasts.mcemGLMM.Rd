@@ -22,9 +22,6 @@ contrasts.mcemGLMM(object, ctr.mat)
     \item{Adj. p-value}{p-value adjusted for multiple comparison (Bonferroni.)}
   }
 }
-\details{
-This will talk about the random effects options, the em options list, and the trust list.
-}
 \examples{
 set.seed(72327)
 data(exdata)
@@ -35,5 +32,8 @@ fit <- mcemGLMM(obs ~ z2 + x, random = ~ 0 + z1,
                 initial = c(-0.13, -0.15, -0.21, 1.59, 0.002))
 mat <- rbind("1 - 2" = c(0, -1, 0, 0), "1 - 3" = c(0, 0, -1, 0), "2 - 3" = c(0, 1, -1, 0))
 contrasts.mcemGLMM(fit, mat)
+}
+\author{
+Felipe Acosta Archila <acosta@umn.edu>
 }
 \keyword{glmm}

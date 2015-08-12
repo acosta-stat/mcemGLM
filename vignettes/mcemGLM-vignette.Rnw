@@ -150,7 +150,7 @@ We will fit a model with one variance component, $z3$ and we will consider $z1$ 
 The main model arguments for the \verb mcemGLMM  function are \verb fixed  and \verb random.  These specify the fixed and random effects of the model. The response must be included in the \verb fixed  argument. In this first example we are considering $x1$ and $z1$ as fixed and $z3$ as random. We can fit this model with the following command:
 <<echo=TRUE>>=
 fit0 <- mcemGLMM(fixed = obs ~ x1 + z1, 
-                random = ~0+z3, 
+                random = ~0+z2, 
                   data = simData, 
                 family = "bernoulli", 
                 vcDist = "normal")
@@ -221,12 +221,12 @@ plot(simData$x1, residuals(fit0, type = "pearson"))
 \caption{Pearson residuals}
 \end{figure}
 
-To assess convergence we can look at trace plots of the MLE estimates and the value of the loglikelihood function across the EM iterations. These are stored in the \verb mcemGLMM  object returned by the function the \verb mcemGLMM  function on the fields \verb mcemEST  and \verb loglikeVal . Figure \ref{fig-fit0-mle} shows trace plots at each EM iteration of these quantities.
+To assess convergence we can look at trace plots of the MLE estimates and the value of the loglikelihood function across the EM iterations. These are stored in the \verb mcemGLMM  object returned by the function the \verb mcemGLMM  function on the fields \verb+mcemEST+ and \verb loglikeVal . Figure \ref{fig-fit0-mle} shows trace plots at each EM iteration of these quantities.
 
 \begin{figure}[ht]
 \label{fig-fit0-mle}
 \centering
-<<echo=TRUE, fig=TRUE, width=7>>=
+<<echo=TRUE, fig=TRUE, width=8>>=
 par(mfrow = c(1, 2))
 ts.plot(fit0$mcemEST, main = "MLEs estimates", 
         xlab = "EM Iteration", ylab = "MLE value")
@@ -242,15 +242,25 @@ We can also take a look at the trace plots of the Markov chain used to estimate 
 \centering
 \label{fit0-rand}
 <<echo=TRUE, fig=TRUE>>=
-ts.plot(fit0$randeff[, 1])
+ts.plot(fit0$randeff[, 1], xlab = "MCMC iteration")
 @
 \caption{Trace plot for MCMC output for the first random effect.}
 \end{figure}
 
-We can also use this matrix to get predictions of the observed random effects.
+This matrix can be used to get predictions of the observed random effects.
 <<echo=TRUE>>=
 colMeans(fit0$randeff)
 @
+
+To see the sampling on the loglikelihood function we can plot the values of the complete loglikelihood at each MCMC step of the last EM iteration. These values are stored in the \verb+loglikeMCMC+ field of the \verb+mcemGLMM+ object.
+\begin{figure}
+\centering
+\label{fit0-rand}
+<<echo=TRUE, fig=TRUE>>=
+ts.plot(fit0$loglikeMCMC, xlab = "MCMC iteration")
+@
+\caption{Trace plot for the complete loglikelihood function.}
+\end{figure}
 
 \clearpage
 \subsection{Fitting a more complex model}
@@ -300,7 +310,7 @@ anova(fit1, fit2)
 To fit a Poisson model we only need to change the \verb family  argument in the \verb mcemGLMM  command. As an example we will use the \verb count  variable in \verb simData .
 <<echo=TRUE>>=
 fit3 <- mcemGLMM(fixed = count ~ x1 + x2 + x3, 
-                random = list(~0+z1, ~0+z1:z2), 
+                random = list(~0+z2), 
                   data = simData, 
                 family = "poisson", 
                 vcDist = "normal")
@@ -321,6 +331,20 @@ plot(simData$x1, predict(fit3),
 @
 \caption{Predicted values as a function of $x1$.}
 \end{figure}
+
+\begin{figure}[ht]
+\label{fig-fit3-mle}
+\centering
+<<echo=TRUE, fig=TRUE, width=8>>=
+par(mfrow = c(1, 2))
+ts.plot(fit3$mcemEST, main = "MLEs estimates", 
+        xlab = "EM Iteration", ylab = "MLE value")
+ts.plot(fit3$loglikeVal, main = "Loglikelihood values", 
+        xlab = "EM iteration", ylab = "Likelihood")
+@
+\caption{MLEs estimates (left) and Loglikelihood value (right) after each EM iteration.}
+\end{figure}
+
 
 \subsection{A negative binomial model}
 To fit a negative binomial model we need to specify the \verb family  argument to \verb "negbinom" . All the previous methods ara available for this model. When we look at the summary of this model we get an estimate of the overdispersion parameter and its standard error.

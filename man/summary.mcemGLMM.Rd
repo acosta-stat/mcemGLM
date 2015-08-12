@@ -30,4 +30,7 @@ coefficients and the variance estimators. In the case of the negative
 binomial the estimate of the overdispersion value is reported with its
 respective standard deviation.
 }
+\author{
+Felipe Acosta Archila <acosta@umn.edu>
+}
 \keyword{glmm}

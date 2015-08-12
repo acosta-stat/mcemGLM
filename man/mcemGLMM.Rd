@@ -42,7 +42,9 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     \item{mcemEST}{a matrix with the value of the maximum likelihood 
     estimators at the end of each EM step.}
     \item{iMatrix}{Fisher's information matrix.}
-    \item{loglikeVal}{loglikelihood value (up to a constant) for the model. Used to perform likelihood ratio tests.}
+    \item{loglikeVal}{loglikelihood value (up to a constant) for the model. 
+      Used to perform likelihood ratio tests.}
+    \item{loglikeMCMC}{complete loglikelihood MCMC samples.}
     \item{randeff}{a sample from the conditional distribution of the 
       random effects given the data and the maximum likelihood estimators.}
     \item{y}{vector of observations.}
@@ -153,21 +155,26 @@ summary(fit.crossed)
 fit.nested <- mcemGLMM(obs ~ x, random = list(~ 0 + z2, ~ 0 + z2:z1), 
                 data = exdata, 
                 family = "bernoulli", vcDist = "normal", 
-                controlEM = list(MCit = 10000), 
+                controlEM = list(EMit = 10, MCit = 10000), 
                 initial = c(0.31, -0.15, 0.29, 0.27))
 summary(fit.nested)
 
 # Fit a Poisson model
 fit.pois <- mcemGLMM(obs2 ~ x, random = ~ 0 + z1, data = exdata, 
                 family = "poisson", vcDist = "normal", 
-                controlEM = list(verb = FALSE, MCit = 10000), 
+                controlEM = list(EMit = 10, , MCit = 10000), 
                 initial = c(1.95, 0.03, 0.003))
 summary(fit.pois)
 
 }
 \references{
 Neath, R. C. (2012) On Convergence Properties of the 
-Monte Carlo EM Algorithm \emph{AMS Collections}
+Monte Carlo EM Algorithm In Advances in Modern Statistical 
+Theory and Applications: A Festschrift in Honor of Morris 
+L. Eaton. \emph{Institute of Mathematical Statistics} 43--62  
+}
+\author{
+Felipe Acosta Archila <acosta@umn.edu>
 }
 
 \keyword{glmm}

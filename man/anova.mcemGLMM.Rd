@@ -30,7 +30,7 @@
     \item{p.value}{p value corresponding to the test statistic.}
   }
 }
-\details{
-This will talk about the random effects options, the em options list, and the trust list.
+\author{
+Felipe Acosta Archila <acosta@umn.edu>
 }
 \keyword{glmm}

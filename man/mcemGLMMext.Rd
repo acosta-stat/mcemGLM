@@ -19,7 +19,7 @@ mcemGLMMext(object, minIt = 25, controlEM)
 An updated object of class \code{mcemGLMM}.
 }
 \author{
-Felipe Acosta Archila
+Felipe Acosta Archila <acosta@umn.edu>
 }
 \note{
 If \code{controlEM} is supplied it is important that the value for \code{MCit} is at least equal to number of Monte Carlo iterations used in the last EM step to fit \code{object} since providing a lower number will increase the Monte Carlo error.
@@ -34,11 +34,11 @@ data(exdata)
 fit1 <- mcemGLMM(obs ~ z2 + x, random = ~ 0 + z1, 
                  data = exdata, 
                  family = "bernoulli", vcDist = "normal", 
-                 controlEM = list(verb = FALSE, EMit = 10, MCit = 8000), 
+                 controlEM = list(verb = FALSE, EMit = 5, MCit = 8000), 
                  initial = c(-0.13, -0.15, -0.21, 1.59, 0.002))
                  
-# Now we extend the algorithm to do at least another 20 iterations
-fit2 <- mcemGLMMext(fit1, minIt = 16)
+# Now we extend the algorithm to do at least another 10 iterations
+fit2 <- mcemGLMMext(fit1, minIt = 10)
 }
 \keyword{ glmm }
 \keyword{ mcemGLMM }

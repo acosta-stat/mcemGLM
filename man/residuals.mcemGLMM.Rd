@@ -16,7 +16,7 @@
 \value{
   A vector with the residuals of the model.
 }
-\details{
-This section will state how is this obtained.
+\author{
+Felipe Acosta Archila <acosta@umn.edu>
 }
 \keyword{glmm, residuals}

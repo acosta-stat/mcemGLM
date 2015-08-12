@@ -17,7 +17,7 @@
 \value{
   A vector with the predictions from the observed data or by using the supplied new data.
 }
-\details{
-  This section will state how is this obtained.
+\author{
+Felipe Acosta Archila <acosta@umn.edu>
 }
 \keyword{glmm, prediction}
