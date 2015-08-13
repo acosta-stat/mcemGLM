@@ -29,6 +29,7 @@ If \code{controlEM} is supplied it is important that the value for \code{MCit} i
 \code{\link{mcemGLMM}}
 }
 \examples{
+\donttest{
 set.seed(72327)
 data(exdata)
 fit1 <- mcemGLMM(obs ~ z2 + x, random = ~ 0 + z1, 
@@ -39,6 +40,7 @@ fit1 <- mcemGLMM(obs ~ z2 + x, random = ~ 0 + z1,
                  
 # Now we extend the algorithm to do at least another 10 iterations
 fit2 <- mcemGLMMext(fit1, minIt = 10)
+}
 }
 \keyword{ glmm }
 \keyword{ mcemGLMM }

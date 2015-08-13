@@ -123,6 +123,7 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
   
 }
 \examples{
+\donttest{
 # Data set for a logistic model with one binary fixed effects and two 
 # possible random effects.
 # Initial values and MC iterations are given to speed up the examples 
@@ -162,10 +163,10 @@ summary(fit.nested)
 # Fit a Poisson model
 fit.pois <- mcemGLMM(obs2 ~ x, random = ~ 0 + z1, data = exdata, 
                 family = "poisson", vcDist = "normal", 
-                controlEM = list(EMit = 10, , MCit = 10000), 
+                controlEM = list(EMit = 10, MCit = 10000), 
                 initial = c(1.95, 0.03, 0.003))
 summary(fit.pois)
-
+}
 }
 \references{
 Neath, R. C. (2012) On Convergence Properties of the 

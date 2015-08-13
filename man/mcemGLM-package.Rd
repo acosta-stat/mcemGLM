@@ -31,6 +31,7 @@ Maintainer: Felipe Acosta Archila <acosta@umn.edu>
 }
 \keyword{ glmm }
 \examples{
+\donttest{
 set.seed(123)
 x <- rnorm(30, 10, 1)
 z <- factor(rep(1:6, each = 5))
@@ -40,4 +41,5 @@ vcDist = "normal", controlEM = list(EMit = 15, MCit = 10000),
 initial = c(3.30, -0.35, 0.005))
 summary(fit)
 anova(fit)
+}
 }
