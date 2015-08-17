@@ -32,7 +32,10 @@ const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0
   usample.row(0) = ucurrent.t();
   
   for (int i = 1; i < B; i++){
-    uproposed = rnorm(kK, 0, sd0);
+    // uproposed = rnorm(kK, 0, sd0);
+    for (int j = 0; j < kK; j++) {
+      uproposed(j) = rnorm(1, 0 , sd0 * sigma(j, j))(0);
+    }
     uproposed += ucurrent;
     if (log(R::runif(0, 1)) < logAcceptPoisson_n(beta, sigma, ucurrent, uproposed, kY, kX, kZ)) {
       ucurrent = uproposed;

@@ -190,7 +190,7 @@ mcemGLMM <- function(fixed, random, data,
     warning("Information matrix is not invertible.")
   }
   
-  if (sum(diag(fit0$iMatrix) < rep(0, length(diag(fit0$iMatrix))))) {
+  if (sum(diag(solve(fit0$iMatrix)) < rep(0, length(diag(fit0$iMatrix))))) {
     warning("Negative standard error estimate. \n This is possible due to Monte Carlo error. Extending the model with mcemGLMMext is recommended. See help(mcemGLMMext) for details.")
   }
   
