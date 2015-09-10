@@ -117,5 +117,5 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   # loglikehood MCMC
   loglikeMCMC <- MCMCloglikelihoodPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
   
-  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, loglikeMCMC = loglikeMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error))
+  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, loglikeMCMC = loglikeMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
 }

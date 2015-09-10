@@ -51,6 +51,7 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     \item{x}{design matrix for the fixed effects.}
     \item{z}{design matrix for the random effects.}
     \item{EMerror}{relative error at the last iteration. See details.}
+    \item{MCsd}{last value for MCMC step size.}
     \item{call}{original call.}
   }
 }
@@ -108,7 +109,7 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     effects. This is useful to assess the performance of the algorithm 
     but it can impact the actual running time.}
     \item{MCsd}{initial standard deviation for the proposal density of 
-    the MCMC step. If null (default) an auto-tuning step will be 
+    the MCMC step. If zero (default) an auto-tuning step will be 
     performed.}
     \item{EMdelta}{constant for the EM error assessment.}
     \item{EMepsilon}{constant for the EM error assessment.}

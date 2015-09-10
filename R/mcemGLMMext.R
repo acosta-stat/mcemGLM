@@ -8,7 +8,7 @@ mcemGLMMext <- function(object, minIt = 25, controlEM) {
                       MCit = nrow(object$randeff),
                        MCf = ifelse(      is.null(object$call$controlEM$MCf),  1.04,       object$call$controlEM$MCf),
                       verb = ifelse(     is.null(object$call$controlEM$verb), FALSE,      object$call$controlEM$verb),
-                      MCsd = ifelse(     is.null(object$call$controlEM$MCsd),     0,      object$call$controlEM$MCsd), 
+                      MCsd = object$MCsd, 
                    EMdelta = ifelse(  is.null(object$call$controlEM$EMdelta),  0.01,   object$call$controlEM$EMdelta),
                  EMepsilon = ifelse(is.null(object$call$controlEM$EMepsilon), 0.001, object$call$controlEM$EMepsilon))
     
