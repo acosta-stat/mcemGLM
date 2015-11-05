@@ -22,7 +22,7 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   alpha <- initial[kP + 1]
   sigma <- initial[-(1:(kP + 1))]
   
-  loglikeVal <- NULL
+  QfunVal <- NULL
   theta <- c(beta, alpha, sigma)
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
@@ -63,7 +63,7 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     if (controlEM$verb == TRUE)
       print(outTrust)
     outMLE[j, ] <- outTrust$argument
-    loglikeVal <- c(loglikeVal, outTrust$value)
+    QfunVal <- c(QfunVal, outTrust$value)
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
@@ -117,7 +117,7 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   colnames(uSample) <- colnames(kZ)
   
   # loglikehood MCMC
-  loglikeMCMC <- MCMCloglikelihoodNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+  QfunMCMC <- MCMCloglikelihoodNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
   
-  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, loglikeMCMC = loglikeMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
+  return(list(mcemEST = outMLE, iMatrix = iMatrix, QfunVal = QfunVal, QfunMCMC = QfunMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
 }

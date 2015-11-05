@@ -42,9 +42,9 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
     \item{mcemEST}{a matrix with the value of the maximum likelihood 
     estimators at the end of each EM step.}
     \item{iMatrix}{Fisher's information matrix.}
-    \item{loglikeVal}{loglikelihood value (up to a constant) for the model. 
+    \item{QfunVal}{ value (up to a constant) of the Q function. 
       Used to perform likelihood ratio tests.}
-    \item{loglikeMCMC}{complete loglikelihood MCMC samples.}
+    \item{QfunMCMC}{Q function MCMC sample.}
     \item{randeff}{a sample from the conditional distribution of the 
       random effects given the data and the maximum likelihood estimators.}
     \item{y}{vector of observations.}
@@ -80,11 +80,8 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
   A note on the negative binomial overdispersion:
   
   The variance for the negative binomial model is set equal to
-  \eqn{\mu(1 + 1/\alpha)} so we have that there is no overdispersion
-  as \eqn{\alpha} goes to infinity. However in the summary of a negative 
-  binomial model the parameter \eqn{\phi = 1 + 1/\alpha} estimation is
-  reported instead of \eqn{\alpha}. This leads to the convention that 
-  there is no over dispersion when \eqn{\phi = 1}.
+  \eqn{(1 + \mu/\alpha)} so we have that there is no overdispersion
+  as \eqn{\alpha} goes to infinity.
   
   Stopping rules and convergence criteria:
   

@@ -22,7 +22,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   sigma <- initial[-(1:kP)]
 
   
-  loglikeVal <- NULL
+  QfunVal <- NULL
   theta <- c(beta, sigma)
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
@@ -68,7 +68,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
       print(outTrust)
     
     outMLE[j, ] <- outTrust$argument
-    loglikeVal <- c(loglikeVal, outTrust$value)
+    QfunVal <- c(QfunVal, outTrust$value)
     
     # The current estimates are updated now
     beta <- outMLE[j, 1:kP]
@@ -121,7 +121,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   colnames(uSample) <- colnames(kZ)
   
   # loglikehood MCMC
-  loglikeMCMC <- MCMCloglikelihoodLogitCpp_n(beta = beta, sigma = ovSigma, u = uSample, kY = kY, kX = kX, kZ = kZ)
+  QfunMCMC <- MCMCloglikelihoodLogitCpp_n(beta = beta, sigma = ovSigma, u = uSample, kY = kY, kX = kX, kZ = kZ)
   
-  return(list(mcemEST = outMLE, iMatrix = iMatrix, loglikeVal = loglikeVal, loglikeMCMC = loglikeMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
+  return(list(mcemEST = outMLE, iMatrix = iMatrix, QfunVal = QfunVal, QfunMCMC = QfunMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
 }
