@@ -35,7 +35,7 @@ mcemGLMM <- function(fixed, random, data,
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 80, MCit = 8000, MCf = 1.05, verb = FALSE, MCsd = 0, EMdelta = 0.05, EMepsilon = 0.025)
+  ctrl <- list(EMit = 120, MCit = 5000, MCf = 1.025, verb = FALSE, MCsd = 0, EMdelta = 0.0075, EMepsilon = 0.01)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){

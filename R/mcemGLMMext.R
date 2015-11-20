@@ -25,12 +25,12 @@ mcemGLMMext <- function(object, minIt = 25, controlEM) {
     fit0 <- mcemGLMM(       fixed = eval(object$call$fixed),
                            random = eval(object$call$random),
                              data = eval(object$call$data),
-                           family = object$call$family,
-                           vcDist = object$call$vcDist,
-                               df = object$call$df,
+                           family = eval(object$call$family),
+                           vcDist = eval(object$call$vcDist),
+                               df = eval(object$call$df),
                         controlEM = controlEM,
-                     controlTrust = object$call$controlTrust,
-                          initial = tail(object$mcemEST, 1))
+                     controlTrust = eval(object$call$controlTrust),
+                          initial = tail(eval(object$mcemEST), 1))
   }
   fit0$call <- object$call
   return(fit0)

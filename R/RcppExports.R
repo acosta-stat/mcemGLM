@@ -97,6 +97,14 @@ loglikelihoodPoissonCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, k
     .Call('mcemGLM_loglikelihoodPoissonCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
 }
 
+margloglikelihoodLogitCpp_n <- function(beta, sigma, u, kY, kX, kZ) {
+    .Call('mcemGLM_margloglikelihoodLogitCpp_n', PACKAGE = 'mcemGLM', beta, sigma, u, kY, kX, kZ)
+}
+
+margloglikelihoodLogitCpp_t <- function(beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ) {
+    .Call('mcemGLM_margloglikelihoodLogitCpp_t', PACKAGE = 'mcemGLM', beta, sigma, sigmaType, u, df, kKi, kLh, kLhi, kY, kX, kZ)
+}
+
 min0 <- function(a, b) {
     .Call('mcemGLM_min0', PACKAGE = 'mcemGLM', a, b)
 }
