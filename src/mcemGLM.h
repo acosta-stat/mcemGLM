@@ -155,3 +155,23 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
 arma::vec MCMCloglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& u, 
 const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 
+double loglikelihoodGammaCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::vec loglikelihoodGammaGradientCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat loglikelihoodGammaHessianCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, 
+const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat iMatrixDiagGammaCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::mat& uSample, 
+const arma::vec& kKi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+
+arma::vec MCMCloglikelihoodGammaCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, 
+const arma::mat& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+List qFunctionDiagGammaCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, const arma::mat& u, 
+const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+double logAcceptGamma_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& ucurrent, 
+const arma::vec& uproposed, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
