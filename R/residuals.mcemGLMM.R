@@ -34,5 +34,16 @@ residuals.mcemGLMM <- function(object, type = c("deviance", "pearson"), ...) {
       res0 <- sign(object$y - mu0) * sqrt(2 * (ifelse(object$y > 0, object$y * log(object$y / mu0), 0)) - 2 * (object$y + a0) * log((object$y + a0)/(mu0 + a0)))
     }
   }
+  
+  if (object$call$family == "gamma") {
+    mu0 <- exp(lin0)
+    a0 <- tail(object$mcemEST, 1)[kP + 1]
+    if (type[1] == "pearson") {
+      res0 <- (object$y - mu0) / sqrt(mu0 / a0)
+    }
+    if (type[1] == "deviance") {
+      res0 <- sign(object$y - mu0) * sqrt(2 * (a0 * (object$y - mu0) * log(a0*object$y) + lgamma(a0 * mu0) - lgamma(a0 * object$y)))
+    }
+  }
   return(as.vector(res0))
 }

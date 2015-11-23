@@ -64,7 +64,8 @@ double loglikelihoodPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, 
 const arma::mat& kX, const arma::mat& kZ);
 
 double loglikelihoodPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::vec& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ);
 
 arma::vec loglikelihoodPoissonGradientCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::vec& kKi, 
 const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
@@ -99,7 +100,8 @@ double loglikelihoodNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma,
 const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 
 double loglikelihoodNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ);
 
 arma::vec loglikelihoodNegBinomGradientCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& kKi, 
 const arma::vec& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
@@ -138,19 +140,22 @@ const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec
 const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
 
 arma::vec MCMCloglikelihoodPoissonCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ);
 
 arma::vec MCMCloglikelihoodPoissonCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& u, const arma::vec& kY, 
 const arma::mat& kX, const arma::mat& kZ);
 
-arma::vec MCMCloglikelihoodNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::mat& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+arma::vec MCMCloglikelihoodNegBinomCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, 
+const arma::mat& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
 
 arma::vec MCMCloglikelihoodNegBinomCpp_n(const arma::vec& beta, const arma::mat& sigma, double alpha, 
 const arma::mat& u, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 
 arma::vec MCMCloglikelihoodLogitCpp_t(const arma::vec& beta, const arma::mat& sigma, const arma::vec& sigmaType, const arma::mat& u, 
-const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ);
 
 arma::vec MCMCloglikelihoodLogitCpp_n(const arma::vec& beta, const arma::mat& sigma, const arma::mat& u, 
 const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
@@ -175,3 +180,31 @@ const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
 
 double logAcceptGamma_n(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& ucurrent, 
 const arma::vec& uproposed, const arma::vec& kY, const arma::mat& kX, const arma::mat& kZ);
+
+double loglikelihoodGammaCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ);
+
+arma::vec loglikelihoodGammaGradientCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, const arma::mat& kX, 
+const arma::mat& kZ);
+
+arma::mat loglikelihoodGammaHessianCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat iMatrixDiagGammaCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, 
+const arma::mat& uSample, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ, int B, double sd0);
+
+arma::vec MCMCloglikelihoodGammaCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, 
+const arma::mat& u, const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, \
+const arma::mat& kX, const arma::mat& kZ);
+
+List qFunctionDiagGammaCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::mat& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ);
+
+arma::mat uSamplerGammaCpp_t(const arma::vec& beta, const arma::mat& sigma, double alpha, const arma::vec& sigmaType, const arma::vec& u, 
+const arma::vec& df, const arma::vec& kKi, const arma::vec& kLh, const arma::vec& kLhi, const arma::vec& kY, 
+const arma::mat& kX, const arma::mat& kZ, int B, double sd0);

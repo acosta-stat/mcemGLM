@@ -10,10 +10,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), ...)
       if (object$call$family == "bernoulli") {
         return(exp(lin0) / (1 + exp(lin0)))
       }
-      if (object$call$family == "poisson") {
-        return(exp(lin0))
-      }
-      if (object$call$family == "negbinom") {
+      if (object$call$family %in% c("poisson", "negbinom", "gamma")) {
         return(exp(lin0))
       }
     }
@@ -31,10 +28,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), ...)
       if (object$call$family == "bernoulli") {
         return(exp(lin0) / (1 + exp(lin0)))
       }
-      if (object$call$family == "poisson") {
-        return(exp(lin0))
-      }
-      if (object$call$family == "negbinom") {
+      if (object$call$family %in% c("poisson", "negbinom", "gamma")) {
         return(exp(lin0))
       }
     }

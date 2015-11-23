@@ -45,7 +45,7 @@ summary.mcemGLMM <- function(object, ...) {
   cat("\n   Two sided Wald tests for fixed effects coefficients:\n\n")
   print(resultsFixed)
   
-  if (object$call$family != "negbinom") {
+  if (object$call$family %in% c("bernoulli", "poisson")) {
     cat("\n\n   One sided Wald tests for variance components:\n\n")
     print(resultsVar)
   } else {

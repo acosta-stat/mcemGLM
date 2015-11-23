@@ -35,8 +35,8 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     sdtune <- 1
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
     while (ar > 0.4 | ar < 0.15) {
-      uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 2000, sd0 = sdtune)
-      ar <- length(unique(uSample[, 1])) / 2000
+      uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
+      ar <- length(unique(uSample[, 1])) / 5000
       if (ar < 0.15)
         sdtune <- 0.8 * sdtune
       if (ar > 0.4)
@@ -82,8 +82,8 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
       sdtune <- controlEM$MCsd
       u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
       while (ar > 0.4 | ar < 0.15) {
-        uSample.tmp <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 2000, sd0 = sdtune)
-        ar <- length(unique(uSample.tmp[, 1])) / 2000
+        uSample.tmp <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
+        ar <- length(unique(uSample.tmp[, 1])) / 5000
         if (ar < 0.15)
           sdtune <- 0.8 * sdtune
         if (ar > 0.4)

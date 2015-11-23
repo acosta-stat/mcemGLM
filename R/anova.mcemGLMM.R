@@ -1,23 +1,23 @@
 anova.mcemGLMM <- function(object, opt, ...) {
-  if (!missing(opt)) {
-    if (class(opt) != "mcemGLMM") {
-      stop("Wrong class object.")
-    }
-    if (!(prod(colnames(opt$mcemEST) %in% colnames(object$mcemEST)) | prod(colnames(object$mcemEST) %in% colnames(opt$mcemEST)))) {
-      cat("    The models are not nested. Likelihood ratio test is not appropriate.\n\n")
-    }
-    
-    # Perform a likelihood ratio test.
-    value <- 2 * abs(tail(opt$loglikeVal, 1) - tail(object$loglikeVal, 1))
-    df <- abs(ncol(opt$mcemEST) - ncol(object$mcemEST))
-    pval <- 1 - pchisq(value, df)
-    
-    cat(paste("  Test statistic value:", value))
-    cat(paste("\n  Degrees of freedom:", df))
-    cat(paste("\n  p value:", round(pval, 8)))
-    
-    return(invisible(list(Chi.Sq = value, Df = df, p.value = pval)))
-  }
+#   if (!missing(opt)) {
+#     if (class(opt) != "mcemGLMM") {
+#       stop("Wrong class object.")
+#     }
+#     if (!(prod(colnames(opt$mcemEST) %in% colnames(object$mcemEST)) | prod(colnames(object$mcemEST) %in% colnames(opt$mcemEST)))) {
+#       cat("    The models are not nested. Likelihood ratio test is not appropriate.\n\n")
+#     }
+#     
+#     # Perform a likelihood ratio test.
+#     value <- 2 * abs(tail(opt$loglikeVal, 1) - tail(object$loglikeVal, 1))
+#     df <- abs(ncol(opt$mcemEST) - ncol(object$mcemEST))
+#     pval <- 1 - pchisq(value, df)
+#     
+#     cat(paste("  Test statistic value:", value))
+#     cat(paste("\n  Degrees of freedom:", df))
+#     cat(paste("\n  p value:", round(pval, 8)))
+#     
+#     return(invisible(list(Chi.Sq = value, Df = df, p.value = pval)))
+#   }
   # Fixed effects
   coef0 <- tail(object$mcemEST, n = 1)[1:ncol(object$x)]
   names(coef0) <- colnames(object$mcemEST)[1:ncol(object$x)]
