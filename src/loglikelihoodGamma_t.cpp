@@ -58,7 +58,8 @@ double loglikelihoodGammaCpp_t(const arma::vec& beta, const arma::mat& sigma, do
     for (int j = 0; j < kK; j++) {
       wij += kZ(i, j) * u(j);
     }
-    value += exp(wij) * alpha * log(alpha * kY(i)) - lgamma(alpha * exp(wij)) - alpha * kY(i);
+    // value += exp(wij) * alpha * log(alpha * kY(i)) - lgamma(alpha * exp(wij)) - alpha * kY(i);
+    value += alpha * log(alpha) - alpha * wij - lgamma(alpha) + alpha * log(kY(i)) - alpha * kY(i) * exp(-wij);
   }
 
   int from = 0;
