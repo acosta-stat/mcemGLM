@@ -86,11 +86,7 @@ mcemGLMM <- function(fixed, random, data,
       initial <- c(initial0, rep(4, length(random)))
     }
   } else {
-<<<<<<< HEAD
     if (length(initial) != ncol(kX)) {
-=======
-    if (length(initial) != ncols(kX)) {
->>>>>>> edd46b12b9f12f65e48412c4b9243f79d60b5541
       stop("Number of initial values must be equal to the number of parameters.")
     }
   }
