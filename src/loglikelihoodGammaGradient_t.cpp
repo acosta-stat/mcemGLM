@@ -42,9 +42,11 @@ arma::vec loglikelihoodGammaGradientCpp_t(const arma::vec& beta, const arma::mat
       wij += kZ(i, j) * u(j);
     }
     for (int j = 0; j < kP; j++) {
-      gradient(j) += kX(i, j) * exp(wij) * alpha * log(alpha * kY(i)) - alpha * kX(i, j) * R::digamma(alpha * exp(wij)) * exp(wij);
+      // gradient(j) += kX(i, j) * exp(wij) * alpha * log(alpha * kY(i)) - alpha * kX(i, j) * R::digamma(alpha * exp(wij)) * exp(wij);
+      gradient(j) += -alpha * kX(i, j) + alpha * kY(i) * kX(i, j) * exp(-wij);
     }
-    gradient(kP) += exp(wij) * (1 + log(alpha * kY(i)) - R::digamma(alpha * exp(wij))) - kY(i);
+    // gradient(kP) += exp(wij) * (1 + log(alpha * kY(i)) - R::digamma(alpha * exp(wij))) - kY(i);
+    gradient(kP) += 1 + log(alpha) - wij - R::digamma(alpha) + log(kY(i)) - kY(i) * exp(-wij);
   }
 
   int counter = 0;

@@ -50,7 +50,8 @@ arma::mat loglikelihoodGammaHessianCpp_t(const arma::vec& beta, const arma::mat&
     // Hessian for Beta
     for (int j = 0; j < kP; j++) {
       for (int k = 0; k <= j; k++) {
-        hessian(j, k) += alpha * kX(i, j) * kX(i, k)* exp(wij) * (log(alpha * kY(i)) - alpha * exp(wij) * R::trigamma(alpha * exp(wij)) - R::digamma(alpha * exp(wij)));
+        // hessian(j, k) += alpha * kX(i, j) * kX(i, k)* exp(wij) * (log(alpha * kY(i)) - alpha * exp(wij) * R::trigamma(alpha * exp(wij)) - R::digamma(alpha * exp(wij)));
+        hessian(j, k) += -alpha * kY(i) * kX(i, j) * kX(i, k) * exp(-wij);
         if (k < j) {
           hessian(k, j) = hessian(j, k);
         }
@@ -58,11 +59,13 @@ arma::mat loglikelihoodGammaHessianCpp_t(const arma::vec& beta, const arma::mat&
     }
     // Hessian for alpha+Beta
     for (int j = 0; j < kP; j++) {
-      hessian(j, kP) += kX(i, j) * exp(wij) * (1 + log(alpha * kY(i)) - R::digamma(alpha * exp(wij)) - alpha * exp(wij) * R::trigamma(alpha * exp(wij)));
+      // hessian(j, kP) += kX(i, j) * exp(wij) * (1 + log(alpha * kY(i)) - R::digamma(alpha * exp(wij)) - alpha * exp(wij) * R::trigamma(alpha * exp(wij)));
+      hessian(j, kP) += -kX(i, j) + kY(i) * kX(i, j) * exp(-wij);
       hessian(kP, j) = hessian(j, kP);
     }
     // Hessian for alpha
-    hessian(kP, kP) += exp(wij) * (1/alpha - R::trigamma(alpha * exp(wij)) * exp(wij));
+    // hessian(kP, kP) += exp(wij) * (1/alpha - R::trigamma(alpha * exp(wij)) * exp(wij));
+    hessian(kP, kP) += 1/alpha - R::trigamma(alpha);
   }
 
   int counter = 0;
