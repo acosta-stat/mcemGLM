@@ -85,10 +85,6 @@ mcemGLMM <- function(fixed, random, data,
     } else {
       initial <- c(initial0, rep(4, length(random)))
     }
-  } else {
-    if (length(initial) != ncol(kX)) {
-      stop("Number of initial values must be equal to the number of parameters.")
-    }
   }
   
   # Fitting starts. Case 1: One random effect not in a list.
