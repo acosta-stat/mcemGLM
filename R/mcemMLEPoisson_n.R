@@ -70,7 +70,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     theta <- c(beta, sigma)
     ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     if (controlEM$verb == TRUE) {
-      print(theta)
+      print(outMLE[1:j, ])
       print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
@@ -95,29 +95,36 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
       controlEM$MCsd <- sdtune
     }
     
-    # The starting value for the next MCMC run is the mean of the previous iteration.
-    u <- colMeans(uSample)
-    # We modify the number of MCMC iterations
-    controlEM$MCit <- controlEM$MCit * controlEM$MCf
-    
     # Error checking
     error <- max(abs(outMLE[j, ] - outMLE[j - 1, ]) / (abs(outMLE[j, ]) + controlEM$EMdelta))
+    if(controlEM$verb == TRUE)
+      print(error)
     if (error < controlEM$EMepsilon) {
       errorCounter <- c(errorCounter, 1)
-      if (sum(tail(errorCounter, 3)) == 2) {
-        controlEM$MCf <- 1.5
-        controlEM$MCit <- controlEM$MCit * controlEM$MCf
-      }
     } else {
       errorCounter <- c(errorCounter, 0)
     }
+    
+    # We modify the number of MCMC iterations
+    if (j > 15 & controlEM$MCf < 1.1) {
+      controlEM$MCf <- 1.2
+    }
+    if (sum(errorCounter) >= 2 | j > 30) {
+      controlEM$MCf <- 1.5
+    }
+    controlEM$MCit <- controlEM$MCit * controlEM$MCf
+    
+    # Modify trust region
+    controlTrust$rinit <- 2 * max(abs(outMLE[j, ] - outMLE[j - 1, ]))
+    
     j <- j + 1
   }
   
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-  uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-  iMatrix <- iMatrixDiagPoissonCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+  B0 <- controlEM$MCit/controlEM$MCf
+  uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
+  iMatrix <- iMatrixDiagPoissonCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   
   colnames(uSample) <- colnames(kZ)
   

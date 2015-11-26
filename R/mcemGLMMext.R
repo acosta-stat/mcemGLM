@@ -1,16 +1,16 @@
-mcemGLMMext <- function(object, minIt = 10, controlEM) {
+mcemGLMMext <- function(object, it = 20, controlEM) {
   if (class(object) != "mcemGLMM") {
     stop("Wrong object type.")
   }
   
   if (missing(controlEM)) {
-    ctrl <- list(     EMit = max(nrow(object$mcemEST), minIt),
+    ctrl <- list(     EMit = it,
                       MCit = nrow(object$randeff),
-                       MCf = ifelse(      is.null(object$call$controlEM$MCf),  1.5,       object$call$controlEM$MCf),
+                       MCf = ifelse(      is.null(object$call$controlEM$MCf),  1.25,       object$call$controlEM$MCf),
                       verb = ifelse(     is.null(object$call$controlEM$verb), FALSE,      object$call$controlEM$verb),
                       MCsd = object$MCsd, 
-                   EMdelta = ifelse(  is.null(object$call$controlEM$EMdelta),  0.002,   object$call$controlEM$EMdelta),
-                 EMepsilon = ifelse(is.null(object$call$controlEM$EMepsilon), 0.005, object$call$controlEM$EMepsilon))
+                   EMdelta = ifelse(  is.null(object$call$controlEM$EMdelta),  0.025,   object$call$controlEM$EMdelta),
+                 EMepsilon = ifelse(is.null(object$call$controlEM$EMepsilon), 0.001, object$call$controlEM$EMepsilon))
     
     fit0 <- mcemGLMM(       fixed = eval(object$call$fixed),
                            random = eval(object$call$random), 

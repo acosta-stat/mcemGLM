@@ -35,7 +35,7 @@ mcemGLMM <- function(fixed, random, data,
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 120, MCit = 5000, MCf = 1.025, verb = FALSE, MCsd = 0, EMdelta = 0.0075, EMepsilon = 0.01)
+  ctrl <- list(EMit = 50, MCit = 5000, MCf = 1.025, verb = FALSE, MCsd = 0, EMdelta = 0.025, EMepsilon = 0.015)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -43,7 +43,7 @@ mcemGLMM <- function(fixed, random, data,
   }
   
   # Options for trust
-  cTrust <- list(rinit = 20, rmax = 200, iterlim = 100)
+  cTrust <- list(rinit = 10, rmax = 200, iterlim = 100)
   cTrustNames <- names(cTrust)
   cTrust[(controlN <- names(controlTrust))] <- controlTrust
   if(length(unkwn <- controlN[!controlN %in% cTrustNames])){

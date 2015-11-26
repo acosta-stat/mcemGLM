@@ -72,11 +72,11 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     theta <- c(beta, alpha, sigma)
     ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     if (controlEM$verb == TRUE) {
-      print(theta)
+      print(outMLE[1:j, ])
       print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
-    # Retuning the accepatance rate.
+    # Retuning the acceptance rate.
     ar <- length(unique(uSample[, 1]))/controlEM$MCit
     if (ar < 0.15 | ar > 0.4) {
       if (controlEM$verb == TRUE)
@@ -97,26 +97,35 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
       controlEM$MCsd <- sdtune
     }
     
-    # We modify the number of MCMC iterations
-    controlEM$MCit <- controlEM$MCit * controlEM$MCf
-    
     # Error checking
     error <- max(abs(outMLE[j, ] - outMLE[j - 1, ])/(abs(outMLE[j, ]) + controlEM$EMdelta))
+    if(controlEM$verb == TRUE)
+      print(error)
     if (error < controlEM$EMepsilon) {
       errorCounter <- c(errorCounter, 1)
-      if (sum(tail(errorCounter, 3)) == 2) {
-        controlEM$MCf <- 1.5
-        controlEM$MCit <- controlEM$MCit * controlEM$MCf
-      }
     } else {
       errorCounter <- c(errorCounter, 0)
     }
+    
+    # We modify the number of MCMC iterations
+    if (j > 15 & controlEM$MCf < 1.1) {
+      controlEM$MCf <- 1.2
+    }
+    if (sum(errorCounter) >= 2 | j > 30) {
+      controlEM$MCf <- 1.5
+    }
+    controlEM$MCit <- controlEM$MCit * controlEM$MCf
+    
+    # Modify trust region
+    controlTrust$rinit <- 2 * max(abs(outMLE[j, ] - outMLE[j - 1, ]))
+    
     j <- j + 1
   }
   # Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-  uSample <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
-  iMatrix <- iMatrixDiagNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
+  B0 <- controlEM$MCit/controlEM$MCf
+  uSample <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
+  iMatrix <- iMatrixDiagNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
 
   colnames(uSample) <- colnames(kZ)
   
