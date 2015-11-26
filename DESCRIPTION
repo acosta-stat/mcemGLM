@@ -1,7 +1,7 @@
 Package: mcemGLM
 Type: Package
 Title: Maximum Likelihood Estimation for Generalized Linear Mixed Models
-Version: 1.0
+Version: 1.1
 Date: 2015-7-17
 Author: Felipe Acosta Archila
 Maintainer: Felipe Acosta Archila <acosta@umn.edu>

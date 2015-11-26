@@ -6,7 +6,7 @@
 }
 \usage{
 mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson", 
-    "negbinom"), vcDist = c("normal", "t"), df, 
+    "negbinom", "gamma"), vcDist = c("normal", "t"), df, 
     controlEM = list(), controlTrust = list(), initial)
 }
 \arguments{
@@ -83,16 +83,21 @@ mcemGLMM(fixed, random, data, family = c("bernoulli", "poisson",
   \eqn{(1 + \mu/\alpha)} so we have that there is no overdispersion
   as \eqn{\alpha} goes to infinity.
   
+  The variance for the gamma distributionis set to \eqn{\mu^2/\alpha}. The value
+  of \eqn{\alpha = 1} corresponds to an exponential regression.
+  
   Stopping rules and convergence criteria:
   
   The algorithm runs for a maximum of \code{EMit} iterations or until
   the criteria 
   \deqn{\max_i \left\{ \frac{ |\theta_i^{(t)} - \theta_i^{(t-1)}|}{|\theta_i^{(t)}| + \delta}\right\} < \epsilon}{\max_i|\theta_i^(t)-\theta_i^(t-1)|/(|\theta_i^(t)| + \delta) < \epsilon}
   is satisfied three times in a row for pre-defined values of 
-  \eqn{\epsilon} and \eqn{\delta}. For a detailed discussion on 
-  convergence diagnostics see Neath R.C. (2012). After fitting a model 
-  it is recommended to plot the EM estimates at each step to assess 
-  convergence.
+  \eqn{\epsilon} and \eqn{\delta}. Once this criterion has been achieved 
+  two times we increase the Monte Carlo sample size more rapidly to 
+  have a better estimation of the model's information matrix. For 
+  a detailed discussion on convergence diagnostics see Neath R.C. (2012). 
+  After fitting a model it is recommended to plot the EM estimates 
+  at each step to assess convergence.
  
   Control options for EM:
   \describe{

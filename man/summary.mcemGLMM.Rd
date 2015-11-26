@@ -26,9 +26,9 @@
 }
 \details{
 The function prints a table for Wald tests for the fixed effect 
-coefficients and the variance estimators. In the case of the negative 
-binomial the estimate of the overdispersion value is reported with its
-respective standard deviation.
+coefficients and the variance estimators. For the negative binomial 
+and the gamma distributions the estimate of \eqn{\alpha} is reported 
+with its respective standard error.
 }
 \author{
 Felipe Acosta Archila <acosta@umn.edu>

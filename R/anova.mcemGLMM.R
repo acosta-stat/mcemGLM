@@ -1,4 +1,4 @@
-anova.mcemGLMM <- function(object, opt, ...) {
+anova.mcemGLMM <- function(object, ...) {
 #   if (!missing(opt)) {
 #     if (class(opt) != "mcemGLMM") {
 #       stop("Wrong class object.")

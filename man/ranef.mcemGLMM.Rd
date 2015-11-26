@@ -1,21 +1,22 @@
-\name{coef.mcemGLMM}
-\alias{coef}
-\alias{coef.mcemGLMM}
+\name{ranef.mcemGLMM}
+\alias{ranef}
+\alias{ranef.mcemGLMM}
 \title{Anova method for mcemGLMM objects}
 \description{
-  Extract the fixed effect coeffcients from a model fitted with \code{mcemGLMM}.
+  Extract the random effect predictions from a model fitted with \code{mcemGLMM}.
 }
 \usage{
-\method{coef}{mcemGLMM}(object, ...)
+\method{ranef}{mcemGLMM}(object, ...)
 }
 \arguments{
   \item{object}{a model fitted with the mcemGLMM function.}
   \item{...}{additional arguments.}
 }
 \value{
-  A vector with the fixed effect coefficients.
+  A vector with the random effect predictions.
 }
 \author{
 Felipe Acosta Archila <acosta@umn.edu>
 }
 \keyword{glmm}
+
