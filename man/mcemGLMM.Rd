@@ -144,7 +144,7 @@ summary(fit.1)
 # We can assess convergence by looking at a trace plot of the EM estimates
 # and the loglikelihood values
 ts.plot(fit.1$mcemEST)
-ts.plot(fit.1$loglikeVal)
+ts.plot(fit.1$QfunVal)
 
 # To fit a model with crossed random effects
 fit.crossed <- mcemGLMM(obs ~ x, random = list(~ 0 + z1, ~ 0 + z2), 
