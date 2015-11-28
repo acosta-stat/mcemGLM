@@ -31,7 +31,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   
   # MCMC step size tuning
   if (controlEM$MCsd == 0) {
-    if (controlEM$verb == TRUE)
+    if (controlEM$verb >= 1)
       print("Tuning acceptance rate.")
     ar <- 1
     sdtune <- 1
@@ -44,7 +44,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
       if (ar > 0.4)
         sdtune <- 1.2 * sdtune
     }
-    if (controlEM$verb == TRUE)
+    if (controlEM$verb >=1)
       print(ar)
     controlEM$MCsd <- sdtune
   }
@@ -64,7 +64,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
                       minimize = FALSE, u = uSample, sigmaType = sigmaType, kKi = kKi, 
                       kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     
-    if (controlEM$verb == TRUE)
+    if (controlEM$verb >= 1)
       print(outTrust)
     
     outMLE[j, ] <- outTrust$argument
@@ -75,15 +75,16 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
     sigma <- outMLE[j, -c(1:kP)]
     theta <- c(beta, sigma)
     ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-    if (controlEM$verb == TRUE) {
+    if (controlEM$verb >= 1) {
       print(outMLE[1:j, ])
-      print(ts.plot(uSample[, sample(1:kK, 1)]))
+      if (controlEM$verb >= 2)
+        print(ts.plot(uSample[, sample(1:kK, 1)]))
     }
     
     # Retuning the MCMC step size.
     ar <- length(unique(uSample[, 1]))/controlEM$MCit
     if (ar < 0.15 | ar > 0.4) {
-      if (controlEM$verb == TRUE)
+      if (controlEM$verb >= 1)
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
@@ -96,14 +97,14 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
         if (ar > 0.4)
           sdtune <- 1.1 * sdtune
       }
-      if (controlEM$verb == TRUE)
+      if (controlEM$verb >= 1)
         print(ar)
       controlEM$MCsd <- sdtune
     }
     
     # Error checking
     error <- max(abs(outMLE[j, ] - outMLE[j - 1, ]) / (abs(outMLE[j, ]) + controlEM$EMdelta))
-    if(controlEM$verb == TRUE)
+    if(controlEM$verb >= 1)
       print(error)
     if (error < controlEM$EMepsilon) {
       errorCounter <- c(errorCounter, 1)

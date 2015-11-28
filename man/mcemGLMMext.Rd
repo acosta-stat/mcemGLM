@@ -8,7 +8,7 @@ Given a model fitted with the function \code{mcemGLMM} this function will add it
 This is recommended if the initial fitting seems to have a large Monte Carlo error. This function will use the previous maximum likelihood estimate as its initial point and will also start with a Monte Carlo sample size equal to the sample size used in the last iteration of the previous fitting.
 }
 \usage{
-mcemGLMMext(object, it = 25, controlEM)
+mcemGLMMext(object, it = 20, controlEM)
 }
 \arguments{
   \item{object}{an model fitted with \code{mcemGLMM}}

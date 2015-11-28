@@ -7,6 +7,8 @@
 \usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{setspace}
+\usepackage[backend=bibtex, sorting=none]{biblatex}
+\bibliography{references}
 
 \usepackage{geometry} 
 \geometry{hmargin=3.0cm,vmargin={3.5cm,3.5cm},nohead,footskip=0.5in}
@@ -18,6 +20,8 @@
 \newcommand{\N}{\textrm{N}}
 \newcommand {\real} {\mathbb{R}}
 
+\def\baro{\vskip  .2truecm\hfill \hrule height.5pt \vskip  .2truecm}
+
 \author{Felipe Acosta Archila}
 \title{The mcemGLM package}
 
@@ -26,361 +30,354 @@
 
 \SweaveOpts{concordance=TRUE}
 \section{A Generalized Linear Mixed Model}
-We start by assuming that we observe a vector of data $Y = (Y_1,\dots,Y_n)$ corresponding to a probability model that depends on a $(p + l)$-dimensional parameter vector $\theta$, a known $n \times p$ fixed effects design matrix $X$, a known $n \times k$ known random effects design matrix $Z$ , and a $k$-dimensional vector of unobservable random effects $U$.
+Suppose that we observe a vector of data $Y = (Y_1,\dots,Y_n) \subset \mathcal{Y} \subseteq \real^n$ corresponding to a probability model 
+that depends on a $(p + l)$-dimensional parameter vector $\theta$, a known $n \times p$ fixed effects design 
+matrix $X$, a known $n \times k$ known random effects design matrix $Z$, and a $k$-dimensional vector 
+of unobservable random effects $U$. Also let $U = (U_1^T, \dots, U_l^T)^T$, and $Z = (Z_1 \cdots Z_l)$ be decompositions for the vector $U$ and the matrix $Z$, respectively. We set $\sum_i^l k_i = k$ so that $U_i$ is a $k_i$-dimensional vector with and that $Z_i$ is a $n \times k_i$ matrix.
 
-Let $\theta$ consist of $p$ fixed effects coefficients $\beta = (\beta_1, \dots, \beta_p)^T$ and $l$ variance parameters, $\sigma^2 = (\sigma_1^2,\dots,\sigma_l^2)^T$, associated to the random effects $U$. Our goal is to find maximum likelihood estimates (MLEs) for the $(p + l)$-dimensional parameter $\theta$ in a space $\Theta$ for a generalized linear mixed model.
+Let $\theta$ consist of $p$ fixed effects coefficients $\beta = (\beta_1, \dots, \beta_p)^T$ and $l$ variance 
+parameters, $\sigma^2 = (\sigma_1^2,\dots,\sigma_l^2)^T$, associated to the random effects $U_1,\dots,U_l$, i.e. 
+we assume that $U_i$ has a known distribution with variance that depends on the parameter $\sigma_i^2$. Our first 
+goal is to find estimators for the $(p + l)$-dimensional parameter $\theta$ in a space $\Theta \subset \real^{p+l}$.
 
-We assume that the expected variable of $Y_i$, can be written as a linear combination of the observable and unobservable variables through a bijective ``link'' function $g$. Let $X_i$ and $Z_i$ be the $i$th rows of the matrices $X$ and $Z$, and let $\ex(Y_i|U=u) = \mu_i$. Then
+We assume that the expected value of $Y_i$ can be written as a linear combination of the observable and 
+unobservable variables through a bijective ``link'' function $g$. Let $X^{(i)}$ and $Z^{(i)}$ be the $i$th rows of 
+the matrices $X$ and $Z$, and let $\ex(Y_i|U=u) = \mu_i$. Then
 \[
-  g(\mu_i) = X_i\, \beta + Z_i\, u, \, \textrm{ for } i = 1, \dots, n.
+  g(\mu_i) = X_i\, \beta + Z^{(i)}\, u, \, \textrm{ for } i = 1, \dots, n.
 \]
 
-Let $U = (U_1^T, \dots, U_l^T)^T$, and $Z = (Z_1 \cdots Z_l)$ a decomposition for the vector $U$ and the matrix $Z$. We assume that $U_i$ is a $k_i$-dimensional vector with $\sum_i^l k_i = k$. Furthermore we assume that $U_i$ has a known distribution with variance that depends on the parameter $\sigma_i^2$. In general let $\mu = (\mu_1,\dots,\mu_n)$ and let $g(\mu)$ denote the element-wise evaluation of $g$ on the vector $\mu$, then we can write mean our model as
+In general let $\mu = (\mu_1,\dots,\mu_n)$ and let $g(\mu)$ denote the element-wise evaluation of $g$ on 
+the vector $\mu$, then we can write the mean as
 \begin{align}
-\label{link} g(\mu) = X\, \beta + \sum_{i = 1}^l Z_i\, u_i.
+\label{link} g(\mu) = X\, \beta + \sum_{j = 1}^l Z_j^{(i)}\, u_j.
 \end{align}
 
-Let $h_U(u)$ be the probability density function of $U$. We assume that conditional on $U$, the data is generated from a probability model with probability mass function $f(Y|\theta, X, Z, U)$ and that we can write its likelihood function in terms of $\mu = g^{-1}(X\, \beta + \sum_{i = 1}^l Z_i\, u_i)$, and $\sigma^2$. Defining the model this way yields to the following likelihood functions:
+Let $h_U(u)$ be the probability density function of $U$. We assume that conditional on $U$, the data is 
+generated from a probability model with probability mass function $f(y|\theta, X, Z, U)$ and that we can 
+write its likelihood function in terms of $\mu = g^{-1}(X\, \beta + \sum_{i = 1}^l Z_i\, u_i)$, 
+and $\sigma^2$. With the model defined this way we can characterize it with the following likelihood functions:
 \begin{enumerate}
-\item A complete likelihood function:
+\item A complete data likelihood function:
   \begin{align}
-    \label{complete}  L(\theta | X, Z, U) = f(y, u|\theta, X, Z) = f_Y(y|\theta, X, Z, u)\, h_U(u|\theta).
+    \label{complete}  L(\theta | y, u, X, Z) = f(y, u|\theta, X, Z) = f_{Y|U}(y|\theta, X, Z, u)\, h_U(u|\theta).
   \end{align}
-\item And a marginal likelihood function:
+\item And a marginal data likelihood function:
   \begin{align}
-    \label{marginal} L(\theta | X, Z) = \int_{\real^l} f(Y|\theta, X, Z, U)\, h_U(u|\theta) du.
+    \label{marginal} L(\theta | y, X, Z) = \int_{\real^k} f(y|\theta, X, Z, U)\, h_U(u|\theta) du.
   \end{align}
 \end{enumerate}
+Since the vector $U$ is not observable we need to obtain the parameter estimates from \ref{marginal}. 
+For the rest of the discussion we will drop $X$ and $Z$ from $L(\,\cdot\,|\,\cdot\,)$ and 
+$f(\,\cdot\,|\,\cdot\,)$ for clearer notation.
 
-Since the vector $U$ is not observable we need to obtain the MLEs from \ref{marginal}. This means that before maximizing the likelihood function we need to integrate out the vector of random effects.
-
-The \texttt{mcemGLM} package focuses on three types of models for the marginal data:
+The \texttt{mcemGLM} package fits models with the following types of data:
 \begin{enumerate}
-  \item Bernoulli data. We say that $Y_i \overset{iid}{\sim} $ Bernoulli$(p_i)$, for $i = 1,\dots,n$, with $0 < p_i < 1$, if $Y_i$ has probability mass function
+  \item Bernoulli data. We say that $Y_i \sim $ Bernoulli$(p_i)$, for $i = 1,\dots,n$, 
+  with $0 < p_i < 1$, if $Y_i$ has probability mass function
   \[
     f(y_i) = p_i^{y_i}(1-p_i)^{1-y_i},\, \textrm{ for } y_i=0,1.
   \]
   With $\ex(Y_i) = p_i$, $\var(Y_i) = p_i(1-p_i)$, and $g(p_i)=\log(p_i/(1-p_i))$.
   
-  \item Poisson data. We say that $Y_i \overset{iid}{\sim} $ Poisson$(\mu_i)$ for $i = 1,\dots,n$, if  $Y_i$ has probability mass function
+  \item Poisson data. We say that $Y_i \sim $ Poisson$(\mu_i)$ for 
+  $i = 1,\dots,n$, with $\mu_i > 0$, if  $Y_i$ has probability mass function
   \[
     f(y_i) = e^{-\mu_i}\,\frac{\mu_i^{y_i}}{y_i!},\, \textrm{ for } y_i=0,1,2,\dots
   \]
   With $\ex(Y_i) = \mu_i$, $\var(Y_i) = \mu_i$, and $g(\mu_i)=\log(\mu_i)$.
   
-  \item Negative binomial data. We say that $Y_i \overset{iid}{\sim} $ neg-binom$(\mu_i, \alpha)$, for $i = 1,\dots,n$, with $\mu_i > 0$, and $\alpha > 0$, if $Y_i$ has probability mass function
+  \item Negative binomial data. We say that $Y_i \sim $ neg-binom$(\mu_i, \alpha)$, 
+  for $i = 1,\dots,n$, with $\mu_i > 0$, and $\alpha > 0$, if $Y_i$ has probability mass function
   \[
     f(y_i) = \dfrac{\Gamma(y_i + \alpha)}{\Gamma(\alpha)\,y_i!}\left(\dfrac{\alpha}{\mu_i + \alpha}\right)^\alpha\left(\dfrac{\mu_i}{\mu_i + \alpha}\right)^{y_i},\, \textrm{ for } y_i=0,1,2,\dots
   \]
   With $\ex(Y_i) = \mu_i$, $\var(Y_i) = \mu_i + \mu_i^2/\alpha$, and $g(\mu_i)=\log(\mu_i)$. 
   
-  The expectation and variance of $Y_i$ can be found easily by using iterated expectation with respect to a random variable $M$ distributed gamma with shape parameter $\alpha$, and rate parameter $\alpha/\mu$ and setting $Y_i|M=m \sim $ Poisson$(m)$. 
+  The expectation and variance of $Y_i$ can be found easily by using iterated expectation 
+  with respect to a random variable $M$ distributed gamma with shape parameter $\alpha$, 
+  and rate parameter $\alpha/\mu$ and setting $Y_i|M=m \sim $ Poisson$(m)$. 
   
-  By using this definition of the distribution of $Y_i$ we can treat the parameter $\alpha$ as the amount of over-dispersion with respect to the Poisson distribution. The value $\alpha = \infty$ corresponds to no over-dispersion.
+  By using this definition of the distribution of $Y_i$ we can treat the parameter $\alpha$ 
+  as the amount of over-dispersion with respect to the Poisson distribution. The value 
+  $\alpha = \infty$ corresponds to no over-dispersion. Notice that in this model, we need to estimate this extra parameter 
+  in addition to $\beta$ and $\sigma^2$.
   
-  By introducing $\alpha$ to the model notice that we need to estimate this extra parameter in addition to $\beta$ and $\sigma^2$.
-\end{enumerate}
-
-In addition to the model selection the \texttt{mcemGLM} package allows to specify two types of random effects. Let $I_{k}$ be an $n \times n$ identity matrix, $\N_n(\mu, \Sigma)$ an $n$-dimensional multivariate normal distribution with mean vector $\mu$ and covariance matrix $\Sigma$, and $t_{n}(\nu, \mu, \Sigma)$ an $n$-dimensional multivariate $t$ distribution with $\nu$ degrees of freedom, location vector $\mu$ and scale matrix $\Sigma$.
-\begin{enumerate}
-\item Normal distribution. We set $U_i \sim \N_{k_i}(0,\, \sigma_i^2 I_{k_i})$ for $i = 1,\dots,l$, and set the $U_i$s to be jointly independent.
-\item t distribution with known degrees of freedom $\nu$. We set $U_i \sim t_{k_i}(\nu,\, 0,\, \sigma_i^2 I_{k_i})$ for $i = 1,\dots,l$, and set the $U_i$s to be jointly independent.
-\end{enumerate}
-
-\section{The MCEM algorithm}
-The MCEM algorithm is a modification of the EM algorithm. The later assumes two sets of data an observed data set $Y$ and a set of missing data $U$.
-
-The EM algorithm estimates the MLEs by an iterative algorithm. Let $\theta^{(t)}$ denote the current estimate at the $i$th iteration. Let 
-\begin{align}
-\label{q-fun} Q(\theta, \theta^{(t)}) = \ex\left[\log f(y, u| \theta, X, U) | y, \theta^{(t)}\right].
-\end{align}
-
-The next value, $\theta^{(t + 1)}$, is found by maximizing \ref{q-fun} with respect to $\theta$. The expectation in \ref{q-fun} is taken with respect to $f(u|y, \theta, X, Z)$ hence if we want to obtain its closed form we need $f(y, u|\theta, X, Z)$ and $f_Y(y|\theta, X, Z)$. The later function is not available for the models we are considering, therefore we need to resort to a numerical method to calculate this expectation.
-% \begin{align*}
-%   \theta^{(t+1)} = \arg\underset{\theta}{\max}\, Q(\theta, \theta^{(t)}).
-% \end{align*}
-
-The solution implemented in the \texttt{mcemGLM} package is to estimate \ref{q-fun} via a Markov chain Monte Carlo (MCMC) step. This works by obtaining a sample $u_{t, 1}, \dots, u_{t, m}$ from a Markov chain with stationary distribution $f(u|y,\theta,X,Z)$ and then maximizing
-\begin{align}
-  \label{q-fun-mc} \widehat Q(\theta) = \sum_{j = 1}^m \log f(y, u_{t, j}| \theta, X, Z)
-\end{align}
-with respect to $\theta$ to obtain $\theta^{(t+1)}$.
-
-The algorithm is run until a termination condition has been reached or the maximum number of iterations has been done.
-
-\section{The mcemGLM package}
-
-The package runs through the following steps:
-\begin{enumerate}
-\item Choose a starting value. The default method is to fit a model without random effects and using the MLEs of the fixed coefficients as starting values for $\beta$. For $\sigma$ we set a predefined value of 5.
-\item Obtain the sample $u_{t, 1}, \dots, u_{t, m}$. This is done by using a Metropolis--Hastings algorithm that uses a multivariate normal random variable as its proposal. The standard deviation vector of the proposal distribution is chosen by performing an auto--tuning step before the first iteration. After each iteration the rejection rate of the chain is checked and if it is either too large (> 0.4)  or to small (< 0.1) the package performs an auto-tuning step before the next iteration.
-\item After obtaining the sample \ref{q-fun-mc} is maximized with respect all the parameters using the \texttt{trust} function from the \texttt{trust} package. The maximizers are set as the current value of the estimator of the MLEs.
-\item Steps 2 and 3 are repeated until the condition
+  \item Gamma data. We say that $Y_i$ is distributed Gamma with shape parameter $\alpha$ and rate parameter $\alpha/\mu_i$, for $i=1,\dots,n$, 
+  with $\alpha>0$, and $\mu_i>0$, if $Y_i$ has probability density function
   \[
-    \underset{i}{\max}\left\{\dfrac{|\theta_i^{(t)} - \theta_i^{(t - 1)}|}{|\theta_i^{(t)}| + \delta}\right\} < \epsilon
+   f(Y_i) = \dfrac{\left(\dfrac{\alpha}{\mu_i}\right)^\alpha}{\Gamma(\alpha)} y^{\alpha-1} e^{-\frac{\alpha}{\mu_i}y_i}, \textrm{ for } y_i > 0.
   \]
-  for specified values of $\delta$ and $\epsilon$ is met three consecutive times or a maximum number of iterations have been performed. 
+  With $\ex(Y_i) = \mu_i$, and $\var(Y_i) = \mu_i^2/\alpha$.
   
-  The default values in the package are $\delta = 0.05$ and $\epsilon = 0.01$ but these can be easily changed by the user. The default number of iterations is 80 and this value can also be changed by the user.
-\item After terminating the iterative process another sample from the random effects is obtained to estimate the information matrix of the model.
+  This kind of response can be used to model variables that feature a variance proportional to its squared mean. 
+  Similarly to the negative binomial data, $\alpha$ corresponds to an over-dispersion parameter. The case
+  with no over-dispersion, $\alpha=1$ corresponds to an exponential distribution with rate parameter $1/\mu_i$.
 \end{enumerate}
+
+In addition to a distribution for the observed data, we will specify a distribution on the random 
+effects $U_1,\dots,U_l$. Let $I_k$ be a $k \times k$, $\N_k(a, B)$ a $k$-dimensional multivariate
+normal distribution with mean vector $a$ and covariance matrix $B$, and $t_k(\nu,a,B)$, a 
+$k$-dimensional multivariate $t$ distribution with $\nu$ degrees of freedom, location vector $a$, 
+and scale matrix $B$.
+We will assume that the random effects are normally or t distributed as follows:
+\begin{enumerate}
+ \item Set $U_i \sim \N_{k_i}(0, \sigma_i^2 I_{k_i})$ for $i=1,\dots,l$, with the $U_i$s
+ mutually independent.
+ \item Set $U_i \sim t_{k_i}(\nu_i, 0, \sigma_i^2 I_{k_i})$  for $i=1,\dots,l$, with the $U_i$s
+ mutually independent.
+\end{enumerate}
+
+The package uses an MCEM algorithm. This is a generalization of the EM algorithm and share the same basic idea. We start by assuming two sets of data: An ``observed'' dataset we call $Y$ and a second set of ``missing'' data $U$. In our context the observed data $Y$ are the actual observations we have measured, i.e., the success and failures for the logistic regression, the counts for the Poisson (and negative binomial) regression, and measurements for the gamma regression. The missing data are the unobservable random effects $U$ which we have assumed either to be normally or t distributed.
+
+The EM algorithm estimates the MLEs of a GLMM by an iterative algorithm. Let $\theta^{(t)}$ denote the current estimate at the $i$th iteration. Let 
+\begin{align}
+\label{q-fun} Q(\theta, \theta^{(t)}) = \ex\left[\log f(y, u| \theta) | y, \theta^{(t)}\right].
+\end{align}
+
+The next value, $\theta^{(t + 1)}$, is found by maximizing \ref{q-fun} with respect to $\theta$. The expectation in \ref{q-fun} is taken with respect to $f(u|y, \theta)$. Hence if we want to obtain its closed form we need $f(y, u|\theta)$ and $f_Y(y|\theta)$. The function $f_Y(y|\theta)$ is not available in closed form for the models we are considering, therefore we need to resort to a numerical method to calculate this expectation.
+
+In the models considered in this package we are not be able to calculate the $Q$ function analytically. However since what we are calculating an expectation we can approximate it by using Monte Carlo simulation. The MCEM algorithm, introduced by \cite{wei:tann:1990}, consists of the following steps.
+
+\baro
+\begin{enumerate}
+ \item Select an initial value $\theta^{(0)}$ for the EM sequence.
+ \item At step $t$, obtain a sample $u_{t, 1},\dots,u_{t, m_t}$, from $U|\,\theta^{(t)}, Y$.
+ \item Obtain $\theta^{(t+1)}$ by maximizing
+ \begin{align}
+  \label{q-fun-mc} \widehat Q_t(\theta) = \frac{1}{m_t}\sum_{j = 1}^{m_t} \log f(y, u_{t, j}| \theta)
+\end{align}
+with respect to $\theta$.
+\item Repeat 2 and 3 until a convergence criterion is reached or a maximum number of iterations has been done.
+\end{enumerate}
+\baro
+\vspace*{.2in}
+The key difference between EM and MCEM is that in the expectation step we approximate the $Q$ function using Monte Carlo simulation through the $\hat Q$ function defined in \ref{q-fun-mc}. This modification turns the integration problem into a sampling problem. Now we are faced with the task of obtaining a sample from the conditional distribution $U|\,\theta^{(t)},Y$.
+
+To find the MLE of a specified model, the main function of \texttt{mcemGLM} package runs through the following steps:
+\begin{enumerate}
+\item Choose  $\theta^{(1)}$, the starting value for the EM step. The default method is to fit a model without random effects and use the MLEs of the fixed coefficients as starting values for $\beta$. For $\sigma$ we set a predefined value of 4. In the case of a negative binomial model, MLEs from a Poisson model are used with the over-dispersion parameter set to 100. User-specified initial values are also supported.
+
+\item At step $t$, obtain the sample $u_{t, 1}, \dots, u_{t, m}$. This is done by using a Metropolis--Hastings algorithm that uses a multivariate normal random variable as its proposal. The standard deviation vector of the proposal distribution is chosen by performing an auto-tuning step before the first iteration. After each iteration the rejection rate of the chain is checked and if it is either too large ($> 0.40$)  or to small ($< 0.15$) the package performs an auto-tuning step before the next iteration.
+
+\item After obtaining the sample, \ref{q-fun-mc} is maximized with respect to the parameters using the \texttt{trust} function from the \texttt{trust} package. The maximizers are set as the current value of the estimator of the MLEs.
+
+\item Steps 2 and 3 are repeated until the condition
+  \begin{align}
+  \label{eq:mcem-cond} \underset{i}{\max}\left\{\dfrac{|\theta_i^{(t)} - \theta_i^{(t - 1)}|}{|\theta_i^{(t)}| + \delta}\right\} < \epsilon
+  \end{align}
+  for specified values of $\delta$ and $\epsilon$ is met three consecutive times or a maximum number of iterations have been performed. This is a stopping rule recommended by \cite{boot:hobe:1999}.
+  
+  The default values in the package are $\delta = 0.025$ and $\epsilon = 0.02$ but these can be easily changed by the user. The default number of iterations is 40 and this value can also be changed by the user.
+\item After terminating the iterative process an additional sample from the conditional distribution of $U|Y$ to estimate Fisher's information matrix.
+\end{enumerate}
+
+One condition for convergence of the MCEM algorithm is that $\sum_{t=0}^\infty m_t^{-1} < \infty$. However there is no consensus about a best way to approach this. The package starts by choosing a starting Monte Carlo sample size $m_1$ (with default value $m_1=3000$) and this is increased by a multiplicative factor $f > 1$ at each step of the algorithm, i.e. $m_t=f\cdot m_{t-1}$. Common experience is that at the start of algorithm small sample sizes are adequate at the beginning of the algorithm but larger sample sizes are required towards the end. Our approach is to increase $f$ at two times during the algorithm. First after 15 steps we go from 1.025 to 1.2. After another 15 iterations or if we have met condition \ref{eq:mcem-cond} twice we increase it to 1.5.
+
+One issue that can arise with a fitted model is that it is possible that the Monte Carlo sample size at the last iteration of the algorithm to be inadequate to calculate the observed Fisher's information matrix due to Monte Carlo error \cite{caff:jank:jone:2005, boot:hobe:1999, gueo:agre:2001}. In this case the package will return a warning and will suggest the user to run the algorithm for longer. The package offers functionality to continue the MCEM procedure from an already fitted model. 
+
+The last MCMC iteration of the algorithm is saved and returned to help with convergence assessment and can be used to predict the random effects. In addition to the sample from the distribution $U|Y$, $u_1,\dots,u_{m_T}$, the package also returns the evaluated complete log-likelihood function for each $u_i$ which can also be used to assess convergence for MCMC step.
+
+In addition to MLE estimation, the package also offers Wald tests for model terms, as well as contrast, prediction, and residual estimation. These functions are similar in use to R's built in linear model functionality. Now we turn and look at examples of the use of the package for each type of supported model.
 
 \section{Using the mcemGLM package}
-<<echo=TRUE>>=
-require(mcemGLM)
-data("simData.rdata")
-@
+
+\subsection{Bernoulli model example}
 <<echo=FALSE>>=
 set.seed(23786)
-simData$count <- simData$count+rpois(200, 3)
-simData$count2 <- simData$count*(1+rpois(200, 2))
 @
-<<>>=
-head(simData)
-summary(simData)
-@
-
-The data consist of three fixed effects, $x1$, $x2$, and $x3$. The first two fixed effects are continuous and $x3$ is a factor with three levels. There are three variables that we can use as variance components $z1$ (5 levels), $z2$ (4 levels), and $z3$ (3 levels.) The component $z2$ can be nested within $z1$ and $z3$ is crossed with these.
-
-First we will consider a simple model based on this data using \verb obs  as the binary response.
-
-\subsection{A simple model}
-We will fit a model with one variance component, $z3$ and we will consider $z1$ as a fixed effect along with $x1$.
-
-The main model arguments for the \verb mcemGLMM  function are \verb fixed  and \verb random.  These specify the fixed and random effects of the model. The response must be included in the \verb fixed  argument. In this first example we are considering $x1$ and $z1$ as fixed and $z3$ as random. We can fit this model with the following command:
 <<echo=TRUE>>=
-fit0 <- mcemGLMM(fixed = obs ~ x1 + z1, 
-                random = ~0+z2, 
-                  data = simData, 
-                family = "bernoulli", 
-                vcDist = "normal")
+require(mcemGLM)
+data("salamander")
+summary(salamander)
 @
-The rest of the used arguments are:
+
+Our first example comes from \cite{mccu:neld:1989}. The data consists of three experiments, each consisting in salamander mating in two closed groups. Both groups contained 10 males and females each with five species ``R'' and five species ``W''. Each experiment resulted in 120 binary observations indicating which matings were successful and which were not.
+
+Let $y_{ij}$ be the indicator of a successful mating between females $i$ and male $j$ for $i,j=1,\dots,60$. Since the salamanders were divided in groups only 360 of these pairs are of interest. Let $u_m$ and $u_f$ be the vectors of random effects for males and females. Each component corresponds to a single salamander, therefore each of these is a $60 \times 1$ vector. The conditional mean can be written as
+\[
+ \mu_{ij} = \log\left(\dfrac{p_{ij}}{1-p_{ij}}\right) = x_{ij} \beta + z_{f,i}\, u_f + z_{m,j}^T\, u_m.
+\]
+Where $x_{ij}$ is a $1 \times 4$ row vector indicating the type of cross, $\beta = (\beta_{RR}, \beta_{RW}, \beta_{WR}, \beta_{WW})$, $z_{f,i}^T$ a $60 \times 1$ row vector indicating the female involved in the cross, and $z_{m,j}$ a $60 \times 1$ row vector indicating the male involved in the cross.
+
+We can fit the model as
+<<echo=TRUE>>=
+fitBernoulli <- mcemGLMM(fixed  = Mate ~ 0+Cross,
+                         random = list(~ 0+Female, ~ 0+Male), 
+                         data   = salamander, 
+                         family = "bernoulli", 
+                         vcDist = "normal")
+@
+
+These are the basic arguments to fit model: 
 \begin{itemize}
-\item \verb data:  argument contains the name of the data frame with the data.
-\item \verb family:  argument specifies the type of model to be fitted. The options are ``bernoulli'' for logistic regression, ``poisson'' for Poisson count regression, and ``negbinom'' for negative binomial count  regression.
-\item \verb vcDist:  argument specifies the distribution of the random effects. The option are ``normal'', and ``t''. In case of $t$ random effects an extra argument with the degrees of freedom must be supplied.
+ \item The \texttt{fixed} argument specifies the fixed effects. Since we want to estimate the effects for each type of cross we specify that we do not wish to fit an intercept in the model.
+ \item The \texttt{random} argument specifies the random effects. In case of more than one random effect these have to be in a list. Each random effect must be specified to not have an intercept.
+ \item The \texttt{data} arguments states the name of the data frame that contains the data.
+ \item The \texttt{family} argument specifies the type of response we wish to fit.
+ \item The \texttt{vcDist} argument specifies the distribution of the random effects.
 \end{itemize}
 
-We can start by taking a look at the coefficient and variance estimates with the \verb summary  command:
-<<echo=TRUE>>=
-summary(fit0)
-@
-We first get a print of the original call used to fit the model. The summary print out has two tables. The first table shows the estimates, standard errors and $z$ tests for the fixed effect coefficients. While the second table contains the same information but for the variance estimates.
+Given a fitted model we can look at the MLEs, standard errors, and default hypothesis tests with the \texttt{summary} command.
 
-Now we can look at an ANOVA table based on Wald tests.
 <<echo=TRUE>>=
-anova(fit0)
+summary(fitBernoulli)
 @
-Each line corresponds to a test on the coefficients that are related to each variable. In the case of a continuous variable or a binary this is equivalent to the $z$ test performed with \verb summary.  When a categorical variable has more than two categories \verb anova  will test run a chi--squared test on all the coefficients that are related to that variable. In this case the chi--squared test for $z1$ tests if the corresponding coefficients for \verb D2 , \verb  D3 , \verb D4 , and \verb D5  are both equal to zero.
+This command displays the original call used to fit the model, and tables of point estimates, standard errors, and Wald tests for the fixed effects and variance components respectively.
 
-We can run multiple comparison tests for the levels of $z1$. First we need to create a contrast matrix with each row representing a contrast that we want to test. In this case
+We can test multiple contrasts with the \texttt{contrasts.mcemGLMM} command. To do so we first set up a contrast matrix. For example if we want to compare all possible pairs of means for each mating groups the matrix is
 <<echo=TRUE>>=
-ctr0 <- rbind("D1 - D2" = c(0, 0,-1, 0, 0, 0),
-              "D1 - D3" = c(0, 0, 0,-1, 0, 0),
-              "D1 - D4" = c(0, 0, 0, 0,-1, 0),
-              "D1 - D5" = c(0, 0, 0, 0, 0,-1),
-              "D2 - D3" = c(0, 0, 1,-1, 0, 0),
-              "D2 - D4" = c(0, 0, 1, 0,-1, 0),
-              "D2 - D5" = c(0, 0, 1, 0, 0,-1),
-              "D3 - D4" = c(0, 0, 0, 1,-1, 0),
-              "D3 - D5" = c(0, 0, 0, 1, 0,-1),
-              "D4 - D5" = c(0, 0, 0, 0, 1,-1))
-@
-Notice that rows one and two are the contrasts that that compare the baseline, \verb D1 , to the other levels, hence these will have equivalent test statistics as those obtained in \verb summary.  However \verb contrasts.mcemGLMM  accounts for multiple comparisons by adjusting the $p$--values via Bonferroni correction therefore it is possible to obtain significance in \verb summary  and not in \verb contrasts.mcemGLMM  since this $p$--value will likely be larger.
-<<echo=TRUE>>=
-contrasts.mcemGLMM(object = fit0, ctr.mat = ctr0)
+ctr0 <- matrix(c(1, -1, 0, 0, 
+                 1, 0, -1, 0, 
+                 1, 0, 0, -1,
+                 0, 1, -1, 0,
+                 0, 1, 0, -1,
+                 0, 0, 1, -1), 6, 4, byrow = TRUE)
+
+rownames(ctr0) <- c("RR - RW", "RR - WR", "RR - WW", 
+                    "RW - WR", "RW - WW", "WR - WW")
+
 @
 
-For this simple model it is possible to plot the predicted probabilities for each level of \verb z1 . These estimates correspond to the population means, i.e., the random effects have been set to zero. Figure \ref{fit0-fitted} shows the plots of the fitted probabilities as a function of $x1$ for the different levels of $z1$.
+Once we have the contrast matrix we use the \texttt{contrasts.mcemGLMM} command. The first argument is the \texttt{mcemGLMM} object that contains the model and the second argument the contrast matrix to be tested.
+<<echo=TRUE>>=
+contrasts.mcemGLMM(fitBernoulli, ctr0)
+@
+The table returns the contrast estimates, standard errors and Bonferroni adjusted $p$-values.
+
+We have access to the residuals with the \texttt{residuals} command. The arguments needed are the \texttt{mcemGLMM} object that contains the model and \texttt{type}, a string that specifies the type of residual, i.e., deviance residuals (default value, \texttt{type = `deviance'}) or Pearson (\texttt{type = `pearson'}) residuals. \ref{fig:sal-01} shows the deviance residuals for each observation and grouped by cross type.
 \begin{figure}[ht]
 \centering
-\label{fit0-fitted}
-<<echo=TRUE, fig=TRUE>>=
-plot(simData$x1, predict(fit0, type = "response"), col = simData$z1, xlab = "x1")
+\label{fig:sal-01}
+<<echo=FALSE, fig=TRUE, width=8, height=4>>=
+par(mfrow=c(1, 2))
+plot(residuals(fitBernoulli, type = "deviance"), xlab = "Observation", ylab = "di", main = "Deviance residuals")
+plot(residuals(fitBernoulli, type = "deviance")~salamander$Cross, xlab = "Cross", ylab = "di", main = "Deviance residuals")
 @
-\caption{Fitted probabilities. Each color represent a level of $z1$}
+\caption{Left: Deviance residuals for each observation. Right: Deviance residuals grouped by cross type.}
 \end{figure}
 
-We can calculate the Pearson and deviance residuals of the model with the \texttt{residuals} command. Figures \ref{fit0-deviance} and \ref{fit0-pearson} shows these plots.
+We can obtain mean predictions at the population level with the \texttt{predict} command. This command can take three arguments, the first argument is the \texttt{mcemGLMM} object that contains the model. The second argument, \texttt{newdata} is a list with vectors corresponding to the values of fixed effects where the predictions will be evaluated. If this argument is not provided the function will return a prediction for each observation in the model. The third argument \texttt{type} is a string that specifies the type of prediction to be returned, i.e., a link function evaluation (\texttt{type = `link'}) or a prediction on the response mean (\texttt{type = `response'}).
+<<echo=TRUE>>=
+predict(fitBernoulli, newdata=list(Cross = c("RR", "RW", "WR", "WW")), 
+        type = "link", se.fit = TRUE)
+predict(fitBernoulli, newdata=list(Cross = c("RR", "RW", "WR", "WW")), 
+        type = "response", se.fit = TRUE)
+@
+The ``link'' and ``response'' predictions correspond to the value of the link function and the probability of success respectively for the value of the random effects when the random effects are set equal to zero. If the argument \texttt{se.fit} is set to \texttt{TRUE}, the function will also return standard errors for the mean predictions.
+
+We can obtain random effect predictions \texttt{ranef.mcemGLMM} command. The output of this command is not shown for space concerns but \ref{fig:sal-02} shows Q-Q plots for the two variance components.
 \begin{figure}[ht]
-\label{fit0-deviance}
 \centering
-<<echo=TRUE, fig=TRUE>>=
-plot(simData$x1, residuals(fit0, type = "deviance"))
+\label{fig:sal-02}
+<<echo=FALSE, fig=TRUE, width=8, height=4>>=
+par(mfrow=c(1, 2))
+qqnorm(ranef.mcemGLMM(fitBernoulli)[1:60], main = "Normal Q-Q Plot for \n Female Random Effects")
+qqnorm(ranef.mcemGLMM(fitBernoulli)[61:120], main = "Normal Q-Q Plot for \n Male Random Effects")
 @
-\caption{Deviance residuals}
+\caption{Left: Q-Q plot for Female random effects. Right: Q-Q plot for Male random effects.}
 \end{figure}
 
+We can assess convergence of the MCEM iterations by looking at trace plots of the EM sequence estimators. The field \texttt{mcemEST} contains a matrix with the MLE estimates at each iteration of the MCEM algorithm. \ref{fig:sal-03} shows trace plots for all the parameters estimated in the model.
 \begin{figure}[ht]
-\label{fit0-pearson}
 \centering
-<<echo=TRUE, fig=TRUE>>=
-plot(simData$x1, residuals(fit0, type = "pearson"))
+\label{fig:sal-03}
+<<echo=FALSE, fig=TRUE, width=8, height=4>>=
+ts.plot(fitBernoulli$mcemEST, col=1:6, xlab = "EM Iteration", ylab = "Estimate")
+legend("topright", lty=1, col = 1:6, c("RR", "RW", "WR", "WW", expression(paste(sigma,"2", "_f")), expression(paste(sigma,"2", "_m"))))
 @
-\caption{Pearson residuals}
+\caption{Trace plots for the EM sequences of each parameter.}
 \end{figure}
 
-To assess convergence we can look at trace plots of the MLE estimates and the value of the loglikelihood function across the EM iterations. These are stored in the \verb mcemGLMM  object returned by the function the \verb mcemGLMM  function on the fields \verb+mcemEST+ and \verb loglikeVal . Figure \ref{fig-fit0-mle} shows trace plots at each EM iteration of these quantities.
-
+We can also obtain a trace plot for the value of $\hat Q$ function at each iteration, the field \texttt{QfunVal} contains these values. \ref{fig:sal-04} shows a trace plot for the values of this estimate across the EM iterations.
 \begin{figure}[ht]
-\label{fig-fit0-mle}
 \centering
-<<echo=TRUE, fig=TRUE, width=8>>=
-par(mfrow = c(1, 2))
-ts.plot(fit0$mcemEST, main = "MLEs estimates", 
-        xlab = "EM Iteration", ylab = "MLE value")
-ts.plot(fit0$loglikeVal, main = "Loglikelihood values", 
-        xlab = "EM iteration", ylab = "Likelihood")
+\label{fig:sal-04}
+<<echo=FALSE, fig=TRUE, width=8, height=4>>=
+ts.plot(fitBernoulli$QfunVal, xlab = "EM iteration", ylab="Q function")
 @
-\caption{MLEs estimates (left) and Loglikelihood value (right) after each EM iteration.}
+\caption{Trace plot for the $\hat Q$ function value at each EM iteration.}
 \end{figure}
 
-We can also take a look at the trace plots of the Markov chain used to estimate the $Q$ function. Since this approximates an integral of dimension equal to the number of random effects it might not be practical to look at all the chains. The last MCMC step is saved on the field \verb randeff  as a matrix. Each column of this matrix corresponds to one random effect.
-
-\begin{figure}
-\centering
-\label{fit0-rand}
-<<echo=TRUE, fig=TRUE>>=
-ts.plot(fit0$randeff[, 1], xlab = "MCMC iteration")
-@
-\caption{Trace plot for MCMC output for the first random effect.}
-\end{figure}
-
-This matrix can be used to get predictions of the observed random effects.
-<<echo=TRUE>>=
-colMeans(fit0$randeff)
-@
-
-To see the sampling on the loglikelihood function we can plot the values of the complete loglikelihood at each MCMC step of the last EM iteration. These values are stored in the \verb+loglikeMCMC+ field of the \verb+mcemGLMM+ object.
-\begin{figure}
-\centering
-\label{fit0-rand}
-<<echo=TRUE, fig=TRUE>>=
-ts.plot(fit0$loglikeMCMC, xlab = "MCMC iteration")
-@
-\caption{Trace plot for the complete loglikelihood function.}
-\end{figure}
-
-\clearpage
-\subsection{Fitting a more complex model}
-To specify more than one random effect we need to put them into a list and state that there is no intercept for that effect. In case of nested random effects if labels are repeated across it is necessary to fit the lower level by using the interaction with the upper level.
-
-In this specific example, the labels for $z2$, "1", "2", "3", and "4", are used for each level of $z1$. If the labels of $z2$ are unique within $z1$ it is not necessary to use the interaction term. However it is recommended to use the interaction form for the sake of clarity in the model statement.
-<<echo=TRUE>>=
-fit1 <- mcemGLMM(fixed = obs ~ x1 + x2 + x3, 
-                random = list(~0+z1, ~0+z1:z2), 
-                  data = simData, 
-                family = "bernoulli", 
-                vcDist = "t", 
-                df = c(5, 5))
-@
-The \verb df  argument specifies the degrees of freedom for each variance component in \verb random.  If \verb vcDist  is ``normal'' this argument is not needed.
-
-We can look at the summary and ANOVA of the model as before
-<<echo=TRUE>>=
-summary(fit1)
-anova(fit1)
-@
-
-We can run multiple comparison tests for the levels of $x3$ as before
-<<echo=TRUE>>=
-ctr1 <- rbind(   "blue - red" = c(0, 0, 0,-1, 0),
-              "blue - yellow" = c(0, 0, 0, 0,-1),
-               "red - yellow" = c(0, 0, 0, 1,-1))
-contrasts.mcemGLMM(object = fit1, ctr.mat = ctr1)
-@
-
-Instead of performing a Wald test to test a fixed effect it is possible to run a likelihood ratio test between two nested models. First we will fit a model without \verb x3 :
-<<echo=TRUE>>=
-fit2 <- mcemGLMM(fixed = obs ~ x1 + x2, 
-                random = list(~0+z1, ~0+z1:z2), 
-                  data = simData, 
-                family = "bernoulli", 
-                vcDist = "t", 
-                    df = c(5, 5),
-                controlEM = list(EMit = 3))
-@
-Now we can use the \verb anova  command to run the likelihood ratio test
-<<echo=TRUE>>=
-anova(fit1, fit2)
-@
-
-\subsection{A Poisson model}
-To fit a Poisson model we only need to change the \verb family  argument in the \verb mcemGLMM  command. As an example we will use the \verb count  variable in \verb simData .
-<<echo=TRUE>>=
-fit3 <- mcemGLMM(fixed = count ~ x1 + x2 + x3, 
-                random = list(~0+z2), 
-                  data = simData, 
-                family = "poisson", 
-                vcDist = "normal")
-@
-All the previous methods are available for this type of model.
-<<echo=TRUE>>=
-summary(fit3)
-anova(fit3)
-contrasts.mcemGLMM(object = fit3, ctr.mat = ctr1)
-@
-
-\begin{figure}[ht]
-\label{fit3-fitted}
-\centering
-<<echo=TRUE, fig=TRUE>>=
-plot(simData$x1, predict(fit3), 
-     main = "Predicted response values", xlab = "x1")
-@
-\caption{Predicted values as a function of $x1$.}
-\end{figure}
-
-\begin{figure}[ht]
-\label{fig-fit3-mle}
-\centering
-<<echo=TRUE, fig=TRUE, width=8>>=
-par(mfrow = c(1, 2))
-ts.plot(fit3$mcemEST, main = "MLEs estimates", 
-        xlab = "EM Iteration", ylab = "MLE value")
-ts.plot(fit3$loglikeVal, main = "Loglikelihood values", 
-        xlab = "EM iteration", ylab = "Likelihood")
-@
-\caption{MLEs estimates (left) and Loglikelihood value (right) after each EM iteration.}
-\end{figure}
-
-
-\subsection{A negative binomial model}
-To fit a negative binomial model we need to specify the \verb family  argument to \verb "negbinom" . All the previous methods ara available for this model. When we look at the summary of this model we get an estimate of the overdispersion parameter and its standard error.
-<<echo=TRUE>>=
-fit4 <- mcemGLMM(fixed = count2 ~ x1 + x2 + x3, 
-                random = list(~0+z1, ~0+z1:z2), 
-                  data = simData, 
-                family = "negbinom", 
-                vcDist = "normal")
-summary(fit4)
-anova(fit4)
-contrasts.mcemGLMM(object = fit4, ctr.mat = ctr1)
-@
+To assess convergence at the MCMC level we can use the sample obtained at the last EM iteration of $U|Y$. In this problem we have 60 different chains so it is not feasible to look at trace plots of all of them. However it is recommended to the user to look at trace plots and autocorrelation functions of at least a handful of them. In addition to the sample from $U|Y$, we can find the complete log-likelihood function evaluated at each observation of the $U|Y$ chain in the field \texttt{QfunMCMC}. This can also be useful for convergence assessment since the maximization step of the algorithm is done on this function. \ref{fig:sal-05} shows these assessment plots for the first female subject and the $\hat Q$ function.
 
 \begin{figure}[ht]
 \centering
-<<echo=TRUE, fig=TRUE>>=
-plot(simData$x1, predict(fit4))
+\label{fig:sal-05}
+<<echo=FALSE, fig=TRUE, width=8>>=
+par(mfrow = c(2,2))
+ts.plot(fitBernoulli$randeff[, 1], xlab = "MC iteration", ylab = "U_F1")
+acf(fitBernoulli$randeff[, 1], lag.max = 100, main = "U_F1")
+ts.plot(fitBernoulli$QfunMCMC, xlab = "MC iteration", ylab = "Q function")
+acf(fitBernoulli$QfunMCMC, lag.max = 100)
 @
+\caption{Top: Trace plot and autocorrelation function for the first female subject. Bottom: Trace plot and autocorrelation function for the $\hat Q$ function function.}
 \end{figure}
 
-\begin{figure}
-\label{fit4-mle}
-\centering
-<<echo=TRUE, fig=TRUE, width=7>>=
-par(mfrow = c(1, 2))
-ts.plot(fit4$mcemEST, main = "MLEs estimates", 
-        xlab = "EM Iteration", ylab = "MLE value")
-ts.plot(fit4$loglikeVal, main = "Likelihood value", 
-        xlab = "EM Iteration", ylab = "Likelihood")
+\subsection{Negative binomial model example}
+The second data set by \cite{thal:vail:1990}, comes from an experiment with $i=1,\dots,59$ epilepsy patients. Each of the patients was assigned to a control group or a treatment group. The experiment recorded the number of seizures experienced by each patient over four two-week periods. The experiment also recorded a baseline count of the number of seizures the patients had experienced during the previous eight weeks. In their analysis they used the following covariates.
+\begin{itemize}
+ \item Base: The logarithm of baseline/4.
+ \item Age: The logarithm of the patient's age in years.
+ \item Trt: An indicator variable for the treatment group.
+ \item V4: An indicator variable for the fourth time period.
+\end{itemize}
+
+This data is also analyzed in \cite{bres:clay:1993}. One of their models replaces the variable V4 with the variable Visit, defined as $(j-2.5)/5$ for $j=1,2,3,4$ where each value corresponds to one of the four time periods. The analysis of \cite{thal:vail:1990} consists in a multiplicative model, while the analysis of \cite{bres:clay:1993} consists a Poisson loglinear model. \cite{boot:case:frie:hobe:2003} note that the Poisson loglinear model fails to account for over-dispersion and consider the use of a negative binomial model. This last model is the one we fit here in this example.
+
+Let $y_{ij}$ be the count for the $i$th subject at the $j$th period. Then we can write the model as
+\[
+ \log\mu_{ij} = \beta_0 + \beta_1 \textrm{Base} + \beta_2 \textrm{Trt} + \beta_3 \textrm{Base} \times \textrm{Trt} + \beta_4\textrm{Age} + \beta_5 \textrm{Visit} + u_i.
+\]
+We will fit this model using $t$ distributed random effects.
+<<echo=TRUE>>=
+fitNegbin <- mcemGLMM(fixed  = count ~ base * group + age + visit, 
+                 random = list( ~ 0 + id),
+                 data   = epilepsy, 
+                 family = "negbinom", 
+                 vcDist = "t", 
+                 df     = 10)
 @
-\caption{MLEs estimates and loglikelihood value after each EM iteration.}
-\end{figure}
-% 
-% <<echo=TRUE>>=
-% # colMeans(fit4$randeff)
-% @
-% 
+The argument \texttt{df} specifies the degrees of freedom for the $t$ distribution. The summary of the model is
+<<echo=TRUE>>=
+summary(fitNegbin)
+@
+
+\section{Options for the mcemGLM package}
+The help file of the \texttt{mcemGLMM} function lists other possible options that can be passed through the \texttt{controlEM} argument. The complete list of options is:
+\begin{description}
+    \item[EMit:]{Maximum number of EM iterations.}
+    \item[MCit:]{Initial number of Monte Carlo iterations for the MCMC 
+    step.}
+    \item[MCf:]{Factor in which the MC iterations increase in each EM 
+    iteration.}
+    \item[verb:]{Logical value. If set to TRUE, at each EM iteration the function will 
+    print convergence information and a trace plot for one of the random 
+    effects. This can be useful to assess the performance and tuning of the algorithm 
+    but it can impact the actual running time.}
+    \item[MCsd:]{Initial standard deviation for the proposal density of 
+    the MCMC step. If zero (default) an auto-tuning step will be 
+    performed.}
+    \item[EMdelta:]{constant for the EM error assessment, see \ref{eq:mcem-cond}.}
+    \item[EMepsilon:]{constant for the EM error assessment, see \ref{eq:mcem-cond}.}
+\end{description}
+
+The object returned by the \texttt{mcemGLMM} function has the following fields:
+\begin{description}
+ \item[mcemEST:]{A matrix with the value of the maximum likelihood 
+    estimators at the end of each EM step.}
+ \item[iMatrix:]{Fisher's information matrix.}
+ \item[QfunVal]{The of the Q function (up to a constant.)}
+ \item[QfunMCMC:]{The Q function evaluated at a sample from the distribution of $U|Y,\hat\theta_n$.}
+ \item[randeff:]{A sample from the distribution of $U|Y,\hat\theta_n$.}
+ \item[y:]{The vector of observations.}
+ \item[x:]{The design matrix for the fixed effects.}
+ \item[z:]{The design matrix for the random effects.}
+ \item[EMerror]{The relative error at the last iteration, see \ref{eq:mcem-cond}.}
+ \item[MCsd:]{The last value for the standard deviation of the proposal distribution of the MCMC step.}
+ \item[call:]{The original call used to fit the function.}
+\end{description}
+
+
+\printbibliography
 \end{document}
