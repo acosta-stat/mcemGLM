@@ -13,7 +13,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), se.f
         colnames(tmp) <- c("Estimate", "SE")
         cmat <- covMat.mcemGLMM(object)
         for (i in 1:kN) {
-          tmp[i, 2] <- object$x[i, ] %*% cmat %*% (object$x[i, ])
+          tmp[i, 2] <- sqrt(object$x[i, ] %*% cmat %*% (object$x[i, ]))
         }
         return(tmp)
       }
@@ -29,7 +29,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), se.f
           colnames(tmp) <- c("Estimate", "SE")
           cmat <- covMat.mcemGLMM(object)
           for (i in 1:kN) {
-            tmp[i, 2] <- exp(2 * lin0[i])/(1 + exp(lin0[i]))^4 * object$x[i, ] %*% cmat %*% object$x[i, ]
+            tmp[i, 2] <- sqrt(exp(2 * lin0[i])/(1 + exp(lin0[i]))^4 * object$x[i, ] %*% cmat %*% object$x[i, ])
           }
           return(tmp)
         }
@@ -44,7 +44,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), se.f
           colnames(tmp) <- c("Estimate", "SE")
           cmat <- covMat.mcemGLMM(object)
           for (i in 1:kN) {
-            tmp[i, 2] <- exp(2 * lin0[i]) * object$x[i, ] %*% cmat %*% object$x[i, ]
+            tmp[i, 2] <- sqrt(exp(2 * lin0[i]) * object$x[i, ] %*% cmat %*% object$x[i, ])
           }
           return(tmp)
         }
@@ -67,7 +67,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), se.f
         colnames(tmp) <- c("Estimate", "SE")
         cmat <- covMat.mcemGLMM(object)
         for (i in 1:kN) {
-          tmp[i, 2] <- tmp.x[i, ] %*% cmat %*% (tmp.x[i, ])
+          tmp[i, 2] <- sqrt(tmp.x[i, ] %*% cmat %*% (tmp.x[i, ]))
         }
         return(tmp)
       }
@@ -83,7 +83,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), se.f
           colnames(tmp) <- c("Estimate", "SE")
           cmat <- covMat.mcemGLMM(object)
           for (i in 1:kN) {
-            tmp[i, 2] <- exp(2 * lin0[i])/(1 + exp(lin0[i]))^4 * tmp.x[i, ] %*% cmat %*% tmp.x[i, ]
+            tmp[i, 2] <- sqrt(exp(2 * lin0[i])/(1 + exp(lin0[i]))^4 * tmp.x[i, ] %*% cmat %*% tmp.x[i, ])
           }
           return(tmp)
         }
@@ -98,7 +98,7 @@ predict.mcemGLMM <- function(object, newdata, type = c("link", "response"), se.f
           colnames(tmp) <- c("Estimate", "SE")
           cmat <- covMat.mcemGLMM(object)
           for (i in 1:kN) {
-            tmp[i, 2] <- exp(2 * lin0[i]) * tmp.x[i, ] %*% cmat %*% tmp.x[i, ]
+            tmp[i, 2] <- sqrt(exp(2 * lin0[i]) * tmp.x[i, ] %*% cmat %*% tmp.x[i, ])
           }
           return(tmp)
         }
