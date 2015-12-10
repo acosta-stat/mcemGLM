@@ -34,10 +34,10 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     ar <- 1
     sdtune <- 1
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-    while (ar > 0.4 | ar < 0.15) {
+    while (ar > 0.4 | ar < 0.2) {
       uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 5000
-      if (ar < 0.15)
+      if (ar < 0.2)
         sdtune <- 0.8 * sdtune
       if (ar > 0.4)
       sdtune <- 1.2 * sdtune
@@ -76,16 +76,16 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     
     # Retuning the acceptance rate.
     ar <- length(unique(uSample[, 1]))/controlEM$MCit
-    if (ar < 0.15 | ar > 0.4) {
+    if (ar < 0.2 | ar > 0.4) {
       if (controlEM$verb >= 1)
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
       u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-      while (ar > 0.4 | ar < 0.15) {
+      while (ar > 0.4 | ar < 0.2) {
         uSample.tmp <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 5000
-        if (ar < 0.15)
+        if (ar < 0.2)
           sdtune <- 0.8 * sdtune
         if (ar > 0.4)
           sdtune <- 1.2 * sdtune
@@ -106,11 +106,13 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
     }
     
     # We modify the number of MCMC iterations
-    if (j > 15 & controlEM$MCf < 1.1) {
+    if (j == 15 & controlEM$MCit < 50000) {
+      controlEM$MCit <- controlEM$MCit + 50000
       controlEM$MCf <- 1.2
     }
-    if (sum(errorCounter) >= 2 | j > 30) {
-      controlEM$MCf <- 1.5
+    if (j == 30 & controlEM$MCit < 300000) {
+      controlEM$MCit <- controlEM$MCit + 100000
+      controlEM$MCf <- 1.15
     }
     controlEM$MCit <- controlEM$MCit * controlEM$MCf
     
@@ -121,7 +123,7 @@ mcemMLE_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initi
   }
   # Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-  B0 <- controlEM$MCit/controlEM$MCf
+  B0 <- max(controlEM$MCit, 200000)
   uSample <- uSamplerCpp(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   iMatrix <- iMatrixDiagCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
 

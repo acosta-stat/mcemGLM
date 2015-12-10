@@ -35,10 +35,10 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     ar <- 1
     sdtune <- 1
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-    while (ar > 0.4 | ar < 0.15) {
+    while (ar > 0.4 | ar < 0.2) {
       uSample.tmp <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
       ar <- length(unique(uSample.tmp[, 1])) / 5000
-      if (ar < 0.15)
+      if (ar < 0.2)
         sdtune <- 0.8 * sdtune
       if (ar > 0.4)
         sdtune <- 1.2 * sdtune
@@ -77,16 +77,16 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     
     # Retuning the MCMC step size.
     ar <- length(unique(uSample[, 1]))/controlEM$MCit
-    if (ar < 0.15 | ar > 0.4) {
+    if (ar < 0.2 | ar > 0.4) {
       if (controlEM$verb >= 1)
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
       u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-      while (ar > 0.4 | ar < 0.15) {
+      while (ar > 0.4 | ar < 0.2) {
         uSample.tmp <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 5000
-        if (ar < 0.15)
+        if (ar < 0.2)
           sdtune <- 0.9 * sdtune
         if (ar > 0.4)
           sdtune <- 1.1 * sdtune
@@ -107,11 +107,13 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
     }
     
     # We modify the number of MCMC iterations
-    if (j > 15 & controlEM$MCf < 1.1) {
+    if (j == 15 & controlEM$MCit < 50000) {
+      controlEM$MCit <- controlEM$MCit + 50000
       controlEM$MCf <- 1.2
     }
-    if (sum(errorCounter) >= 2 | j > 30) {
-      controlEM$MCf <- 1.5
+    if (j == 30 & controlEM$MCit < 300000) {
+      controlEM$MCit <- controlEM$MCit + 100000
+      controlEM$MCf <- 1.15
     }
     controlEM$MCit <- controlEM$MCit * controlEM$MCf
     
@@ -123,7 +125,7 @@ mcemMLEPoisson_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, co
   
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-  B0 <- controlEM$MCit/controlEM$MCf
+  B0 <- max(controlEM$MCit, 200000)
   uSample <- uSamplerPoissonCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   iMatrix <- iMatrixDiagPoissonCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   
