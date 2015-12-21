@@ -1,3 +1,17 @@
+#' Residual extraction method for mcemGLMM objects
+#' 
+#' This functions returns the residuals of a model fitted with \code{mcemGLMM}.
+#' 
+#' @aliases residuals residuals.mcemGLMM
+#' @param object a model fitted with the mcemGLMM function.
+#' @param type character string. The type of residuals to be returned.
+#' @param ... additional arguments.
+#' @return A vector with the residuals of the model.
+#' @author Felipe Acosta Archila <acosta@@umn.edu>
+#' @keywords glmm, residuals
+#' 
+#' @export
+#' 
 residuals.mcemGLMM <- function(object, type = c("deviance", "pearson"), ...) {
   kP <- ncol(object$x)
   coef0 <- tail(object$mcemEST, 1)[1:kP]
