@@ -109,13 +109,13 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     }
     
     # We modify the number of MCMC iterations
-    if (j == 15 & controlEM$MCit < 50000) {
+    if (j == 30 & controlEM$MCit < 50000) {
       controlEM$MCit <- controlEM$MCit + 50000
       controlEM$MCf <- 1.2
     }
-    if (j == 30 & controlEM$MCit < 300000) {
+    if (j == 40 & controlEM$MCit < 500000) {
       controlEM$MCit <- controlEM$MCit + 100000
-      controlEM$MCf <- 1.15
+      controlEM$MCf <- 1.025
     }
     controlEM$MCit <- controlEM$MCit * controlEM$MCf
     
@@ -126,7 +126,7 @@ mcemMLENegBinom_t_fixed_df <- function(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   }
   # Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-  B0 <- max(controlEM$MCit, 200000)
+  B0 <- max(controlEM$MCit, 300000)
   uSample <- uSamplerNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   iMatrix <- iMatrixDiagNegBinomCpp_t(beta = beta, sigma = ovSigma, alpha = alpha, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
 

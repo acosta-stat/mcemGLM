@@ -112,14 +112,14 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
       errorCounter <- c(errorCounter, 0)
     }
     
-    # We modify the number of MCMC iterations
-    if (j == 15 & controlEM$MCit < 50000) {
+    # We modify the number of MCMC iterations at iterations 30 and 40 if necessary
+    if (j == 30 & controlEM$MCit < 50000) {
       controlEM$MCit <- controlEM$MCit + 50000
       controlEM$MCf <- 1.2
     }
-    if (j == 30 & controlEM$MCit < 300000) {
+    if (j == 40 & controlEM$MCit < 500000) {
       controlEM$MCit <- controlEM$MCit + 100000
-      controlEM$MCf <- 1.15
+      controlEM$MCf <- 1.025
     }
     controlEM$MCit <- controlEM$MCit * controlEM$MCf
     
@@ -131,7 +131,7 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   
   #Estimation of the information matrix.
   ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
-  B0 <- max(controlEM$MCit, 200000)
+  B0 <- max(controlEM$MCit, 300000)
   uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   iMatrix <- iMatrixDiagCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   colnames(uSample) <- colnames(kZ)
