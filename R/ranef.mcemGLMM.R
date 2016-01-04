@@ -13,5 +13,5 @@
 #' @export
 #' 
 ranef.mcemGLMM <- function(object, ...) {
-  return(colMeans(object$randeff))
+  return(object$ranef)
 }

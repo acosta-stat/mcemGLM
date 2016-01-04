@@ -1,4 +1,5 @@
-# This function starts the estimation of the parameters. It runs for a fixed number of EM iterations.
+# This function starts the estimation of the parameters. It runs for a 
+# fixed number of EM iterations.
 # sigmaType:  Structure of the sigma matrices in the model.
 # kKi:        Number of random effects per variance component.
 # kLh:        Number of subvariance components in each variance component.
@@ -9,7 +10,8 @@
 # MCf:        Factor to increase the number of MCMC iterations.
 # MCsd:       Standard deviation for the proposal step.
 
-mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust) {
+mcemMLE_n <- function(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, 
+                      controlEM, controlTrust) {
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
   kK <- ncol(kZ)
@@ -24,7 +26,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   
   QfunVal <- NULL
   theta <- c(beta, sigma)
-  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, 
+                            kR = kR, kLh = kLh, kLhi = kLhi)
   
   outMLE <- matrix(0, controlEM$EMit, length(theta))
   outMLE[1, ] <- theta
@@ -37,7 +40,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
     sdtune <- 1
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
     while (ar > 0.4 | ar < 0.2) {
-      uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
+      uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, 
+                               kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 5000
       if (ar < 0.2)
         sdtune <- 0.8 * sdtune
@@ -74,7 +78,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
     beta <- outMLE[j, 1:kP]
     sigma <- outMLE[j, -c(1:kP)]
     theta <- c(beta, sigma)
-    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, 
+                              kR = kR, kLh = kLh, kLhi = kLhi)
     if (controlEM$verb >= 1) {
       print(outMLE[1:j, ])
       if (controlEM$verb >= 2)
@@ -90,7 +95,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
       sdtune <- controlEM$MCsd
       u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
       while (ar > 0.4 | ar < 0.2) {
-        uSample.tmp <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
+        uSample.tmp <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, 
+                                     kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 5000
         if (ar < 0.2)
           sdtune <- 0.9 * sdtune
@@ -103,7 +109,8 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
     }
     
     # Error checking
-    error <- max(abs(outMLE[j, ] - outMLE[j - 1, ]) / (abs(outMLE[j, ]) + controlEM$EMdelta))
+    error <- max(abs(outMLE[j, ] - outMLE[j - 1, ]) / 
+                   (abs(outMLE[j, ]) + controlEM$EMdelta))
     if(controlEM$verb >= 1)
       print(error)
     if (error < controlEM$EMepsilon) {
@@ -130,14 +137,47 @@ mcemMLE_n <- function (sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM
   }
   
   #Estimation of the information matrix.
-  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, 
+                            kR = kR, kLh = kLh, kLhi = kLhi)
   B0 <- max(controlEM$MCit, 300000)
-  uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
-  iMatrix <- iMatrixDiagCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
+  uSample <- uSamplerCpp_n(beta = beta, sigma = ovSigma, u = u, kY = kY, 
+                           kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
+  iMatrix <- iMatrixDiagCpp_n(beta = beta, sigma = ovSigma, uSample = uSample, 
+                              kKi = kKi, kY = kY, kX = kX, kZ = kZ, B = B0, 
+                              sd0 = controlEM$MCsd)
   colnames(uSample) <- colnames(kZ)
   
   # loglikehood MCMC
-  QfunMCMC <- MCMCloglikelihoodLogitCpp_n(beta = beta, sigma = ovSigma, u = uSample, kY = kY, kX = kX, kZ = kZ)
+  QfunMCMC <- MCMCloglikelihoodLogitCpp_n(beta = beta, sigma = ovSigma, u = uSample, 
+                                          kY = kY, kX = kX, kZ = kZ)
   
-  return(list(mcemEST = outMLE, iMatrix = iMatrix, QfunVal = QfunVal, QfunMCMC = QfunMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
+  # The return statement is like this because ifelse can't 
+  # return objects of different sizes.
+  if (controlEM$ranefsam == TRUE) {
+    return(list(mcemEST = outMLE, 
+                iMatrix = iMatrix, 
+                QfunVal = QfunVal, 
+                QfunMCMC = QfunMCMC, 
+                ranefsam = uSample, 
+                ranef = colMeans(uSample), 
+                y = kY, 
+                x = kX, 
+                z = kZ, 
+                EMerror = error, 
+                MCsd = controlEM$MCsd, 
+                MCit = nrow(uSample)))
+  } else {
+    return(list(mcemEST = outMLE, 
+                iMatrix = iMatrix, 
+                QfunVal = QfunVal, 
+                QfunMCMC = QfunMCMC, 
+                ranefsam = 0, 
+                ranef = colMeans(uSample), 
+                y = kY, 
+                x = kX, 
+                z = kZ, 
+                EMerror = error, 
+                MCsd = controlEM$MCsd, 
+                MCit = nrow(uSample)))
+  }
 }

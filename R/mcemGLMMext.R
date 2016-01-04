@@ -45,7 +45,7 @@ mcemGLMMext <- function(object, it = 20, controlEM) {
   
   if (missing(controlEM)) {
     ctrl <- list(     EMit = it,
-                      MCit = nrow(object$randeff),
+                      MCit = eval(object$MCit),
                        MCf = ifelse(      is.null(object$call$controlEM$MCf),  1.25,       object$call$controlEM$MCf),
                       verb = ifelse(     is.null(object$call$controlEM$verb), FALSE,      object$call$controlEM$verb),
                       MCsd = object$MCsd, 

@@ -26,7 +26,7 @@ summary.mcemGLMM <- function(object, ...) {
   coef0 <- tail(object$mcemEST, n = 1)[1:ncol(object$x)]
   names(coef0) <- colnames(object$mcemEST)[1:ncol(object$x)]
   
-  ran.eff0 <- colMeans(object$randeff)
+  ran.eff0 <- ranef.mcemGLMM(object)
   
   # Variance estimates
   var.est0 <-tail(object$mcemEST, n = 1)[-(1:ncol(object$x))]

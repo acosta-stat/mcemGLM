@@ -46,7 +46,8 @@
 #' 
 #' Control options for EM: \describe{ \item{EMit}{maximum number of EM
 #' iterations.} \item{MCit}{initial number of Monte Carlo iterations for the
-#' MCMC step.} \item{MCf}{factor in which the MC iterations increase in each EM
+#' MCMC step.} \item{ranefsam}{logical. If true the full random effect sample 
+#' is returned.} \item{MCf}{factor in which the MC iterations increase in each EM
 #' iteration.} \item{verb}{logical. If TRUE at each EM iteration the function
 #' will print convergence information and a trace plot for on of the random
 #' effects. This is useful to assess the performance of the algorithm but it
@@ -89,12 +90,14 @@
 #' at the end of each EM step.} \item{iMatrix}{Fisher's information matrix.}
 #' \item{QfunVal}{ value (up to a constant) of the Q function.  Used to perform
 #' likelihood ratio tests.} \item{QfunMCMC}{Q function MCMC sample.}
-#' \item{randeff}{a sample from the conditional distribution of the random
+#' \item{ranefsam}{a sample from the conditional distribution of the random
 #' effects given the data and the maximum likelihood estimators.}
+#' \item{ranef}{the predicted random effects.}
 #' \item{y}{vector of observations.} \item{x}{design matrix for the fixed
 #' effects.} \item{z}{design matrix for the random effects.}
 #' \item{EMerror}{relative error at the last iteration. See details.}
-#' \item{MCsd}{last value for MCMC step size.} \item{call}{original call.} }
+#' \item{MCsd}{last value for MCMC step size.} \item{call}{original call.}
+#' \item{MCit}{last value for MCMC sample size.} \item{call}{original call.} }
 #' @author Felipe Acosta Archila <acosta@@umn.edu>
 #' @references Neath, R. C. (2012) On Convergence Properties of the Monte Carlo
 #' EM Algorithm In Advances in Modern Statistical Theory and Applications: A
@@ -188,7 +191,8 @@ mcemGLMM <- function(fixed, random, data,
   xlabs <- colnames(kX)
   
   # Options
-  ctrl <- list(EMit = 90, MCit = 2500, MCf = 1.05, verb = 0, MCsd = 0, EMdelta = 0.05, EMepsilon = 0.015)
+  ctrl <- list(EMit = 90, MCit = 2500, ranefsam = FALSE, MCf = 1.05, verb = 0, 
+               MCsd = 0, EMdelta = 0.05, EMepsilon = 0.015)
   ctrlN <- names(ctrl)
   ctrl[(controlN <- names(controlEM))] <- controlEM
   if(length(unkwn <- controlN[!controlN %in% ctrlN])){
@@ -256,32 +260,43 @@ mcemGLMM <- function(fixed, random, data,
     
     if (vcDist == "normal") {
       if (family == "bernoulli") {
-        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, 
+                          controlEM = ctrl, controlTrust = cTrust)
       }
       if (family == "poisson") {
-        fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial,
+                                 controlEM = ctrl, controlTrust = cTrust)
       }
       if (family == "negbinom") {
-        fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial,
+                                  controlEM = ctrl, controlTrust = cTrust)
       }
       if (family == "gamma") {
-        fit0 <- mcemMLEGamma_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEGamma_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, 
+                               controlEM = ctrl, controlTrust = cTrust)
       }
     } else {
       if (length(df) > 1) {
         stop("The number of variance components and the length of df must me equal.")
       }
       if (family == "bernoulli") {
-        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, 
+                                   initial, controlEM = ctrl, controlTrust = cTrust)
       } 
       if (family == "poisson") {
-        fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, 
+                                          kX, kZ, initial, controlEM = ctrl, 
+                                          controlTrust = cTrust)
       }
       if (family == "negbinom") {
-        fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, 
+                                           kX, kZ, initial, controlEM = ctrl, 
+                                           controlTrust = cTrust)
       }
       if (family == "gamma") {
-        fit0 <- mcemMLEGamma_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEGamma_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, 
+                                        kZ, initial, controlEM = ctrl, 
+                                        controlTrust = cTrust)
       }
     }
   } else {
@@ -296,7 +311,8 @@ mcemGLMM <- function(fixed, random, data,
       } else {
         tmpZ <- model.matrix(random[[i]], data = data)
       }
-      tmpZ <- tmpZ[, colSums(tmpZ^2) !=0] # Check for columns with only zeros. This might happen with nested random effects.
+      # Check for columns with only zeros. This might happen with nested random effects.
+      tmpZ <- tmpZ[, colSums(tmpZ^2) !=0] 
       kZ <- cbind(kZ, tmpZ)
       kKi <- c(kKi, ncol(tmpZ))
       kLh <- c(kLh, 1)        
@@ -307,16 +323,20 @@ mcemGLMM <- function(fixed, random, data,
     # Normal random effects
     if (vcDist == "normal") {
       if (family == "bernoulli") {
-        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLE_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, 
+                          controlEM = ctrl, controlTrust = cTrust)
       } 
       if (family == "poisson") {
-        fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEPoisson_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, 
+                                 initial, controlEM = ctrl, controlTrust = cTrust)
       }
       if (family == "negbinom") {
-        fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLENegBinom_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, 
+                                  initial, controlEM = ctrl, controlTrust = cTrust)
       }
       if (family == "gamma") {
-        fit0 <- mcemMLEGamma_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEGamma_n(sigmaType, kKi, kLh, kLhi, kY, kX, kZ, initial, 
+                               controlEM = ctrl, controlTrust = cTrust)
       }
     }
     
@@ -326,16 +346,24 @@ mcemGLMM <- function(fixed, random, data,
         stop("The number of variance components and the length of df must me equal.")
       }
       if (family == "bernoulli") {
-        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLE_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, 
+                                   kX, kZ, initial, controlEM = ctrl, 
+                                   controlTrust = cTrust)
       } 
       if (family == "poisson") {
-        fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEPoisson_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, 
+                                          kY, kX, kZ, initial, controlEM = ctrl,
+                                          controlTrust = cTrust)
       }
       if (family == "negbinom") {
-        fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLENegBinom_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, 
+                                           kY, kX, kZ, initial, controlEM = ctrl,
+                                           controlTrust = cTrust)
       }
       if (family == "gamma") {
-        fit0 <- mcemMLEGamma_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM = ctrl, controlTrust = cTrust)
+        fit0 <- mcemMLEGamma_t_fixed_df(sigmaType, df, kKi, kLh, kLhi, 
+                                        kY, kX, kZ, initial, controlEM = ctrl, 
+                                        controlTrust = cTrust)
       }
     }
   }

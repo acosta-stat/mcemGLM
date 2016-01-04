@@ -15,7 +15,7 @@
 residuals.mcemGLMM <- function(object, type = c("deviance", "pearson"), ...) {
   kP <- ncol(object$x)
   coef0 <- tail(object$mcemEST, 1)[1:kP]
-  u0 <- colMeans(object$randeff)
+  u0 <- ranef.mcemGLMM(object)
   lin0 <- object$x %*% coef0 + object$z %*% u0
   if (object$call$family == "bernoulli") {
     prob0 <- exp(lin0) / (1 + exp(lin0))
