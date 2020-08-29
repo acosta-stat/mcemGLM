@@ -17,7 +17,7 @@ Example data for logistic, Poisson and negative binomial models.
     \item{\code{x3}}{a categorical vector with levels \code{blue}, \code{red}, and \code{yellow}.}
     \item{\code{z1}}{a categorical vector with levels \code{D1}, \code{D2}, \code{D3}, \code{D4}, and \code{D5}.}
     \item{\code{z2}}{a categorical vector with levels \code{1}, \code{2}, \code{3}, \code{4}, and \code{5}.}
-    \item{\code{z3}}{a categorical vectir with levels \code{A}, \code{B}, and \code{D}.}
+    \item{\code{z3}}{a categorical vector with levels \code{A}, \code{B}, and \code{D}.}
     \item{\code{count}}{a numeric vector. Used as a response for a Poisson model.}
   }
 }

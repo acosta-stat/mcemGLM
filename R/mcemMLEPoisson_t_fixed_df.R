@@ -9,8 +9,7 @@
 # MCf:        Factor to increase the number of MCMC iterations.
 # MCsd:       Standard deviation for the proposal step.
 
-mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, 
-                                       initial, controlEM, controlTrust) {  
+mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ, initial, controlEM, controlTrust) {  
   # Number of fixed effects, random effects, variance and subvariance components.
   kP <- ncol(kX)
   kK <- ncol(kZ)
@@ -24,8 +23,7 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   
   QfunVal <- NULL
   theta <- c(beta, sigma)
-  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, 
-                            kLh = kLh, kLhi = kLhi)
+  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
   
   outMLE <- matrix(0, controlEM$EMit, length(theta))
   outMLE[1, ] <- theta
@@ -37,13 +35,10 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     ar <- 1
     sdtune <- 1
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-    while (ar > 0.4 | ar < 0.2) {
-      uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, 
-                                      sigmaType = sigmaType, u = u, df = df, 
-                                      kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, 
-                                      kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
+    while (ar > 0.4 | ar < 0.15) {
+      uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
       ar <- length(unique(uSample[, 1])) / 5000
-      if (ar < 0.2)
+      if (ar < 0.15)
         sdtune <- 0.8 * sdtune
       if (ar > 0.4)
         sdtune <- 1.2 * sdtune
@@ -59,16 +54,10 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
   while (j <= controlEM$EMit & sum(tail(errorCounter, 3)) < 3) {
     # Obtain MCMC sample for u with the current parameter estimates.
     u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-    uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType,
-                                    u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, 
-                                    kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, 
-                                    sd0 = controlEM$MCsd)
+    uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = controlEM$MCit, sd0 = controlEM$MCsd)
     
     # Now we optimize.
-    outTrust <- trust(toMaxDiagPoisson_t, parinit = theta, rinit = controlTrust$rinit,
-                      rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, 
-                      minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, 
-                      kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
+    outTrust <- trust(toMaxDiagPoisson_t, parinit = theta, rinit = controlTrust$rinit, rmax = controlTrust$rmax, iterlim = controlTrust$iterlim, minimize = FALSE, u = uSample, sigmaType = sigmaType, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
     
     if (controlEM$verb >= 1)
       print(outTrust)
@@ -79,8 +68,7 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     beta <- outMLE[j, 1:kP]
     sigma <- outMLE[j, -c(1:kP)]
     theta <- c(beta, sigma)
-    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, 
-                              kLh = kLh, kLhi = kLhi)
+    ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
     if (controlEM$verb >= 1) {
       print(outMLE[1:j, ])
       if (controlEM$verb >= 2)
@@ -89,19 +77,16 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     
     # Re-tuning the acceptance rate.
     ar <- length(unique(uSample[, 1]))/controlEM$MCit
-    if (ar < 0.2 | ar > 0.4) {
+    if (ar < 0.15 | ar > 0.4) {
       if (controlEM$verb >= 1)
         print("Tuning acceptance rate.")
       ar <- 1
       sdtune <- controlEM$MCsd
       u <- rnorm(kK, rep(0, kK), sqrt(diag(ovSigma))) # Initial value for u
-      while (ar > 0.4 | ar < 0.2) {
-        uSample.tmp <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, 
-                                            sigmaType = sigmaType, u = u, df = df,
-                                            kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY,
-                                            kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
+      while (ar > 0.4 | ar < 0.15) {
+        uSample.tmp <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = 5000, sd0 = sdtune)
         ar <- length(unique(uSample.tmp[, 1])) / 5000
-        if (ar < 0.2)
+        if (ar < 0.15)
           sdtune <- 0.8 * sdtune
         if (ar > 0.4)
           sdtune <- 1.2 * sdtune
@@ -112,8 +97,7 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     }
 
     # Error checking
-    error <- max(abs(outMLE[j, ] - outMLE[j - 1, ]) / 
-                   (abs(outMLE[j, ]) + controlEM$EMdelta))
+    error <- max(abs(outMLE[j, ] - outMLE[j - 1, ])/(abs(outMLE[j, ]) + controlEM$EMdelta))
     if(controlEM$verb >= 1)
       print(error)
     if (error < controlEM$EMepsilon) {
@@ -123,13 +107,11 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     }
     
     # We modify the number of MCMC iterations
-    if (j == 30 & controlEM$MCit < 50000) {
-      controlEM$MCit <- controlEM$MCit + 50000
+    if (j > 15 & controlEM$MCf < 1.1) {
       controlEM$MCf <- 1.2
     }
-    if (j == 40 & controlEM$MCit < 500000) {
-      controlEM$MCit <- controlEM$MCit + 100000
-      controlEM$MCf <- 1.025
+    if (sum(errorCounter) >= 2 | j > 30) {
+      controlEM$MCf <- 1.5
     }
     controlEM$MCit <- controlEM$MCit * controlEM$MCf
     
@@ -139,53 +121,15 @@ mcemMLEPoisson_t_fixed_df <- function (sigmaType, df, kKi, kLh, kLhi, kY, kX, kZ
     j <- j + 1
   }
   # Estimation of the information matrix. Get a sample from U given the estimated MLEs
-  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, 
-                            kLh = kLh, kLhi = kLhi)
-  B0 <- max(controlEM$MCit, 300000)
-  uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, 
-                                  u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, 
-                                  kY = kY, kX = kX, kZ = kZ, B = B0,
-                                  sd0 = controlEM$MCsd)
-  iMatrix <- iMatrixDiagPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType,
-                                     uSample = uSample, df = df, kKi = kKi, kLh = kLh,
-                                     kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0,
-                                     sd0 = controlEM$MCsd)
+  ovSigma <- constructSigma(pars = sigma, sigmaType = sigmaType, kK = kK, kR = kR, kLh = kLh, kLhi = kLhi)
+  B0 <- controlEM$MCit/controlEM$MCf
+  uSample <- uSamplerPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = u, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
+  iMatrix <- iMatrixDiagPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, uSample = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ, B = B0, sd0 = controlEM$MCsd)
   
   colnames(uSample) <- colnames(kZ)
   
   # loglikehood MCMC
-  QfunMCMC <- MCMCloglikelihoodPoissonCpp_t(beta = beta, sigma = ovSigma, 
-                                            sigmaType = sigmaType, u = uSample, df = df,
-                                            kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY,
-                                            kX = kX, kZ = kZ)
+  QfunMCMC <- MCMCloglikelihoodPoissonCpp_t(beta = beta, sigma = ovSigma, sigmaType = sigmaType, u = uSample, df = df, kKi = kKi, kLh = kLh, kLhi = kLhi, kY = kY, kX = kX, kZ = kZ)
   
-  # The return statement is like this because ifelse can't 
-  # return objects of different sizes.
-  if (controlEM$ranefsam == TRUE) {
-    return(list(mcemEST = outMLE, 
-                iMatrix = iMatrix, 
-                QfunVal = QfunVal, 
-                QfunMCMC = QfunMCMC, 
-                ranefsam = uSample, 
-                ranef = colMeans(uSample), 
-                y = kY, 
-                x = kX, 
-                z = kZ, 
-                EMerror = error, 
-                MCsd = controlEM$MCsd, 
-                MCit = nrow(uSample)))
-  } else {
-    return(list(mcemEST = outMLE, 
-                iMatrix = iMatrix, 
-                QfunVal = QfunVal, 
-                QfunMCMC = QfunMCMC, 
-                ranefsam = 0, 
-                ranef = colMeans(uSample), 
-                y = kY, 
-                x = kX, 
-                z = kZ, 
-                EMerror = error, 
-                MCsd = controlEM$MCsd, 
-                MCit = nrow(uSample)))
-  }
+  return(list(mcemEST = outMLE, iMatrix = iMatrix, QfunVal = QfunVal, QfunMCMC = QfunMCMC, randeff = uSample, y = kY, x = kX, z = kZ, EMerror = error, MCsd = controlEM$MCsd))
 }

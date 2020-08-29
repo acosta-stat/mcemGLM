@@ -14,7 +14,7 @@ Salamander mating experiment data from McCullagh and Nelder.
     \item{\code{Cross}}{the type of salamanders involved in the crossing.}
     \item{\code{Female}}{the female salamander's ID.}
     \item{\code{Male}}{the male salamander's ID.}
-    \item{\code{Mate}}{wheter the crossing was succesful or not.}
+    \item{\code{Mate}}{whether the crossing was successful or not.}
   }
 }
 
